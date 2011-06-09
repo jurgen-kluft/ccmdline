@@ -1,62 +1,62 @@
-#ifndef _AG_H
-#define _AG_H
+#ifndef __XCMDLINE_AG_H__
+#define __XCMDLINE_AG_H__
 
 namespace xcore
 {
-
-	#ifndef	TRUE
-	#define	TRUE	1
-	#define	FALSE	0
-	#endif
-
-	/*************************************
-	 * ARGVECTOR structure
-	 * Basically, an (argc,argv) construct
-	 * with indices to which character of 
-	 * which word is the current position
-	 */
-	struct ARGVECTOR
+	namespace xcmdline
 	{
-		char    **v;            /* argument vector */
-		int     c;              /* argument count  */
-		int     iw;             /* current word    */
-		int     ic;             /* current character */
-	};
+		#ifndef	TRUE
+			#define	TRUE	1
+			#define	FALSE	0
+		#endif
 
-	/* 
-	 * Function prototypes 
-	 */
+		/*************************************
+		 * xargv structure
+		 * Basically, an (argc,argv) construct
+		 * with indices to which character of 
+		 * which word is the current position
+		 */
+		struct xargv
+		{
+			char    **v;            /// argument vector
+			s32     c;              /// argument count
+			s32     iw;             /// current word
+			s32     ic;             /// current character
+		};
 
-	extern ARGVECTOR	*ag_new(int,char **);
-	extern void			ag_free(ARGVECTOR *);
-	extern void			ag_fprint(FILE *, ARGVECTOR *);
-	extern int			ag_enstring(char *,ARGVECTOR *,int);
-	extern void			ag_reset(ARGVECTOR *);
-	extern int			ag_w_number(ARGVECTOR *);
-	extern void			ag_w_advance(ARGVECTOR *);
-	extern int			ag_eow(ARGVECTOR *);
-	extern int			ag_end(ARGVECTOR *);
-	extern char			ag_c(ARGVECTOR *);
-	extern char			ag_c_next(ARGVECTOR *);
-	extern char			ag_cnn_next(ARGVECTOR *);
-	extern char			ag_c_advance(ARGVECTOR *);
-	extern char			ag_backspace(ARGVECTOR *);
-	extern void			ag_backword(ARGVECTOR *);
-	extern char			*ag_s(ARGVECTOR *);
-	extern char			*ag_s_next(ARGVECTOR *);
-	extern char			*ag_s_advance(ARGVECTOR *);
-	extern int			ag_clear(ARGVECTOR *);
-	extern int			ag_argc(ARGVECTOR *);
-	extern char			**ag_argv(ARGVECTOR *);
-	extern ARGVECTOR	*ag_copy(ARGVECTOR *);
-	extern void			ag_freeall(ARGVECTOR *);
-	extern ARGVECTOR	*ag_prepend_argv0(ARGVECTOR *, char *);
-	extern char			*argnext(ARGVECTOR *);
+		/* 
+		 * Function prototypes 
+		 */
 
+		extern xargv		*ag_new(s32,char **);
+		extern void			ag_free(xargv *);
+		extern s32			ag_enstring(char *,xargv *,s32);
+		extern void			ag_reset(xargv *);
+		extern s32			ag_w_number(xargv *);
+		extern void			ag_w_advance(xargv *);
+		extern s32			ag_eow(xargv *);
+		extern s32			ag_end(xargv *);
+		extern char			ag_c(xargv *);
+		extern char			ag_c_next(xargv *);
+		extern char			ag_cnn_next(xargv *);
+		extern char			ag_c_advance(xargv *);
+		extern char			ag_backspace(xargv *);
+		extern void			ag_backword(xargv *);
+		extern char			*ag_s(xargv *);
+		extern char			*ag_s_next(xargv *);
+		extern char			*ag_s_advance(xargv *);
+		extern s32			ag_clear(xargv *);
+		extern s32			ag_argc(xargv *);
+		extern char			**ag_argv(xargv *);
+		extern xargv		*ag_copy(xargv *);
+		extern void			ag_freeall(xargv *);
+		extern xargv		*ag_prepend_argv0(xargv *, char *);
+		extern char			*argnext(xargv *);
+	}
 }
 
 
-#endif /* _AG_H */
+#endif	/// __XCMDLINE_AG_H__
 
 
 

@@ -3,9 +3,9 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "xcmdline\opt.h"
-#include "xcmdline\ag.h"
-#include "xcmdline\opt_p.h"
+#include "xcmdline\private\opt.h"
+#include "xcmdline\private\ag.h"
+#include "xcmdline\private\opt_p.h"
 
 namespace xcore
 {

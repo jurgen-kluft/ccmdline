@@ -42,6 +42,32 @@
 		<Type>Package</Type>
 	</Dependency>
 
+	<ProjectProperties>
+		<Properties DependencyType="Root" Platform="*">
+			<PropertyGroup Label="xcmdline_TargetDirs">
+				<xcmdline_RootDir>$(SolutionDir)</xcmdline_RootDir> 
+				<xcmdline_LibraryDir>$(SolutionDir)target\xcmdline\outdir\xbase_$(Configuration)_$(Platform)\</xcmdline_LibraryDir>
+				<xcmdline_IncludeDir>$(SolutionDir)source\main\include\</xcmdline_IncludeDir>
+			</PropertyGroup>
+		</Properties>
+				
+		<Properties DependencyType="Package" Platform="*">
+			<PropertyGroup Label="xcmdline_TargetDirs">
+				<xcmdline_RootDir>${Location}</xcmdline_RootDir> 
+				<xcmdline_LibraryDir>${Location}libs\</xcmdline_LibraryDir>
+				<xcmdline_IncludeDir>${Location}source\main\include\</xcmdline_IncludeDir>
+			</PropertyGroup>
+		</Properties>
+	
+		<Properties DependencyType="Source" Platform="*">
+			<PropertyGroup Label="xcmdline_TargetDirs">
+				<xcmdline_RootDir>$(SolutionDir)target\xcmdline\</xcmdline_RootDir> 
+				<xcmdline_LibraryDir>$(SolutionDir)target\xcmdline\target\xcmdline\outdir\xcmdline_$(Configuration)_$(Platform)\</xcmdline_LibraryDir>
+				<xcmdline_IncludeDir>$(SolutionDir)target\xcmdline\source\main\include\</xcmdline_IncludeDir>
+			</PropertyGroup>
+		</Properties>
+	</ProjectProperties>
+
 	<Project Name="${Name}" Language="${Language}" Location="source\main\cpp" Scope="Public" DependsOn="xbase:xbase">
 		<ProjectFile>
 			<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -348,8 +374,6 @@
 				</PropertyGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Win32'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
@@ -359,8 +383,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
@@ -370,8 +392,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
