@@ -48,6 +48,9 @@ namespace xcore
 
 		virtual void		deallocate(void* mem)
 		{
+			if (mem==0)
+				return;
+
 			--mNumAllocations;
 			mAllocator->deallocate(mem);
 		}

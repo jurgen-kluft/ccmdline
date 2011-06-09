@@ -31,22 +31,21 @@ UNITTEST_SUITE_BEGIN(birthday)
 		}
 		s32 fix_mon(void *v)
 		{
-			int m;
-			/* fix whatever int variable v is pointing to */
-			m = *((int *)v);
+			s32 m;
+			/* fix whatever s32 variable v is pointing to */
+			m = *((s32 *)v);
 			if (m < 1 || m > 12) 
 				m=1;
-			*((int *)v) = m;
+			*((s32 *)v) = m;
 			return OPT_OK;
 		} 
 		UNITTEST_TEST(full)
 		{
-			xcmdline::optreg(&month,xcmdline::OPT_INT,'m',"Month");
-			//xcmdline::optlongname(&month,"month");
-			xcmdline::opthook(&month,fix_mon);
-
-			xcmdline::optrega(&day,xcmdline::OPT_INT,'d',"day","Day");
+			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
+
+			xcmdline::optrega(&month,xcmdline::OPT_INT,'m',"month","Month");
+			xcmdline::opthook(&month,fix_mon);
 
 			xcmdline::optreg(&year,xcmdline::OPT_INT,'y',"Year...");
 			xcmdline::optreg(&year,xcmdline::OPT_INT,'Y',"Year");
@@ -57,6 +56,29 @@ UNITTEST_SUITE_BEGIN(birthday)
 
 			xcmdline::optregp(&who,xcmdline::OPT_STRING,"who","Who to say hello to");
 
+			char*	argv[] =
+			{
+				"executable name",
+				"-y",
+				"2011",
+				"--month",
+				"12",
+				"--day",
+				"30",
+				"-who",
+				"Jurgen"
+			};
+			xcore::s32 argc = sizeof(argv)/sizeof(char*);
+
+			char** argvp = argv;
+			char*** argvv = (char***)(&argvp);
+			xcmdline::opt(&argc, argvv);
+			xcmdline::opt_free();
+
+			CHECK_EQUAL(2011, year);
+			CHECK_EQUAL(12, month);
+			CHECK_EQUAL(30, day);
+			CHECK_NOT_NULL(who);
 		}
 	}
 }

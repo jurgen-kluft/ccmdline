@@ -99,9 +99,14 @@ namespace xcore
 		extern	char		*opt_program_name;
 		extern  OPT_PFI		opt_additional_usage_fcn; 
 
+		extern  xargv		*opt_process(int,char **);
+		extern  char		*short_progname(char *);
+		extern  s32			opt_lineprocess(char *);
+
 		extern	void		opt_help(char *);
 		extern	void		opt_usage(void);
 		extern  void		opt_readline_init(char *);
+		extern	void		opt_freestrings();
 
 		#define opt_mess_1(fmt,var1)                x_printf(fmt,x_va_list(x_va(var1)))
 		#define opt_mess_2(fmt,var1,var2)           x_printf(fmt,x_va_list(x_va(var1),x_va(var2)))

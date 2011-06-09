@@ -10,7 +10,7 @@
 *        4) a string by which the variable can be invoked
 *        5) the positional value of the option if applicable
 *        6) a brief description of the variable's role in the program
-*        7) a s64er help message
+*        7) a longer help message
 *        8) a flag indicating that an option has been invoked
 *        9) a "hook", a function that is called when variable is invoked
 *        10) a pointer to an array structure if the option is for an array
@@ -45,13 +45,13 @@ namespace xcore
 		* But, by #define'ing FLAG_ZERO_ONE, we will use 1 or 0 instead
 		*/
 
-		#ifdef FLAG_ZERO_ONE
-			#define FLAG_TRUE '1'
-			#define FLAG_FALSE '0'        
-		#else
-			#define FLAG_TRUE '+'
-			#define FLAG_FALSE '-'        
-		#endif
+#ifdef FLAG_ZERO_ONE
+#define FLAG_TRUE '1'
+#define FLAG_FALSE '0'        
+#else
+#define FLAG_TRUE '+'
+#define FLAG_FALSE '-'        
+#endif
 
 		s32 opt_exit_number=0;          /* if we have to exit(), then exit
 										* with this number.
@@ -76,10 +76,10 @@ namespace xcore
 			void			*value;			/* pointer to value of option */
 			opt_TYPE		type;			/* will be cast according to type */
 			char			name;			/* name by which option is invoked */
-			char			*s64name;		/* s64 version of the name */
+			char			*longname;		/* long version of the name */
 			opt_MODE		mode;			/* delimited, positional or flexible? */
 			char			*descript;		/* a brief description */
-			char			*help;			/* s64er help message */
+			char			*help;			/* longer help message */
 			s32				invoked;		/* counts number of times option is invoked */
 			OPT_HOOK		hook;			/* code to evaluate if option is invoked */
 			OptArray_t		*array;			/* set to null if not an array option */
@@ -92,7 +92,7 @@ namespace xcore
 		//static void opt_fileheader(FILE *);
 		static s32		opt_action(s32, xargv *);
 		static s32		opt_number(void *);
-		static s32		opt_s64name_number(char *);
+		static s32		opt_longname_number(char *);
 		static char		*optarray_getstrval(s32, void *, opt_TYPE, char);
 		static char		*opt_getstrval( void *, opt_TYPE );
 		static s32		optsizeof(opt_TYPE);
@@ -116,8 +116,9 @@ namespace xcore
 		/* OPT_SETVALUE: sets the value that the 'void *' points to */
 
 		#define OPT_GETVALUE(typ,v)			((typ)(*((typ *)(v))))
-		#define OPT_SETVALUE(typ,v,val)		do { typ *xptr;       \
-											xptr = (typ *)v; \
+
+		#define OPT_SETVALUE(typ,v,val)		do { typ *xptr;			\
+											xptr = (typ *)v;		\
 											*xptr = (typ)val; } while (0)
 
 		/* OPT_GET_ITH_VALUE: gets value of i'th option */
@@ -132,7 +133,7 @@ namespace xcore
 			s32 i;
 			for (i=0; i<opt_nreg; ++i) 
 			{
-				OPT_FREE(optlist[i].s64name);
+				OPT_FREE(optlist[i].longname);
 				OPT_FREE(optlist[i].help);
 				OPT_FREE(optlist[i].descript);
 				if (optlist[i].array && optlist[i].type == OPT_STRING)
@@ -144,6 +145,7 @@ namespace xcore
 				OPT_FREE(optlist[i].array);
 			}
 			OPT_FREE(optlist);
+			opt_freestrings();
 			opt_nreg=0;
 		}
 
@@ -180,7 +182,8 @@ namespace xcore
 				str_delim[0] = delim;
 				str_delim[1] = 0; 
 
-				if ( n == size-1 ) str_delim[0]='\0';  /* no delimiter at the end */
+				if ( n == size-1 ) 
+					str_delim[0]='\0';  /* no delimiter at the end */
 
 				/* Make room in str_val for the next item */
 				len += x_strlen(str_nth_val) + x_strlen(str_delim);
@@ -204,30 +207,27 @@ namespace xcore
 		/* Added by: Damian Eads <dre9227@cs.rit.edu>  */
 		/* ------------------------------------------- */
 
-		s32	optrega_array(  s32 *size, void *val, opt_TYPE otype, char name, char *s64name, char *descript )
+		s32	optrega_array(  s32 *size, void *val, opt_TYPE otype, char name, char *longname, char *descript )
 		{
-	#if 0  
+#if 0  
 			static char **str_val_array=NULL;
 			static s32    str_val_array_n=0;
 
 			++str_val_array_n;
-			str_val_array = (char **)realloc(str_val_array,
-				str_val_array_n*sizeof(char *));
+			str_val_array = (char **)realloc(str_val_array, str_val_array_n*sizeof(char *));
 			str_val_array[str_val_array_n-1] = optarray_getstrval(*size,val,otype,opt_array_delim);
 
 			/* Register the option as an OPT_STRING */
-			optrega( &str_val_array[str_val_array_n-1],
-				OPT_STRING, name, s64name, descript );
-	#else
+			optrega( &str_val_array[str_val_array_n-1], OPT_STRING, name, longname, descript );
+#else
 			char **s = (char **)get_opt_allocator()->allocate(sizeof(char *), 4);
 			*s = optarray_getstrval(*size,val,otype,opt_array_delim);
-			optrega( s, OPT_STRING, name, s64name, descript );
-	#endif     
+			optrega( s, OPT_STRING, name, longname, descript );
+#endif     
 
 			/* Warn if inappropriate base_type is specified */
 			switch (otype) 
 			{
-				/* These are all okay */
 			case OPT_INT:
 			case OPT_UINT:
 			case OPT_SHORT:
@@ -238,11 +238,9 @@ namespace xcore
 			case OPT_DOUBLE:
 				break;
 
-				/* These _should_ be okay too */
 			case OPT_STRING:
 				break;
 
-				/* These might be problematic */
 			case OPT_CHAR:
 			case OPT_UCHAR:
 			case OPT_INTLEVEL:
@@ -283,23 +281,23 @@ namespace xcore
 		{
 			return optrega_array(size,val,otype,name,NULL,descript);
 		}
-		s32 optregs_array( s32 *size, void *val, opt_TYPE otype, char *s64name ) 
+		s32 optregs_array( s32 *size, void *val, opt_TYPE otype, char *longname ) 
 		{
-			return optrega_array(size,val,otype,'\0',s64name,s64name);
+			return optrega_array(size,val,otype,'\0',longname,longname);
 		}
-		s32 optregsb_array( s32 *size, void *val, opt_TYPE otype, char *s64name, char *descript)
+		s32 optregsb_array( s32 *size, void *val, opt_TYPE otype, char *longname, char *descript)
 		{
-			return optrega_array(size,val,otype,'\0',s64name,descript);
+			return optrega_array(size,val,otype,'\0',longname,descript);
 		}
-		s32 optregp_array( s32 *size, void *val, opt_TYPE otype, char* s64name, char* descript)
+		s32 optregp_array( s32 *size, void *val, opt_TYPE otype, char* longname, char* descript)
 		{
-			s32 n = optrega_array(size,val,otype,'\0',s64name,descript);
+			s32 n = optrega_array(size,val,otype,'\0',longname,descript);
 			optmode_n(n, OPT_POSITIONAL);
 			return n;
 		}
-		s32 optregf_array( s32 *size, void *val, opt_TYPE otype, char name, char* s64name, char* descript) 
+		s32 optregf_array( s32 *size, void *val, opt_TYPE otype, char name, char* longname, char* descript) 
 		{
-			s32 n = optrega_array(size,val,otype,name,s64name,descript);
+			s32 n = optrega_array(size,val,otype,name,longname,descript);
 			optmode_n(n, OPT_FLEXIBLE);
 			return n;
 		}
@@ -321,35 +319,35 @@ namespace xcore
 		{
 			return optrega(val,otype,name,NULL,descript);
 		}
-		s32 optregs(void *val, opt_TYPE otype, char *s64name) 
+		s32 optregs(void *val, opt_TYPE otype, char *longname) 
 		{
-			return optrega(val,otype,'\0',s64name,s64name);
+			return optrega(val,otype,'\0',longname,longname);
 		}
-		s32 optregsb(void *val, opt_TYPE otype, char *s64name, char *descript)
+		s32 optregsb(void *val, opt_TYPE otype, char *longname, char *descript)
 		{
-			return optrega(val,otype,'\0',s64name,descript);
+			return optrega(val,otype,'\0',longname,descript);
 		}
-		s32 optregp(void *val, opt_TYPE otype, char* s64name, char* descript) 
+		s32 optregp(void *val, opt_TYPE otype, char* longname, char* descript) 
 		{
-			s32 n = optrega(val, otype, '\0', s64name, descript);
+			s32 n = optrega(val, otype, '\0', longname, descript);
 			optmode_n(n, OPT_POSITIONAL);
 			return n;
 		}
-		s32 optregf(void *val, opt_TYPE otype, char name, char* s64name, char* descript)
+		s32 optregf(void *val, opt_TYPE otype, char name, char* longname, char* descript)
 		{
-			s32 n = optrega(val, otype, name, s64name, descript);
+			s32 n = optrega(val, otype, name, longname, descript);
 			optmode_n(n, OPT_FLEXIBLE);
 			return n;
 		}
-		s32 optexec(char *s64name, OPT_HOOK fcn, char *descript)
+		s32 optexec(char *longname, OPT_HOOK fcn, char *descript)
 		{
 			s32 n;
-			n = optrega(NULL,OPT_NUL,'\0',s64name,descript);
+			n = optrega(NULL,OPT_NUL,'\0',longname,descript);
 			opthook_n(n,fcn);
 			return n;
 		}
 
-		s32	optrega(void *val, opt_TYPE otype, char name, char *s64name, char *descript)
+		s32	optrega(void *val, opt_TYPE otype, char name, char *longname, char *descript)
 		{
 			opt_MODE mode = OPT_DELIMITED;
 
@@ -358,17 +356,26 @@ namespace xcore
 			{
 				opt_warn_1("optrega: Duplicate option name \'%c\'",name);
 			}
-			if (!ISEMPTYSTRING(s64name) && opt_s64name_number(s64name) != -1) 
+			if (!ISEMPTYSTRING(longname) && opt_longname_number(longname) != -1) 
 			{
-				opt_warn_1("optrega: Duplicate option s64name \"%s\"",s64name);
+				opt_warn_1("optrega: Duplicate option longname \"%s\"",longname);
 			}
 
 			/* val points to the memory where the value of the option
 			* is maintained.  This cannot be NULL.
 			*/
-			if( val == NULL && otype != OPT_NUL ) {
-				if (name)     { opt_warn_1("Name: -%c", name); }
-				if (s64name) { opt_warn_1("Name: --%s",s64name); }
+			if ( val == NULL && otype != OPT_NUL ) 
+			{
+				if (name)
+				{
+					opt_warn_1("Name: -%c", name); 
+				}
+
+				if (longname)
+				{
+					opt_warn_1("Name: --%s",longname); 
+				}
+
 				opt_fatal("optrega: invalid first argument=NULL\n");
 			}
 
@@ -376,32 +383,31 @@ namespace xcore
 			since it will be printed every time the program is run.
 			Perhaps it should only be run if the user types 'run --testopt'
 			*/
-	#if 0    
-			if( val != NULL  && opt_val_number(val) != -1)
+#if 0    
+			if ( val != NULL  && opt_val_number(val) != -1)
 			{
-				opt_warn_1("optrega: This variable [%s] has already been registered",
-					thename);
+				opt_warn_1("optrega: This variable [%s] has already been registered", thename);
 			}
-	#endif    
+#endif    
 
 			/* Programmer may optionally signal that an option is to be a
-			* positional option by setting the name to '\0' and the s64name
+			* positional option by setting the name to '\0' and the longname
 			* to NULL or an empty string.
 			*/
-			if(name=='\0' && ISEMPTYSTRING(s64name))
+			if(name=='\0' && ISEMPTYSTRING(longname))
 			{
 				mode = OPT_POSITIONAL;
 			}
 
-			/* Make sure that the s64name doesn't have any whitespace */
-			if (!ISEMPTYSTRING(s64name)) 
+			/* Make sure that the longname doesn't have any whitespace */
+			if (!ISEMPTYSTRING(longname)) 
 			{
-				char *t = s64name;
+				char *t = longname;
 				while (*t != '\0') 
 				{
 					if (x_isspace(*t))
 					{
-						opt_fatal_1("invalid s64name [%s] contains whitespace\n",s64name);
+						opt_fatal_1("invalid longname [%s] contains whitespace\n",longname);
 					}
 					++t;
 				}
@@ -416,7 +422,7 @@ namespace xcore
 			optlist[opt_nreg-1].value         = val;
 			optlist[opt_nreg-1].type          = otype;
 			optlist[opt_nreg-1].name          = name;
-			optlist[opt_nreg-1].s64name      = s64name ? opt_strdup(s64name) : NULL;
+			optlist[opt_nreg-1].longname      = longname ? opt_strdup(longname) : NULL;
 			optlist[opt_nreg-1].mode          = mode;
 			optlist[opt_nreg-1].descript      = descript ? opt_strdup(descript) : NULL;
 
@@ -431,11 +437,13 @@ namespace xcore
 
 		void optchar_n(s32 n, char name)
 		{
-			if (OPT_isvalidnum(n)) optlist[n].name = name;
+			if (OPT_isvalidnum(n)) 
+				optlist[n].name = name;
 		}    
 		void optmode_n(s32 n, opt_MODE mode)
 		{
-			if (OPT_isvalidnum(n)) {
+			if (OPT_isvalidnum(n))
+			{
 				if (!(mode == OPT_POSITIONAL || mode == OPT_DELIMITED || mode == OPT_FLEXIBLE))
 					opt_warning("optmode() was passed an invalid mode");
 				optlist[n].mode = mode;
@@ -443,19 +451,23 @@ namespace xcore
 		}
 		void optdescript_n(s32 n, char *descript)
 		{
-			if (OPT_isvalidnum(n)) opt_setstring(&optlist[n].descript,descript);
+			if (OPT_isvalidnum(n))
+				opt_setstring(&optlist[n].descript,descript);
 		}
 		void opthelp_n(s32 n, char *help)
 		{
-			if (OPT_isvalidnum(n)) opt_setstring(&optlist[n].help,help);
+			if (OPT_isvalidnum(n)) 
+				opt_setstring(&optlist[n].help,help);
 		}
-		void opts64name_n(s32 n, char *s64name)
+		void optlongname_n(s32 n, char *longname)
 		{
-			if (OPT_isvalidnum(n)) opt_setstring(&optlist[n].s64name,s64name);
+			if (OPT_isvalidnum(n)) 
+				opt_setstring(&optlist[n].longname,longname);
 		}
 		void opthook_n(s32 n, OPT_HOOK hook)
 		{
-			if (OPT_isvalidnum(n)) optlist[n].hook = hook;
+			if (OPT_isvalidnum(n)) 
+				optlist[n].hook = hook;
 		}
 		s32 optinvoked_n(s32 n)
 		{
@@ -464,14 +476,26 @@ namespace xcore
 			return 0;
 		}
 
-		s32 optinvoked(void *v) { return optinvoked_n( opt_number(v) ); }
+		s32 optinvoked(void *v) 
+		{ 
+			return optinvoked_n( opt_number(v) );
+		}
 
-		void optchar(void *v,  char name) { optchar_n( opt_number(v),   name ); }
-		void opthelp(void *v,  char *help) { opthelp_n( opt_number(v),  help ); }
-		void opthook(void *v,  OPT_HOOK hook) { opthook_n( opt_number(v), hook ); }      
-		void opts64name(void *v, char *s64name)
+		void optchar(void *v,  char name) 
+		{ 
+			optchar_n( opt_number(v),   name ); 
+		}
+		void opthelp(void *v,  char *help) 
+		{ 
+			opthelp_n( opt_number(v),  help ); 
+		}
+		void opthook(void *v,  OPT_HOOK hook)
 		{
-			opts64name_n( opt_number(v), s64name );
+			opthook_n( opt_number(v), hook ); 
+		}      
+		void optlongname(void *v, char *longname)
+		{
+			optlongname_n( opt_number(v), longname );
 		}
 		void optmode(void* v, opt_MODE mode) 
 		{
@@ -537,7 +561,7 @@ namespace xcore
 		/* opt_XXX_number(): Get number corresponding to option name; return
 		* a value of -1 if the option does not exist.
 		*  opt_char_number(c) takes as input the single-character name;
-		*  opt_s64name_number(s64name) takes as input the s64 name
+		*  opt_longname_number(longname) takes as input the long name
 		*  opt_number(void *) takes as input pointer to variable
 		*/
 
@@ -564,16 +588,17 @@ namespace xcore
 			}
 			return -1;                     /* to signify not an option */
 		}
-		static s32	opt_s64name_number(char *s)
+		static s32	opt_longname_number(char *s)
 		{
 			s32 i;                         /* see which registered option */
 			if ( ISEMPTYSTRING(s) )
 				return -1;
+
 			for(i=0; i<opt_nreg; ++i)
 			{
-				if ( !ISEMPTYSTRING(optlist[i].s64name) ) 
+				if ( !ISEMPTYSTRING(optlist[i].longname) ) 
 				{
-					if (0==x_strcmp(s, optlist[i].s64name)) 
+					if (0==x_strcmp(s, optlist[i].longname)) 
 					{
 						return i;
 					}
@@ -609,91 +634,96 @@ namespace xcore
 
 		static char*	opt_getstrval( void *val, opt_TYPE typ )
 		{
-				s32 maybe;
-				static char stval_buf[80];
+			s32 maybe;
+			static char stval_buf[80];
 
-				switch( typ ) {
-				case OPT_INT:
-					opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s32,val) );
-					break;
-				case OPT_UINT:
-					opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u32,val) );
-					break;
-				case OPT_SHORT:
-					opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s16,val) );
-					break;
-				case OPT_USHORT:
-					opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u16,val) );
-					break;
-				case OPT_LONG:
-					opt_snprintf_1(stval_buf,80,"%ld", OPT_GETVALUE(s64,val) );
-					break;
-				case OPT_ULONG:
-					opt_snprintf_1(stval_buf,80,"%lu", OPT_GETVALUE(u64,val) );
-					break;
-				case OPT_CHAR:
-					opt_snprintf_1(stval_buf,80,"%c", OPT_GETVALUE(char,val));
-					break;
-				case OPT_UCHAR:
-					opt_snprintf_1(stval_buf,80,"%c", OPT_GETVALUE(unsigned char,val));
-					break;
-				case OPT_FLOAT:
-					opt_snprintf_1(stval_buf,80,"%g", OPT_GETVALUE(f32,val) );
-					break;
-				case OPT_DOUBLE:
-					opt_snprintf_1(stval_buf,80,"%g", OPT_GETVALUE(f64,val) );
-					break;
-				case OPT_INTLEVEL:
-					if (1) {
-						s32 v = OPT_GETVALUE(s32,val);
-						if (v < 0) {
-							opt_fatal_1("Invalid (negative) value [v=%d] for OPT_INTLEVEL",v);
-						}
-						if (v < 10) {
-							opt_snprintf_1(stval_buf,80,"%1d",v);
-						}
-						if (v >= 10) {
-							/* Could set it to "- -xxxxx" but need to know x */
-							/* and it only works if 'x' is a one-character name */
-							opt_warn_1("Cannot set string for OPT_INTLEVEL v=%d > 9",v);
-						}
+			switch( typ ) {
+			case OPT_INT:
+				opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s32,val) );
+				break;
+			case OPT_UINT:
+				opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u32,val) );
+				break;
+			case OPT_SHORT:
+				opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s16,val) );
+				break;
+			case OPT_USHORT:
+				opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u16,val) );
+				break;
+			case OPT_LONG:
+				opt_snprintf_1(stval_buf,80,"%ld", OPT_GETVALUE(s64,val) );
+				break;
+			case OPT_ULONG:
+				opt_snprintf_1(stval_buf,80,"%lu", OPT_GETVALUE(u64,val) );
+				break;
+			case OPT_CHAR:
+				opt_snprintf_1(stval_buf,80,"%c", OPT_GETVALUE(char,val));
+				break;
+			case OPT_UCHAR:
+				opt_snprintf_1(stval_buf,80,"%c", OPT_GETVALUE(unsigned char,val));
+				break;
+			case OPT_FLOAT:
+				opt_snprintf_1(stval_buf,80,"%g", OPT_GETVALUE(f32,val) );
+				break;
+			case OPT_DOUBLE:
+				opt_snprintf_1(stval_buf,80,"%g", OPT_GETVALUE(f64,val) );
+				break;
+			case OPT_INTLEVEL:
+				if (1)
+				{
+					s32 v = OPT_GETVALUE(s32,val);
+					if (v < 0) 
+					{
+						opt_fatal_1("Invalid (negative) value [v=%d] for OPT_INTLEVEL",v);
 					}
-					break;
-				case OPT_TOGGLE:
-				case OPT_BOOL:
-					maybe = OPT_GETVALUE(s32,val);
-					opt_snprintf_1(stval_buf,80,"%c", (maybe==OPT_TRUE ? FLAG_TRUE : FLAG_FALSE) );
-					break;
-				case OPT_NEGTOGGLE:
-				case OPT_NEGBOOL:
-					maybe = OPT_GETVALUE(s32,val);
-					opt_snprintf_1(stval_buf,80,"%c", (maybe==OPT_TRUE ? FLAG_FALSE : FLAG_TRUE) );
-					break;
-				case OPT_STRING:
-					if( val == NULL )	/* this should never happen */
-						x_sprintf(stval_buf,sizeof(stval_buf)-1,"\"\"");
-					else 
-						if( OPT_GETVALUE(char *,val) == NULL )
-							x_sprintf(stval_buf,sizeof(stval_buf)-1,"\"\"");
-						else
-							opt_snprintf_1(stval_buf,80,"\"%s\"",OPT_GETVALUE(char *,val));
-					break;
-				case OPT_NUL:
-					stval_buf[0]='\0';
-					break;
-				default:
-					opt_fatal("opt_getstrval: Undefined o-type");
-					break;
+					if (v < 10)
+					{
+						opt_snprintf_1(stval_buf,80,"%1d",v);
+					}
+					if (v >= 10) 
+					{
+						/* Could set it to "- -xxxxx" but need to know x */
+						/* and it only works if 'x' is a one-character name */
+						opt_warn_1("Cannot set string for OPT_INTLEVEL v=%d > 9",v);
+					}
 				}
-				/* ---- Return value is static buffer ---- */
-				return stval_buf;
+				break;
+			case OPT_TOGGLE:
+			case OPT_BOOL:
+				maybe = OPT_GETVALUE(s32,val);
+				opt_snprintf_1(stval_buf,80,"%c", (maybe==OPT_TRUE ? FLAG_TRUE : FLAG_FALSE) );
+				break;
+			case OPT_NEGTOGGLE:
+			case OPT_NEGBOOL:
+				maybe = OPT_GETVALUE(s32,val);
+				opt_snprintf_1(stval_buf,80,"%c", (maybe==OPT_TRUE ? FLAG_FALSE : FLAG_TRUE) );
+				break;
+			case OPT_STRING:
+				if( val == NULL )	/* this should never happen */
+					x_sprintf(stval_buf,sizeof(stval_buf)-1,"\"\"");
+				else 
+					if( OPT_GETVALUE(char *,val) == NULL )
+						x_sprintf(stval_buf,sizeof(stval_buf)-1,"\"\"");
+					else
+						opt_snprintf_1(stval_buf,80,"\"%s\"",OPT_GETVALUE(char *,val));
+				break;
+			case OPT_NUL:
+				stval_buf[0]='\0';
+				break;
+			default:
+				opt_fatal("opt_getstrval: Undefined o-type");
+				break;
+			}
+			/* ---- Return value is static buffer ---- */
+			return stval_buf;
 		}/* opt_getstrval */
 
 		static s32	optsizeof( opt_TYPE typ )
 		{
 			s32 retval=0;
 
-			switch( typ ) {
+			switch( typ )
+			{
 			case OPT_INT:
 				retval = sizeof(s32);
 				break;
@@ -764,7 +794,6 @@ namespace xcore
 
 			switch( o ) 
 			{
-				/* Integers */
 			case OPT_INT:         x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<INT"); break;
 			case OPT_UINT:        x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<UINT"); break;
 			case OPT_SHORT:       x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<s16"); break;
@@ -791,6 +820,7 @@ namespace xcore
 			default:
 				opt_fatal("usage: undefined o-type");
 			}
+
 			/* If it's an array, then add " ARRAY" to the name of the type */
 			if ( optlist[i].array )
 			{
@@ -801,9 +831,6 @@ namespace xcore
 			return sttyp_buf;
 		}
 
-		char		*opt_program_name;
-		OPT_PFI		opt_additional_usage_fcn; 
-
 		/* opt_usage: Write a usage statement describing registered options.
 		* This is what the program writes in response to '--help' on the
 		* command line.
@@ -813,6 +840,7 @@ namespace xcore
 		#define OPTDESCRIPTWIDTH  43
 		#define OPTDESCRIPTOFFSET 38
 		#define OPTMAXLONGNAMELEN 14
+
 		void	opt_usage(void)
 		{
 			static char *dformat =        " -%c                   %-14s  %s\n";
@@ -843,7 +871,7 @@ namespace xcore
 						x_printf("%2d u ",i);
 
 					if (!ISEMPTYSTRING(optlist[i].descript))
-						opt_mess_3(pformat,optlist[i].s64name,optstrtyp(i),justified_descript);
+						opt_mess_3(pformat,optlist[i].longname,optstrtyp(i),justified_descript);
 					else
 						opt_mess_2(uformat,optstrtyp(i),justified_descript);
 
@@ -855,65 +883,68 @@ namespace xcore
 			initial = 1;
 			for(i=0; i<opt_nreg; ++i) 
 			{
-				if (optlist[i].mode != OPT_POSITIONAL && (optlist[i].name != '\0' || !ISEMPTYSTRING(optlist[i].s64name))) 
+				if (optlist[i].mode != OPT_POSITIONAL && (optlist[i].name != '\0' || !ISEMPTYSTRING(optlist[i].longname))) 
 				{
-						if (initial) 
-						{
-							opt_message("The options are:\n");
-							initial = 0;
-						}
-						/* Get a suitably formatted version of the description */
-						/* If the option is positional, then refer to the argument description */
-						if (optlist[i].mode == OPT_FLEXIBLE) 
-						{
-							justified_descript = opt_justify("(See argument description above)", OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
-						} 
-						else if (optlist[i].s64name && x_strlen(optlist[i].s64name) > OPTMAXLONGNAMELEN) 
-						{
-							justified_descript = opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET, OPTDESCRIPTOFFSET,0);
-						} 
-						else 
-						{
-							justified_descript = opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
-						}
+					if (initial) 
+					{
+						opt_message("The options are:\n");
+						initial = 0;
+					}
+					/* Get a suitably formatted version of the description */
+					/* If the option is positional, then refer to the argument description */
+					if (optlist[i].mode == OPT_FLEXIBLE) 
+					{
+						justified_descript = opt_justify("(See argument description above)", OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
+					} 
+					else if (optlist[i].longname && x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
+					{
+						justified_descript = opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET, OPTDESCRIPTOFFSET,0);
+					} 
+					else 
+					{
+						justified_descript = opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
+					}
 
-						if (optlist[i].name == '\0') 
+					if (optlist[i].name == '\0') 
+					{
+						if(OPTUSAGEDEBUG) 
+							x_printf("a ");
+
+						if (x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
+						{
+							opt_mess_3(aformat,optlist[i].longname, optstrtyp(i),"");
+							opt_mess_1("%s\n",justified_descript);
+						} 
+						else
+						{
+							opt_mess_3(aformat,optlist[i].longname, optstrtyp(i),justified_descript);
+						}            
+					}
+					else
+					{
+						if (!ISEMPTYSTRING(optlist[i].longname)) 
 						{
 							if(OPTUSAGEDEBUG) 
-								x_printf("a ");
+								x_printf("l ");
 
-							if (x_strlen(optlist[i].s64name) > OPTMAXLONGNAMELEN) 
+							if (x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
 							{
-								opt_mess_3(aformat,optlist[i].s64name, optstrtyp(i),"");
+								opt_mess_4(lformat,optlist[i].name,optlist[i].longname, optstrtyp(i),"");
 								opt_mess_1("%s\n",justified_descript);
 							} 
 							else
 							{
-								opt_mess_3(aformat,optlist[i].s64name, optstrtyp(i),justified_descript);
+								opt_mess_4(lformat,optlist[i].name,optlist[i].longname, optstrtyp(i),justified_descript);
 							}            
-						}
-						else
+						} 
+						else 
 						{
-							if (!ISEMPTYSTRING(optlist[i].s64name)) 
-							{
-								if(OPTUSAGEDEBUG) x_printf("l ");
-								if (x_strlen(optlist[i].s64name) > OPTMAXLONGNAMELEN) 
-								{
-									opt_mess_4(lformat,optlist[i].name,optlist[i].s64name, optstrtyp(i),"");
-									opt_mess_1("%s\n",justified_descript);
-								} 
-								else
-								{
-									opt_mess_4(lformat,optlist[i].name,optlist[i].s64name, optstrtyp(i),justified_descript);
-								}            
-							} 
-							else 
-							{
-								if (OPTUSAGEDEBUG) x_printf("d ");
-									opt_mess_3(dformat,optlist[i].name, optstrtyp(i),justified_descript);
-							}
+							if (OPTUSAGEDEBUG) 
+								x_printf("d ");
+							opt_mess_3(dformat,optlist[i].name, optstrtyp(i),justified_descript);
 						}
-						get_opt_allocator()->deallocate(justified_descript);
+					}
+					get_opt_allocator()->deallocate(justified_descript);
 				}
 			}
 
@@ -980,21 +1011,20 @@ namespace xcore
 			return opt_action(i,ag);
 		}
 
-
-		s32	opt_parse_s64delim(xargv *ag)
+		s32	opt_parse_longdelim(xargv *ag)
 		{
-			s32      i;
+			int      i;
 			char     c;
 			char     *sc,*scptr;
 
 			/* this code parses input options of the form --var=value */
 
-			sc = opt_strdup(ag_s(ag));      /* s64 option name is a string */
+			sc = opt_strdup(ag_s(ag));      /* long option name is a string */
 			scptr = sc;
-			while( !ag_eow(ag) )
+			while( !ag_eow(ag) ) 
 			{
 				c=ag_c_advance(ag);
-				if (c == '=')
+				if (c == '=') 
 				{
 					*scptr = '\0';
 					break;
@@ -1002,18 +1032,17 @@ namespace xcore
 				++scptr;
 			}
 
-			i  = opt_s64name_number(sc);   /* this is number of option w/ name `sc' */
-			if(! OPT_isvalidnum(i))
+			i  = opt_longname_number(sc);   /* this is number of option w/ name `sc' */
+			if (! OPT_isvalidnum(i))
 			{
 				opt_warn_1("%s not a registered option name\n",sc);
 				return 0;
 			}
-			get_opt_allocator()->deallocate(sc); 
+			get_opt_allocator()->deallocate((char *)sc); 
 			return opt_action(i,ag);
 		}
 
-		static void
-			opt_setvalue(void *v, opt_TYPE o, char *s)
+		static void opt_setvalue(void *v, opt_TYPE o, char *s)
 		{
 			switch(o)
 			{
@@ -1057,30 +1086,31 @@ namespace xcore
 			}
 		}
 
-		static void
-			optarray_action(OptArray_t *arr, char *stmp)
+		static void optarray_action(OptArray_t *arr, char *stmp)
 		{
 			char *s = opt_strdup(stmp);
 			char *t = s;
 			char *u = s;
 			char cu = '\0';
 			char *v;  /* why is this a char * and not a void *, even though it
-					  * is meant as a generic pointer?  see the s64 comment
+					  * is meant as a generic pointer?  see the long comment
 					  * above in the optarray_getstrval() function
 					  */
 
 			/* Reset the array values */
 			if (*(arr->value))
 			{
-	#if 0 /* Trying to free some memory, but I get "FREE DANGLING" */   
-				if (arr->base_type == OPT_STRING) {
+#if 0 /* Trying to free some memory, but I get "FREE DANGLING" */   
+				if (arr->base_type == OPT_STRING)
+				{
 					s32 i;
-					for (i=0; i < *(arr->size); ++i) {
+					for (i=0; i < *(arr->size); ++i)
+					{
 						char *ith_val = (char *)(*(arr->value)) + i;
 						free( ith_val );
 					}
 				}
-	#endif    
+#endif    
 				get_opt_allocator()->deallocate(*(arr->value));
 			}
 			*(arr->value)=NULL;
@@ -1106,8 +1136,10 @@ namespace xcore
 				/* set the value of v according to the string t */
 				opt_setvalue(v,arr->base_type,t);
 				/* now go to the next word */
-				if (cu) t = u+1;
-				else    t = u; /* unless that was the last word */
+				if (cu)
+					t = u+1;
+				else    
+					t = u; /* unless that was the last word */
 			}
 			get_opt_allocator()->deallocate(s);
 		}
@@ -1159,13 +1191,17 @@ namespace xcore
 				*/
 				maybe  = OPT_GET_ITH_VALUE(s32,i);
 				toggle = (maybe==OPT_TRUE ? OPT_FALSE : OPT_TRUE);
+				
 				if( o == OPT_TOGGLE || o==OPT_BOOL )
 					yes=OPT_TRUE;
 				else
 					yes=OPT_FALSE;
+
 				no = (yes==OPT_TRUE ? OPT_FALSE : OPT_TRUE);
 				c = ag_c(ag);           /* character following 'c' */
-				switch(c) {
+
+				switch(c) 
+				{
 				case '+':
 				case '1':
 					OPT_SET_ITH_VALUE(s32,i,yes);
@@ -1177,9 +1213,12 @@ namespace xcore
 					ag_c_advance(ag);       /* eat the '-' */
 					break;
 				default:
-					if( o==OPT_BOOL || o==OPT_NEGBOOL ) {
+					if( o==OPT_BOOL || o==OPT_NEGBOOL ) 
+					{
 						OPT_SET_ITH_VALUE(s32,i,yes);
-					} else {    /* otherwise toggle value */
+					} 
+					else
+					{    /* otherwise toggle value */
 						OPT_SET_ITH_VALUE(s32,i,toggle);
 					}
 					break;
@@ -1216,9 +1255,9 @@ namespace xcore
 					* confident that it can be safely freed, before reassigning
 					* it to a new value
 					*/
-	#if 0
+#if 0
 					fprintf(stderr,"invoked opt[%d] for %d times:s=%s\n",i,optinvoked_n(i),s);
-	#endif          
+#endif          
 					get_opt_allocator()->deallocate(*((char **)(optlist[i].value)));
 				}
 				OPT_SET_ITH_VALUE(char *,i, opt_strdup(s));
@@ -1269,8 +1308,14 @@ namespace xcore
 			ss = s = optstrtyp(i);
 			while (*s) 
 			{
-				if (*s == '<') { *s = '\"'; ++s; }
-				else if (*s == '>') { *s = '\"'; ++s; *s='\0'; }
+				if (*s == '<') 
+				{ 
+					*s = '\"'; ++s;
+				}
+				else if (*s == '>') 
+				{
+					*s = '\"'; ++s; *s='\0';
+				}
 				else ++s;
 			}
 			return ss;
