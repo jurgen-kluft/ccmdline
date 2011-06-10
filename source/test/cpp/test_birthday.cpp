@@ -7,9 +7,9 @@
 
 using namespace xcore;
 
-UNITTEST_SUITE_BEGIN(birthday)
+UNITTEST_SUITE_BEGIN(xcmdline_tests)
 {
-	UNITTEST_FIXTURE(main)
+	UNITTEST_FIXTURE(birthday)
 	{
 		UNITTEST_FIXTURE_SETUP() {}
 		UNITTEST_FIXTURE_TEARDOWN() {}
@@ -41,6 +41,9 @@ UNITTEST_SUITE_BEGIN(birthday)
 		} 
 		UNITTEST_TEST(full)
 		{
+			x_cmdline c;
+			bool r = c.parse("-y 2011 --month 12 --day 30 -who \"Jurgen\"");
+
 			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
 

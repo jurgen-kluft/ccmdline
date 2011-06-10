@@ -26,7 +26,7 @@ namespace xcore
 			OPT_STRING,     
 		} opt_TYPE;
 
-		/* define the deprecated typenames */
+		/* define the deprecated type names */
 		#define OPT_FLAG OPT_TOGGLE
 		#define OPT_ABSFLAG OPT_BOOL
 		#define OPT_NEGFLAG OPT_NEGTOGGLE
@@ -46,7 +46,7 @@ namespace xcore
 		#define OPT_TRUE 1
 		#define OPT_FALSE 0
 
-			/* Return values from hook functions */
+		/* Return values from hook functions */
 		#define OPT_OK    0
 		#define OPT_ERROR 1
 		#define OPT_ABORT 2
@@ -72,7 +72,7 @@ namespace xcore
 		* it processes the options on the command line, setting variables,
 		* calling hooks, etc. 
 		*/
-		extern void opt(s32 *,char ***);
+		extern void			opt(s32 *,char ***);
 
 
 		/* But before opt() can be called, variables/hooks/etc must be
@@ -93,31 +93,31 @@ namespace xcore
 		*/
 
 		/*    ARGUMENT LIST: &var    OPT_INT   'c'   "name"   "Brief Description" */
-		extern s32		optrega(  void *, opt_TYPE, char,  char *, char * );
-		extern s32		optreg(   void *, opt_TYPE, char,          char * );
-		extern s32		optregc(  void *, opt_TYPE, char                  );
-		extern s32		optregcb( void *, opt_TYPE, char,          char * );
-		extern s32		optregs(  void *, opt_TYPE,        char *         );
-		extern s32		optregsb( void *, opt_TYPE,        char *, char * );
-		extern s32		optregp(  void *, opt_TYPE,        char *, char * );
-		extern s32		optregf(  void *, opt_TYPE, char,  char *, char * );
+		extern s32			optrega(  void *, opt_TYPE, char,  char *, char * );
+		extern s32			optreg(   void *, opt_TYPE, char,          char * );
+		extern s32			optregc(  void *, opt_TYPE, char                  );
+		extern s32			optregcb( void *, opt_TYPE, char,          char * );
+		extern s32			optregs(  void *, opt_TYPE,        char *         );
+		extern s32			optregsb( void *, opt_TYPE,        char *, char * );
+		extern s32			optregp(  void *, opt_TYPE,        char *, char * );
+		extern s32			optregf(  void *, opt_TYPE, char,  char *, char * );
 		/*    ARGUMENT LIST: &var    OPT_INT   'c'   "name"   "Brief Description" */
 
 		/*    ARGUMENTS:    "name"  hook      "Descript" */
-		extern int optexec( char *, OPT_HOOK, char * );
+		extern s32			optexec( char *, OPT_HOOK, char * );
 
 
 		/* ARRAY OPTIONS, same as scalar except first argument points to
 		* the size of the array. Not currently available for positionals */
 		/*  ARGUMENT LIST:      &nelts, &array, OPT_INT, 'c'   "name"  "Descript" */
-		extern s32		optrega_array(  s32 *, void *, opt_TYPE, char, char *, char *);
-		extern s32		optreg_array(   s32 *, void *, opt_TYPE, char,         char *);
-		extern s32		optregc_array(  s32 *, void *, opt_TYPE, char                );
-		extern s32		optregcb_array( s32 *, void *, opt_TYPE, char,         char *);
-		extern s32		optregs_array(  s32 *, void *, opt_TYPE,       char *        );
-		extern s32		optregsb_array( s32 *, void *, opt_TYPE,       char *, char *);
-		extern s32		optregp_array(  s32 *, void *, opt_TYPE,       char *, char *);
-		extern s32		optregf_array(  s32 *, void *, opt_TYPE, char, char *, char *);
+		extern s32			optrega_array(  s32 *, void *, opt_TYPE, char, char *, char *);
+		extern s32			optreg_array(   s32 *, void *, opt_TYPE, char,         char *);
+		extern s32			optregc_array(  s32 *, void *, opt_TYPE, char                );
+		extern s32			optregcb_array( s32 *, void *, opt_TYPE, char,         char *);
+		extern s32			optregs_array(  s32 *, void *, opt_TYPE,       char *        );
+		extern s32			optregsb_array( s32 *, void *, opt_TYPE,       char *, char *);
+		extern s32			optregp_array(  s32 *, void *, opt_TYPE,       char *, char *);
+		extern s32			optregf_array(  s32 *, void *, opt_TYPE, char, char *, char *);
 
 		/* Using the following routines, one can specify features (such as
 		* char, longname, descript) of the variable that were left out in the
@@ -125,21 +125,21 @@ namespace xcore
 		* exec) that the registration routines do not permit.
 		*/
 		/* These functions use &var to identify which option */
-		extern void		optchar(         void *, char);
-		extern void		optlongname(     void *, char *);
-		extern void		optmode(         void *, opt_MODE);
-		extern void		optdescript(     void *, char *);
-		extern void		opthelp(         void *, char *);
-		extern void		opthook(         void *, OPT_HOOK);
-		extern void		optarraydelim(   void *, char);
+		extern void			optchar(         void *, char);
+		extern void			optlongname(     void *, char *);
+		extern void			optmode(         void *, opt_MODE);
+		extern void			optdescript(     void *, char *);
+		extern void			opthelp(         void *, char *);
+		extern void			opthook(         void *, OPT_HOOK);
+		extern void			optarraydelim(   void *, char);
 		/* These functions use option number to identify which option */
-		extern void		optchar_n(       s32, char);
-		extern void		optlongname_n(   s32, char *);
-		extern void		optmode_n(       s32, opt_MODE);
-		extern void		optdescript_n(   s32, char *);
-		extern void		opthelp_n(       s32, char *);
-		extern void		opthook_n(       s32, OPT_HOOK);
-		extern void		optarraydelim_n( s32, char);  
+		extern void			optchar_n(       s32, char);
+		extern void			optlongname_n(   s32, char *);
+		extern void			optmode_n(       s32, opt_MODE);
+		extern void			optdescript_n(   s32, char *);
+		extern void			opthelp_n(       s32, char *);
+		extern void			opthook_n(       s32, OPT_HOOK);
+		extern void			optarraydelim_n( s32, char);  
 
 		/* The following routines are used to set features (such as usage),
 		* which are not specific to single variables, but apply to the whole
@@ -148,14 +148,14 @@ namespace xcore
 		* optlowercase() refers to functions that apply to a specific
 		* registered variable.
 		*/
-		extern void		optUsage(char *);
-		extern void		optTitle(char *);
-		extern void		optProgName(char *);
-		extern void		optVersion(char *);
-		extern void		optEnvVarName(char *);
-		extern void		optDefaultString(char *);
+		extern void			optUsage(char *);
+		extern void			optTitle(char *);
+		extern void			optProgName(char *);
+		extern void			optVersion(char *);
+		extern void			optEnvVarName(char *);
+		extern void			optDefaultString(char *);
 
-		extern void		optAdditionalUsage(OPT_PFI);
+		extern void			optAdditionalUsage(OPT_PFI);
 
 
 		/* The following routines provide opt-related services that might
@@ -163,114 +163,25 @@ namespace xcore
 		*/
 		/* optPrintusage() writes the opt usage message to stdout
 		*/
-		extern void		optPrintUsage();
+		extern void			optPrintUsage();
 		/* optinvoked(&var) returns the number of times the option was invoked
 		* on the command line.  This function is not used in the registering
 		* stage, but is used during execution of the code to see whether or
 		* not a value was actually set (or if it's just using the default).
 		*/
-		extern s32		optinvoked(void *);
+		extern s32			optinvoked(void *);
 		/* opt_free() is called when you are sure you won't be using any more
 		* opt functions; usually, you could call it right after opt(), but
 		* after opt_free(), you won't be able to use any other opt functions,
 		* such as optinvoked
 		*/
-		extern void		opt_free();
+		extern void			opt_free();
 
 
-		extern void		opt_message(char *);
-		extern void		opt_warning(char *);
-		extern void		opt_fatal(char *);
+		extern void			opt_message(char *);
+		extern void			opt_warning(char *);
+		extern void			opt_fatal(char *);
 
-		/* BEGIN_AUTOGENERATED */
-		extern s32		OptRegister(char *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char *v, char *n, char *B=0);
-		extern s32		OptRegister(char *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(char *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(char *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s16 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s16 *v, char *n, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s16 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u16 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u16 *v, char *n, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u16 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s32 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s32 *v, char *n, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s32 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u32 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u32 *v, char *n, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u32 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(f64 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f64 *v, char *n, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f64 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s64 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s64 *v, char *n, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(s64 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u64 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u64 *v, char *n, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(u64 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(char **v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char **v, char *n, char *B=0);
-		extern s32		OptRegister(char **v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char **v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(char **v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char **v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(char **v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(char **v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(f32 *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f32 *v, char *n, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(f32 *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(unsigned char *v, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(unsigned char *v, char *n, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_TYPE o, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_TYPE o, char *n, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_MODE m, char *n, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_TYPE o, opt_MODE m, char c, char *n=0, char *B=0);
-		extern s32		OptRegister(unsigned char *v, opt_TYPE o, opt_MODE m, char *n, char *B=0);
 	}
 }
 

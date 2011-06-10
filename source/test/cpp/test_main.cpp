@@ -1,5 +1,6 @@
 #include "xbase\x_target.h"
 #include "xbase\x_types.h"
+#include "xbase\x_string.h"
 #include "xbase\x_allocator.h"
 
 #include "xcmdline\private\opt.h"
@@ -7,7 +8,7 @@
 #include "xunittest\xunittest.h"
 
 UNITTEST_SUITE_LIST(xCmdlineUnitTest);
-UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, birthday);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests);
 
 
 namespace xcore
@@ -92,6 +93,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 	UnitTest::SetAllocator(&unittestAllocator);
 
 	xcore::TestHeapAllocator libHeapAllocator(systemAllocator);
+	xcore::xstring::sSetAllocator(&libHeapAllocator);
 	xcore::xcmdline::set_opt_allocator(&libHeapAllocator);
 	
 	int r = UNITTEST_SUITE_RUN(reporter, xCmdlineUnitTest);
@@ -107,6 +109,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 	}
 
 	xcore::xcmdline::set_opt_allocator(NULL);
+	xcore::xstring::sSetAllocator(NULL);
 
 	UnitTest::SetAllocator(NULL);
 	systemAllocator->release();
