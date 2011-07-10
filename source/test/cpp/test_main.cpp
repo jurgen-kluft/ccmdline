@@ -30,19 +30,13 @@ namespace xcore
 			return "xcmdline unittest test heap allocator";
 		}
 
-		virtual void*		allocate(s32 size, s32 alignment)
+		virtual void*		allocate(u32 size, u32 alignment)
 		{
 			++mNumAllocations;
 			return mAllocator->allocate(size, alignment);
 		}
 
-		virtual void*		callocate(s32 n_elems, s32 elem_size)
-		{
-			++mNumAllocations;
-			return mAllocator->callocate(n_elems, elem_size);
-		}
-
-		virtual void*		reallocate(void* mem, s32 size, s32 alignment)
+		virtual void*		reallocate(void* mem, u32 size, u32 alignment)
 		{
 			return mAllocator->reallocate(mem, size, alignment);
 		}
