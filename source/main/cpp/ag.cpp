@@ -140,7 +140,7 @@ namespace xcore
 
 		void ag_backword(xargv *ag)
 		{
-			ag->iw -= 1;
+			ag->iw -= 1;								/*should we fix the iw to 0 if the iw is going to be set below 0 ?*/
 		}
 
 		char ag_backspace(xargv *ag)

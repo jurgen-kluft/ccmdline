@@ -398,9 +398,12 @@ namespace xcore
 							if (0==x_strcmp("help",ag_s(ag))) 
 							{ 
 								long_usage();
-								if (!opt_menuflag)
+
+								/*We remove the menu part*/
+
+								//if (!opt_menuflag)
 								{
-									ag_free(ag);
+									argnext(ag);
 									break;	//optAbortRun();
 								}
 							}
@@ -415,33 +418,34 @@ namespace xcore
 	#ifdef OPT_VERSION                        
 								opt_mess_1("OPT Version %s\n",OPT_VERSION);
 	#endif
-								if (!opt_menuflag)
+								//if (!opt_menuflag)
 								{
-									ag_free(ag);
+									argnext(ag);
+									
 									break;//optAbortRun();
 								}
 							} 
-							else if (0==x_strcmp("menu",ag_s(ag)))
-							{ /* --menu */
-								if (!opt_menu_enabled) 
-								{
-									opt_warning("menu not available for this application");
-									ag_w_advance(ag);
-								}
-								else
-								{
-									if ( !opt_menuflag )      /* If not called already */
-										ag_w_advance(ag); /* Swallow the '--menu' */
-									//opt_menu();       /* and call the menu */	
-								}
-							}
+// 							else if (0==x_strcmp("menu",ag_s(ag)))
+// 							{ /* --menu */
+// 								if (!opt_menu_enabled) 
+// 								{
+// 									opt_warning("menu not available for this application");
+// 									ag_w_advance(ag);
+// 								}
+// 								else
+// 								{
+// 									if ( !opt_menuflag )      /* If not called already */
+// 										ag_w_advance(ag); /* Swallow the '--menu' */
+// 									//opt_menu();       /* and call the menu */	
+// 								}
+// 							}
 							else if (0==x_strcmp("version",ag_s(ag)) && !ISEMPTYSTRING(opt_pkg_version))
 							{
 								optWriteVersion();
-								if (!opt_menuflag) 
+								//if (!opt_menuflag) 
 								{
-									ag_free(ag);
-									break;	//optAbortRun();
+ 									argnext(ag);
+ 									break;	//optAbortRun();
 								}
 							} 
 							else 

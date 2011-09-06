@@ -7,8 +7,16 @@
 
 #include "xunittest\xunittest.h"
 
+
 UNITTEST_SUITE_LIST(xCmdlineUnitTest);
 UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_attribute);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_reg_all);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_reg);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_opt_p);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_ag_tests);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_array_register);
+
 
 
 namespace xcore
@@ -20,6 +28,10 @@ namespace xcore
 			: mAllocator(allocator)
 			, mNumAllocations(0)
 		{
+#if TEST_ALLOCATIONS
+			mAllocationIdx = 0;
+			mDeallocationIdx = 0;
+#endif
 		}
 
 		xcore::x_iallocator*	mAllocator;
@@ -30,15 +42,43 @@ namespace xcore
 			return "xcmdline unittest test heap allocator";
 		}
 
+#if TEST_ALLOCATIONS
+
+		void*		mAllocations[100];
+		int			mAllocationIdx;
+
+		void*		mDeallocations[100];
+		int			mDeallocationIdx;
+#endif
+
 		virtual void*		allocate(u32 size, u32 alignment)
 		{
 			++mNumAllocations;
-			return mAllocator->allocate(size, alignment);
+			void * mem = mAllocator->allocate(size, alignment);
+#if TEST_ALLOCATIONS
+			mAllocations[mAllocationIdx++] = mem;
+#endif
+			return mem;
 		}
 
 		virtual void*		reallocate(void* mem, u32 size, u32 alignment)
 		{
-			return mAllocator->reallocate(mem, size, alignment);
+			void * new_mem = mAllocator->reallocate(mem, size, alignment);
+#if TEST_ALLOCATIONS
+
+			if (new_mem != mem)
+			{
+				for (s32 i=0; i<mAllocationIdx; ++i)
+				{
+					if (mAllocations[i] == mem)
+					{
+						mAllocations[i] = new_mem;
+						break;
+					}
+				}
+			}
+#endif
+			return new_mem;
 		}
 
 		virtual void		deallocate(void* mem)
@@ -46,8 +86,30 @@ namespace xcore
 			if (mem==0)
 				return;
 
+#if TEST_ALLOCATIONS
+			// See if we are freeing memory which has been allocated through allocate()
+			bool was_allocated = false;
+			for (s32 i=0; i<mAllocationIdx && !was_allocated; ++i)
+			{
+				was_allocated = (mAllocations[i] == mem);
+			}
+			ASSERT(was_allocated);
+
+			// This is a history of deallocations, see if we are double freeing the same address
+			for (s32 i=0; i<mDeallocationIdx; ++i)
+			{
+				if (mem == mDeallocations[i])
+				{
+					// Double free
+					ASSERT(false);
+				}
+			}
+
+			mDeallocations[mDeallocationIdx++] = mem;
+#else
+		mAllocator->deallocate(mem);
+#endif
 			--mNumAllocations;
-			mAllocator->deallocate(mem);
 		}
 
 		virtual void		release()
@@ -79,14 +141,14 @@ public:
 		mAllocator->deallocate(ptr);
 	}
 };
-
+xcore::x_iallocator* gSystemAllocator=NULL;
 bool gRunUnitTest(UnitTest::TestReporter& reporter)
 {
-	xcore::x_iallocator* systemAllocator = xcore::gCreateSystemAllocator();
-	UnitTestAllocator unittestAllocator( systemAllocator );
+	gSystemAllocator = xcore::gCreateSystemAllocator();
+	UnitTestAllocator unittestAllocator( gSystemAllocator );
 	UnitTest::SetAllocator(&unittestAllocator);
 
-	xcore::TestHeapAllocator libHeapAllocator(systemAllocator);
+	xcore::TestHeapAllocator libHeapAllocator(gSystemAllocator);
 	xcore::xstring::sSetAllocator(&libHeapAllocator);
 	xcore::xcmdline::set_opt_allocator(&libHeapAllocator);
 	
@@ -106,7 +168,8 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 	xcore::xstring::sSetAllocator(NULL);
 
 	UnitTest::SetAllocator(NULL);
-	systemAllocator->release();
+	gSystemAllocator->release();
+	gSystemAllocator=NULL;
 	return r==0;
 }
 

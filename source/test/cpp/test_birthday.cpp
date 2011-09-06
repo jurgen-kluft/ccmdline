@@ -13,14 +13,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 	{
 		UNITTEST_FIXTURE_SETUP() {}
 		UNITTEST_FIXTURE_TEARDOWN() {}
-		
+			
 		s32 month=4;
 		s32 day=24;
 		s32 year=1993;
 		s32 julian=0;
 		char *who=NULL;
 		s32 altversion=99;
-
+		
 		s32 checkyear(void *v)
 		{
 			if (year == 2000)
@@ -43,7 +43,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 		{
 			x_cmdline c;
 			bool r = c.parse("-y 2011 --month 12 --day 30 -who \"Jurgen\"");
-
+			
 			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
 
@@ -61,7 +61,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 
 			char*	argv[] =
 			{
-				"executable name",
+				"xcmdline_test_TestDebug_Win32",
 				"-y",
 				"2011",
 				"--month",
@@ -74,7 +74,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 			xcore::s32 argc = sizeof(argv)/sizeof(char*);
 
 			char** argvp = argv;
-			char*** argvv = (char***)(&argvp);
+			char*** argvv = &argvp;
 			xcmdline::opt(&argc, argvv);
 			xcmdline::opt_free();
 
@@ -82,6 +82,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 			CHECK_EQUAL(12, month);
 			CHECK_EQUAL(30, day);
 			CHECK_NOT_NULL(who);
+
+			xcmdline::get_opt_allocator()->deallocate(who);
 		}
 	}
 }

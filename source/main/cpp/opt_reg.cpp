@@ -37,6 +37,11 @@
 #include "xcmdline\private\ag.h"
 #include "xcmdline\private\opt_p.h"
 
+//#define COUTDEBUG
+
+#ifdef COUTDEBUG
+#include <iostream>
+#endif
 namespace xcore
 {
 	namespace xcmdline
@@ -236,6 +241,9 @@ namespace xcore
 			case OPT_ULONG:
 			case OPT_FLOAT:
 			case OPT_DOUBLE:
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:
+			case OPT_UBYTE:
 				break;
 
 			case OPT_STRING:
@@ -415,8 +423,11 @@ namespace xcore
 
 			/* reallocate another struct for the new opt */
 			++opt_nreg;
-			optlist = (Option_t *)get_opt_allocator()->reallocate(optlist, opt_nreg*sizeof(Option_t), 4);
-
+			if (optlist == NULL)
+				optlist = (Option_t *)get_opt_allocator()->allocate(opt_nreg*sizeof(Option_t), 4);
+			else
+				optlist = (Option_t *)get_opt_allocator()->reallocate(optlist, opt_nreg*sizeof(Option_t), 4);
+			
 			/* Having checked for various warnings, now register the options */
 
 			optlist[opt_nreg-1].value         = val;
@@ -551,7 +562,12 @@ namespace xcore
 			s32 n;
 			n = opt_char_number(c);
 			if (OPT_isvalidnum(n) && optlist[n].help != NULL)
+			{
 				opt_mess_2("%c: %s\n",c,optlist[n].help);
+
+				//test whether the result is right
+				//std::cout<< c << "     " <<optlist[n].help<<std::endl;
+			}
 			else
 				opt_mess_1("Help unavailable for \'%c\'\n",c);
 		}
@@ -644,6 +660,13 @@ namespace xcore
 			case OPT_UINT:
 				opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u32,val) );
 				break;
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:
+				opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s8,val) );
+				break;
+			case OPT_UBYTE:
+				opt_snprintf_1(stval_buf,80,"%u", OPT_GETVALUE(u8,val) );
+				break;
 			case OPT_SHORT:
 				opt_snprintf_1(stval_buf,80,"%d", OPT_GETVALUE(s16,val) );
 				break;
@@ -730,6 +753,16 @@ namespace xcore
 			case OPT_UINT:
 				retval = sizeof(u32);
 				break;
+
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:
+				retval = sizeof(s8);
+				break;
+			case  OPT_UBYTE:
+				retval = sizeof(u8);
+				break;
+
+
 			case OPT_SHORT:
 				retval = sizeof(s16);
 				break;
@@ -800,6 +833,10 @@ namespace xcore
 			case OPT_LONG:        x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<LONG"); break;
 			case OPT_USHORT:      x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<Us16"); break;
 			case OPT_ULONG:       x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<ULONG"); break;
+			
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:        x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<s8"); break;
+			case OPT_UBYTE:       x_strcpy(sttyp_buf, sizeof(sttyp_buf), "<u8"); break;
 				/* f32ing point */
 			case OPT_FLOAT:       x_strcpy(sttyp_buf, sizeof(sttyp_buf),"<f32"); break;
 			case OPT_DOUBLE:      x_strcpy(sttyp_buf, sizeof(sttyp_buf),"<f64"); break;
@@ -875,6 +912,9 @@ namespace xcore
 					else
 						opt_mess_2(uformat,optstrtyp(i),justified_descript);
 
+#ifdef COUTDEBUG
+					std::cout << "deallocate memory size" << sizeof(justified_descript) << std::endl;
+#endif
 					get_opt_allocator()->deallocate(justified_descript);
 				}
 			}
@@ -889,7 +929,7 @@ namespace xcore
 					{
 						opt_message("The options are:\n");
 						initial = 0;
-					}
+					} 
 					/* Get a suitably formatted version of the description */
 					/* If the option is positional, then refer to the argument description */
 					if (optlist[i].mode == OPT_FLEXIBLE) 
@@ -944,6 +984,9 @@ namespace xcore
 							opt_mess_3(dformat,optlist[i].name, optstrtyp(i),justified_descript);
 						}
 					}
+#ifdef COUTDEBUG
+					std::cout << "deallocate memory size" << sizeof(justified_descript) << std::endl;
+#endif
 					get_opt_allocator()->deallocate(justified_descript);
 				}
 			}
@@ -1055,6 +1098,14 @@ namespace xcore
 			case OPT_SHORT:
 				OPT_SETVALUE(s16, v, opt_atoi(s));
 				break;
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:
+				OPT_SETVALUE(s8, v, opt_atoi(s));
+				break;
+			case OPT_UBYTE:
+				OPT_SETVALUE(u8, v, opt_atou(s));
+				break;
+
 			case OPT_LONG:
 				OPT_SETVALUE(s64, v, opt_atoi(s));
 				break;
@@ -1165,6 +1216,12 @@ namespace xcore
 			case OPT_INT:
 			case OPT_UINT:
 			case OPT_SHORT:
+
+			// Add this two types to deal with the s8 and u8
+			case OPT_BYTE:	
+			case OPT_UBYTE:
+
+
 			case OPT_LONG:
 			case OPT_USHORT:
 			case OPT_ULONG:

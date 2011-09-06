@@ -29,6 +29,10 @@ namespace xcore
 			OPT_NUL,
 			OPT_INT,        OPT_SHORT,      OPT_LONG,       OPT_CHAR,
 			OPT_UINT,       OPT_USHORT,     OPT_ULONG,      OPT_UCHAR,
+
+			// Add this two types to deal with the s8 and u8
+			OPT_BYTE,       OPT_UBYTE,
+
 			OPT_FLOAT,      OPT_DOUBLE,
 			OPT_TOGGLE,     OPT_BOOL,
 			OPT_NEGTOGGLE,  OPT_NEGBOOL,    OPT_INTLEVEL,       

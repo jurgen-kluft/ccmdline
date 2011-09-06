@@ -25,6 +25,11 @@
 #include "xcmdline\private\opt.h"
 #include "xcmdline\private\opt_p.h"
 
+//#define COUTDEBUG
+
+#ifdef COUTDEBUG
+	#include <iostream>
+#endif
 namespace xcore
 {
 	namespace xcmdline
@@ -104,6 +109,10 @@ namespace xcore
 				(1 + indent + width) * approxLines * 3; /* Justified lines, assuming bad line breaks */
 
 			buf = (char*) get_opt_allocator()->allocate(bufSize + 1, 4);
+#ifdef COUTDEBUG
+			std::cout << "allocate memory size: " << bufSize+1 << std::endl;
+#endif
+
 			if (!buf)
 				opt_fatal("unable to allocate memory for string processing");
 
@@ -159,7 +168,12 @@ namespace xcore
 				}
 
 				/* Copy over the word */
-				x_strcpy(buf + j, k, s + i);
+
+				/*
+				*	the original source code has a bug
+				*	now change the k to k+1
+				*/
+				x_strcpy(buf + j, k+1, s + i);
 				p += k;
 				i += k;
 				j += k;
