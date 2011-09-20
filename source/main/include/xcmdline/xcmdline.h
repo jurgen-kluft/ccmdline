@@ -9,7 +9,7 @@
 // INCLUDES
 //==============================================================================
 #include "xbase\x_types.h"
-
+#include "xstl\list.h"
 //==============================================================================
 // xcore namespace
 //==============================================================================
@@ -18,11 +18,31 @@ namespace xcore
 	// Forward declares
 	struct xargv;
 
+
+	namespace xcmdline
+	{
+		struct xparameters;
+	}
+
+
 	class x_cmdline
 	{
 	public:
+		x_cmdline();
+		~x_cmdline();
+
+		/*parse the cmdline and store them in xparameters*/
 		bool			parse(const char* cmdline);
 		bool			parse(s32 argc, const char** argv);
+
+		/*interface to get variable's value by give its name*/
+		void*			getValue(char* name);
+
+		/*Register variables and set value by xparameters*/
+		bool			regAndSetValue();
+
+		/*free memory*/
+		void			clearRegisteredOption();
 
 		enum EOptType
 		{
@@ -137,6 +157,41 @@ namespace xcore
 
 	private:
 		xargv*			mArgVector;
+		char**			mArgv;
+		s32				mArgc;
+		xcmdline::xparameters*	mParameter;
+		s32*			mRegList;
+		s32				mRegListNum;
+		char*			mNewCmdline;
+		xstl::list<char*>		mStringVarList;
+
+
+		/*clear the argv allocated by changeParamToArgv()*/
+		void			argvClear();
+
+		/*Change the param to argv,argc in order to call opt()*/
+		void			changeParamToArgv();
+
+		/*Remember what argv is automatically registered*/
+		void			setRegList(s32 regNum);
+
+		s32				findVariable(char*	variableName);
+
+		/*change "true" "false" into 1,0*/
+		bool			JudgeTrueOrFalse(char* _string);
+
+
+
+
+
+
+		/*Since we use opt() to process the argv, we don't need to write 
+		  the setvalue. So this two functions are not used now.*/
+		void			setValueForOpt(xcmdline::xparameters*	parameters);
+		void			setValue(s32	optNum,	char* optValue);
+
+
+
 	};
 
 
