@@ -40,10 +40,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 			return OPT_OK;
 		} 
 		UNITTEST_TEST(full)
-		{
-			x_cmdline c;
-			bool r = c.parse("-y 2011 --month 12 --day 30 -who \"Jurgen\"");
-			
+		{	
 			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
 
@@ -61,7 +58,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 
 			char*	argv[] =
 			{
-				"xcmdline_test_TestDebug_Win32",
+ 				"xcmdline_test_TestDebug_Win32",
 				"-y",
 				"2011",
 				"--month",
@@ -70,6 +67,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 				"30",
 				"-who",
 				"Jurgen"
+				//"@bday.opt"
 			};
 			xcore::s32 argc = sizeof(argv)/sizeof(char*);
 

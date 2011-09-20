@@ -1,4 +1,4 @@
-#include "xbase\x_target.h"
+﻿#include "xbase\x_target.h"
 #include "xbase\x_types.h"
 #include "xbase\x_string.h"
 #include "xbase\x_allocator.h"
@@ -6,6 +6,17 @@
 #include "xcmdline\private\opt.h"
 
 #include "xunittest\xunittest.h"
+
+//----------------------------
+#include "xstl\list.h"
+
+//-----------------------------
+
+
+#ifdef	COUTDEBUG
+#include <iostream>
+using namespace std;
+#endif
 
 
 UNITTEST_SUITE_LIST(xCmdlineUnitTest);
@@ -16,6 +27,8 @@ UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_reg);
 UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_tests_opt_p);
 UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_ag_tests);
 UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, xcmdline_array_register);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, test_xcmdline_reg_opt);
+UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, test_x_cmdline);
 
 
 
@@ -55,6 +68,11 @@ namespace xcore
 		{
 			++mNumAllocations;
 			void * mem = mAllocator->allocate(size, alignment);
+
+#ifdef COUTDEBUG
+			cout << "allocate address:  " << mem << "  size:  " << size << "  number:  " << mNumAllocations << endl;
+#endif
+
 #if TEST_ALLOCATIONS
 			mAllocations[mAllocationIdx++] = mem;
 #endif
@@ -64,6 +82,10 @@ namespace xcore
 		virtual void*		reallocate(void* mem, u32 size, u32 alignment)
 		{
 			void * new_mem = mAllocator->reallocate(mem, size, alignment);
+#ifdef COUTDEBUG
+			cout << "reallocate address:  " << new_mem << "  size:  " << size << "  number:  " << mNumAllocations << endl;
+#endif
+
 #if TEST_ALLOCATIONS
 
 			if (new_mem != mem)
@@ -85,6 +107,10 @@ namespace xcore
 		{
 			if (mem==0)
 				return;
+#ifdef COUTDEBUG
+			cout << "deallocate address:  " << mem;
+#endif
+
 
 #if TEST_ALLOCATIONS
 			// See if we are freeing memory which has been allocated through allocate()
@@ -110,6 +136,10 @@ namespace xcore
 		mAllocator->deallocate(mem);
 #endif
 			--mNumAllocations;
+
+#ifdef COUTDEBUG
+			cout << "  number:  " << mNumAllocations << endl;
+#endif
 		}
 
 		virtual void		release()
@@ -145,6 +175,7 @@ xcore::x_iallocator* gSystemAllocator=NULL;
 bool gRunUnitTest(UnitTest::TestReporter& reporter)
 {
 	gSystemAllocator = xcore::gCreateSystemAllocator();
+	xstl::allocator::sSetXAllocator(gSystemAllocator);
 	UnitTestAllocator unittestAllocator( gSystemAllocator );
 	UnitTest::SetAllocator(&unittestAllocator);
 

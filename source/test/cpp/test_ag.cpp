@@ -34,9 +34,6 @@ UNITTEST_SUITE_BEGIN(xcmdline_ag_tests)
 
 		UNITTEST_TEST(ag_new_free)
 		{
-			x_cmdline x;
-			x.parse("--name 30 -d 21");
-
 			test_ag = ag_new(argc,argvp);
 
 			CHECK_NOT_NULL(test_ag);
