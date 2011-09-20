@@ -142,7 +142,7 @@ namespace xcore
 
 				/* Search for next whitespace char */
 				k = 0;
-				while (s[i+k]!=' ' && s[i+k]!='\t' && s[i+k]!='\r' && s[i+k]!='\n')
+				while (s[i+k]!=' ' && s[i+k]!='\t' && s[i+k]!='\r' && s[i+k]!='\n' && s[i+k]!='\0')
 					++k;
 
 				/* Do we need a line break? */

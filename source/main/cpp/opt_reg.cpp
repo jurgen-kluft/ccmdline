@@ -67,30 +67,8 @@ namespace xcore
 		/* -------------------------- */
 
 
-		struct OptArray_t
-		{
-			void			**value;		/* pointer to array of data */
-			s32				*size;			/* pointer to size of data (number of elements in array) */
-			char			delim;			/* char delimits elements of array: eg "," in "1,2,3" */
-			opt_TYPE		base_type;		/* what the array of data is... */
-		};
 
-
-		struct Option_t
-		{
-			void			*value;			/* pointer to value of option */
-			opt_TYPE		type;			/* will be cast according to type */
-			char			name;			/* name by which option is invoked */
-			char			*longname;		/* long version of the name */
-			opt_MODE		mode;			/* delimited, positional or flexible? */
-			char			*descript;		/* a brief description */
-			char			*help;			/* longer help message */
-			s32				invoked;		/* counts number of times option is invoked */
-			OPT_HOOK		hook;			/* code to evaluate if option is invoked */
-			OptArray_t		*array;			/* set to null if not an array option */
-		};
-
-		static	Option_t *optlist=NULL;             /* array of options */
+		Option_t *optlist=NULL;             /* array of options */
 		s32              opt_nreg=0;                /* number of registered opts */
 
 		/* Prototypes for static (local) functions */
@@ -101,7 +79,7 @@ namespace xcore
 		static char		*optarray_getstrval(s32, void *, opt_TYPE, char);
 		static char		*opt_getstrval( void *, opt_TYPE );
 		static s32		optsizeof(opt_TYPE);
-		static void		opt_setvalue(void *, opt_TYPE, char *);
+		void		opt_setvalue(void *, opt_TYPE, char *);
 		static void		optarray_action(OptArray_t *, char *);
 
 		static char opt_array_delim=',';    /* the delimiter for arrays. (eads)*/
@@ -117,10 +95,7 @@ namespace xcore
 			(o)==OPT_NEGTOGGLE || (o)==OPT_NEGBOOL)
 
 
-		/* OPT_GETVALUE: returns value of what 'void *' points to */
 		/* OPT_SETVALUE: sets the value that the 'void *' points to */
-
-		#define OPT_GETVALUE(typ,v)			((typ)(*((typ *)(v))))
 
 		#define OPT_SETVALUE(typ,v,val)		do { typ *xptr;			\
 											xptr = (typ *)v;		\
@@ -427,7 +402,7 @@ namespace xcore
 				optlist = (Option_t *)get_opt_allocator()->allocate(opt_nreg*sizeof(Option_t), 4);
 			else
 				optlist = (Option_t *)get_opt_allocator()->reallocate(optlist, opt_nreg*sizeof(Option_t), 4);
-			
+
 			/* Having checked for various warnings, now register the options */
 
 			optlist[opt_nreg-1].value         = val;
@@ -1085,7 +1060,7 @@ namespace xcore
 			return opt_action(i,ag);
 		}
 
-		static void opt_setvalue(void *v, opt_TYPE o, char *s)
+		void opt_setvalue(void *v, opt_TYPE o, char *s)
 		{
 			switch(o)
 			{
@@ -1230,7 +1205,13 @@ namespace xcore
 				opt_setvalue(optlist[i].value,o,argnext(ag));
 				break;
 			case OPT_CHAR:
-				OPT_SET_ITH_VALUE(char,i,ag_c_advance(ag));
+//				OPT_SET_ITH_VALUE(char,i,ag_c_advance(ag));
+
+				//process 2 lines arguments
+				char result;
+				result = argnext(ag)[0];
+				OPT_SET_ITH_VALUE(char,i,result); 
+
 				break;
 			case OPT_UCHAR:
 				OPT_SET_ITH_VALUE(unsigned char,i,ag_c_advance(ag));
@@ -1256,6 +1237,17 @@ namespace xcore
 
 				no = (yes==OPT_TRUE ? OPT_FALSE : OPT_TRUE);
 				c = ag_c(ag);           /* character following 'c' */
+
+
+
+				//process 2 lines arguments
+				if(ag->iw+1 < ag->c	&&	x_strlen(ag->v[ag->iw+1])==1 && ag->v[ag->iw+1][0]!='-')
+				{
+					c = ag->v[ag->iw+1][0];
+					ag->iw++;
+				}
+
+
 
 				switch(c) 
 				{

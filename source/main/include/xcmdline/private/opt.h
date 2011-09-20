@@ -57,6 +57,10 @@ namespace xcore
 		#define OPT_QUIT  3
 		#define OPT_EXIT  4
 
+
+		/* OPT_GETVALUE: returns value of what 'void *' points to */
+		#define OPT_GETVALUE(typ,v)			((typ)(*((typ *)(v))))
+
 		/* Possible values for the option mode attribute */
 		typedef enum
 		{
@@ -64,6 +68,32 @@ namespace xcore
 			OPT_DELIMITED,
 			OPT_FLEXIBLE
 		} opt_MODE;
+
+
+		struct OptArray_t
+		{
+			void			**value;		/* pointer to array of data */
+			s32				*size;			/* pointer to size of data (number of elements in array) */
+			char			delim;			/* char delimits elements of array: eg "," in "1,2,3" */
+			opt_TYPE		base_type;		/* what the array of data is... */
+		};
+
+
+		struct Option_t
+		{
+			void			*value;			/* pointer to value of option */
+			opt_TYPE		type;			/* will be cast according to type */
+			char			name;			/* name by which option is invoked */
+			char			*longname;		/* long version of the name */
+			opt_MODE		mode;			/* delimited, positional or flexible? */
+			char			*descript;		/* a brief description */
+			char			*help;			/* longer help message */
+			s32				invoked;		/* counts number of times option is invoked */
+			OPT_HOOK		hook;			/* code to evaluate if option is invoked */
+			OptArray_t		*array;			/* set to null if not an array option */
+		};
+
+
 
 		/* opt(&argc,&argv) is the main function call that does all the work.
 		* it processes the options on the command line, setting variables,
@@ -186,6 +216,9 @@ namespace xcore
 		extern void			opt_warning(char *);
 		extern void			opt_fatal(char *);
 
+
+		extern Option_t *optlist; 
+		extern void			opt_setvalue(void *v, opt_TYPE o, char *s);
 
 	}
 }
