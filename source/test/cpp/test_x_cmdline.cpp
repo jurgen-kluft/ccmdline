@@ -79,8 +79,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			x_cmdline	c;
 			c.parse("-s \"String\" --stringVar \"Today is 9.30\"");
 			c.regAndSetValue();
-			c.parse("-s \"Jurgen\" --stringVar \"Today is 10.30\"");
-			c.regAndSetValue();
+ 			c.parse("-s \"Jurgen\" --stringVar \"Today is 10.30\"");
+ 			c.regAndSetValue();
 
 			char*	test	=	OPT_GETVALUE(char*,c.getValue("s"));
 			char*	test2	=	OPT_GETVALUE(char*,c.getValue("stringVar"));
@@ -93,8 +93,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			xcmdline::opt_free();
 
 
-			CHECK_EQUAL(0, result1);
-			CHECK_EQUAL(0, result2);
+			CHECK_FALSE(result1);
+			CHECK_FALSE(result2);
 		}
 
 		UNITTEST_TEST(test_parse_bool)
@@ -111,9 +111,9 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			xcmdline::opt_free();
 
-			CHECK_EQUAL(0, test);
-			CHECK_EQUAL(1, test2);
-			CHECK_EQUAL(0, test3);
+			CHECK_FALSE(test);
+			CHECK_TRUE(test2);
+			CHECK_FALSE(test3);
 		}
 
 		UNITTEST_TEST(test_parse_other)
@@ -174,7 +174,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			CHECK_EQUAL((f32)30.22f, day);
 			CHECK_NOT_NULL(who);
 			CHECK_EQUAL('J',whoShort);
-			CHECK_EQUAL(0,isBirthday);
+			CHECK_FALSE(isBirthday);
 
 			c.clearRegisteredOption();
 

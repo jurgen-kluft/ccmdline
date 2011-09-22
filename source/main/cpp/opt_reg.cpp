@@ -1310,6 +1310,7 @@ namespace xcore
 					get_opt_allocator()->deallocate(*((char **)(optlist[i].value)));
 				}
 				OPT_SET_ITH_VALUE(char *,i, opt_strdup(s));
+				
 
 				/* If this type is really an array, then act accordingly */
 				if (optlist[i].array) 

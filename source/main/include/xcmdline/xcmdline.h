@@ -9,7 +9,6 @@
 // INCLUDES
 //==============================================================================
 #include "xbase\x_types.h"
-#include "xstl\list.h"
 //==============================================================================
 // xcore namespace
 //==============================================================================
@@ -160,10 +159,11 @@ namespace xcore
 		char**			mArgv;
 		s32				mArgc;
 		xcmdline::xparameters*	mParameter;
-		s32*			mRegList;
+		s32*				mRegList;
 		s32				mRegListNum;
 		char*			mNewCmdline;
-		xstl::list<char*>		mStringVarList;
+		char**			mStringList;
+		int				mStringListNum;
 
 
 		/*clear the argv allocated by changeParamToArgv()*/
@@ -175,7 +175,7 @@ namespace xcore
 		/*Remember what argv is automatically registered*/
 		void			setRegList(s32 regNum);
 
-		s32				findVariable(char*	variableName);
+		s32			findVariable(char*	variableName);
 
 		/*change "true" "false" into 1,0*/
 		bool			JudgeTrueOrFalse(char* _string);

@@ -411,11 +411,6 @@ namespace xcore
 				params.mKey.mStr	=	mParametersString	+	pos;
 				params.mKey.mLen	=	ioOffset	-	pos;
 
-// 				if(params.mKey.mStr[0]	==	'?')
-// 				{
-// 					params.mValueType = xcmdline::xparam::TYPE_OTHER;
-// 				}
-
 				params.mValue.mStr	=	"true";
 				params.mValue.mLen	=	x_strlen(params.mValue.mStr);
 
@@ -928,19 +923,44 @@ namespace xcore
 					break;
 
 				case xcmdline::xparam::TYPE_STRING:
- 					char* stringVar;
- 					stringVar = NULL;
+					/*we use a string array to store the string we registered*/
+					if(mStringListNum == 0)
+					{
+						mStringList = (char**)xcmdline::get_opt_allocator()->allocate(sizeof(char*),4);
+						mStringList[mStringListNum] = NULL;
+						mStringListNum++;
+					}
+					else
+					{
+						/*here may be obscure
+							the array is dynamic allocate size to adapt the increase number of registered string
+							because the optlist.value stores the address of the string array element
+							when the string array reallocate, the address of the array will be changed
+							so we must adjust the optlist.value to be the same as the array
+						*/
+						mStringList = (char**)xcmdline::get_opt_allocator()->reallocate(mStringList,(mStringListNum+1)*sizeof(char*),4);
+						mStringList[mStringListNum] = NULL;
+						mStringListNum++;
+						int i = 0;
+						for (s32 j=0;j<mRegListNum;j++)
+						{
+							if(xcmdline::optlist[mRegList[j]].type==OPT_STRING)
+							{
+								xcmdline::optlist[mRegList[j]].value = &mStringList[i];
+								i++;							
+							}
+						}							
+					}
 
-					mStringVarList.push_back(stringVar);
 					if (tempParams->mKey.mLen == 1)
 					{
 						char c = tempParams->mKey.mStr[0];
-						s32 regNum = reg_opt(&mStringVarList.back(),c);
+						s32 regNum = reg_opt(&mStringList[mStringListNum-1],c);
 						setRegList(regNum);
 					}
 					else
 					{
-						s32 regNum = reg_opt(&mStringVarList.back(),getKey);
+						s32 regNum = reg_opt(&mStringList[mStringListNum-1],getKey);
 						setRegList(regNum);
 					}
 					break;
@@ -1673,6 +1693,8 @@ namespace xcore
 		mNewCmdline = NULL;
 		mArgc = 0;
 		mArgv = (char**)xcmdline::get_opt_allocator()->allocate(sizeof(char*),4);
+		mStringListNum = 0;
+		mStringList = NULL;
 	}
 
 	void x_cmdline::clearRegisteredOption()
@@ -1695,6 +1717,8 @@ namespace xcore
 
 	x_cmdline::~x_cmdline()
 	{
+		if(mStringList != NULL)
+			xcmdline::get_opt_allocator()->deallocate(mStringList);
 		xcmdline::get_opt_allocator()->deallocate(mParameter);
 		xcmdline::get_opt_allocator()->deallocate(mRegList);
 		if (mNewCmdline != NULL)

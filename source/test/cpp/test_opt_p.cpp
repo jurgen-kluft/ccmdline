@@ -79,17 +79,17 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 
 			char* justifyTest = "Today is Monday.\n      Now I want to sleep.";
  			char* justifyResult = xcmdline::opt_justify(justifyTest,10,5,5,"aaa");
-// 
+
  			xcmdline::opt_free();
  
-			CHECK_EQUAL(0,result);
+			CHECK_FALSE(result);
 			CHECK_EQUAL(1,n);
-			CHECK_EQUAL(0,result_2);
-			CHECK_EQUAL(0,result_3);
+			CHECK_FALSE(result_2);
+			CHECK_FALSE(result_3);
 			CHECK_EQUAL(12,s32Var);
 			CHECK_EQUAL(10,s64Var);
 
-			CHECK_EQUAL(0,result_4);
+			CHECK_FALSE(result_4);
 
 			xcmdline::get_opt_allocator()->deallocate(*string1);
 			xcmdline::get_opt_allocator()->deallocate(justifyResult);
@@ -199,13 +199,12 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			xcmdline::opt_help(NULL);
 			xcmdline::opt_usage();
 
-// 
  			xcmdline::opt_free();
 
 			CHECK_EQUAL(98,optProcessTestA);
 			CHECK_EQUAL(-9,optProcessTestB);
 			CHECK_EQUAL(3.324,optProcessTestC);
-			CHECK_EQUAL(0,result);
+			CHECK_FALSE(result);
 		}
 	}
 }
