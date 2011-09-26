@@ -72,7 +72,7 @@ namespace xcore
 			const char*		mParametersString;
 			xparam*			mParams;
 			xparamstr		mCmd;
-			bool			mCaseSensitive;
+			xbool			mCaseSensitive;
 
 			void			clear()
 			{
@@ -195,42 +195,42 @@ namespace xcore
 		class xparser
 		{
 		public:
-			bool		parse(const char* parameters_string, xparameters& outParams);
+			xbool		parse(const char* parameters_string, xparameters& outParams);
 
 		private:
-			bool		matchParameters(s32 pos, s32 offset, xparameters& params) const;
-			bool		matchParameter(s32 pos, s32& ioOffset, xparameters& params) const;
-			bool		matchParameter(s32 pos, s32&	ioOffset, xparameters& params, int overload) const;
-			bool		matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const;
-			bool		matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const;
-			bool		matchParameterName(s32 pos, s32& ioOffset) const;
-			bool		matchParameterSeparator(s32 pos) const;
-			bool		matchParameterValue(s32 pos, s32& ioOffset) const;
+			xbool		matchParameters(s32 pos, s32 offset, xparameters& params) const;
+			xbool		matchParameter(s32 pos, s32& ioOffset, xparameters& params) const;
+			xbool		matchParameter(s32 pos, s32&	ioOffset, xparameters& params, int overload) const;
+			xbool		matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const;
+			xbool		matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const;
+			xbool		matchParameterName(s32 pos, s32& ioOffset) const;
+			xbool		matchParameterSeparator(s32 pos) const;
+			xbool		matchParameterValue(s32 pos, s32& ioOffset) const;
 
-			typedef		bool (xparser::*matchDelegate)(s32) const;
+			typedef		xbool (xparser::*matchDelegate)(s32) const;
 
 			s32			advanceWhile(s32 pos, matchDelegate matcher) const;
 			s32			advanceWhileNot(s32 pos, matchDelegate matcher) const;
 
-			bool		matchAllNotOf(s32 pos, char* cc) const;
-			bool		matchParameterNameChar(s32 pos) const;
-			bool		matchParameterValueChar(s32 pos) const;
-			bool		matchParameterValueFirstChar(s32 pos) const;
-			bool		match(s32 pos, char c) const;
-			bool		matchSlash(s32 pos) const;
-			bool		matchMinus(s32 pos) const;
-			bool		matchQuestion(s32 pos) const;
-			bool		matchColon(s32 pos) const;
-			bool		matchSpace(s32 pos) const;
-			bool		matchQuote(s32 pos) const;
-			bool		matchDoubleQuote(s32 pos) const;
+			xbool		matchAllNotOf(s32 pos, char* cc) const;
+			xbool		matchParameterNameChar(s32 pos) const;
+			xbool		matchParameterValueChar(s32 pos) const;
+			xbool		matchParameterValueFirstChar(s32 pos) const;
+			xbool		match(s32 pos, char c) const;
+			xbool		matchSlash(s32 pos) const;
+			xbool		matchMinus(s32 pos) const;
+			xbool		matchQuestion(s32 pos) const;
+			xbool		matchColon(s32 pos) const;
+			xbool		matchSpace(s32 pos) const;
+			xbool		matchQuote(s32 pos) const;
+			xbool		matchDoubleQuote(s32 pos) const;
 
 			s32			mParametersStringLen;
 			const char*	mParametersString;
 		};
 		
 
-		bool	xparser::parse(const char* parameters_string, xparameters& outParams)
+		xbool	xparser::parse(const char* parameters_string, xparameters& outParams)
 		{
 			if (parameters_string==NULL)
 				return false;
@@ -240,7 +240,7 @@ namespace xcore
 
 			s32 pos = 0;
 			s32 offset = 0;
-			bool _success = false;
+			xbool _success = false;
 
 			if (mParametersStringLen>0)
 			{
@@ -271,7 +271,7 @@ namespace xcore
 			return _success;
 		}
 
-		bool	xparser::matchParameters(s32 pos, s32 offset, xparameters& params) const
+		xbool	xparser::matchParameters(s32 pos, s32 offset, xparameters& params) const
 		{
 			/*overload matchParameter function*/
 			while (pos < mParametersStringLen && matchParameter(pos, offset, params,1))
@@ -289,7 +289,7 @@ namespace xcore
 		}
 
 		/*just overload the matchParameters to fit for the xparam argument in the matchParameterStruct function.*/
-		bool		xparser::matchParameter(s32 pos, s32&	ioOffset, xparameters& params, int overload) const
+		xbool		xparser::matchParameter(s32 pos, s32&	ioOffset, xparameters& params, int overload) const
 		{
 			if (matchSlash(pos))
 			{
@@ -326,7 +326,7 @@ namespace xcore
 			return false;
 		}
 
-		bool	xparser::matchParameter(s32 pos, s32& ioOffset, xparameters& params) const
+		xbool	xparser::matchParameter(s32 pos, s32& ioOffset, xparameters& params) const
 		{
 			if (matchSlash(pos))
 			{
@@ -363,7 +363,7 @@ namespace xcore
 			return false;
 		}
 
-		bool	matchBoolean(const char* string, s32 length)
+		xbool	matchBoolean(const char* string, s32 length)
 		{
 			xbool result = false;
 			char* tempBoolStr = (char*)xcmdline::get_opt_allocator()->allocate(length*sizeof(char)+1,4);
@@ -374,7 +374,7 @@ namespace xcore
 			return result;
 		}
 
-		bool matchFloatNumber(const char* string,	s32	stringLen)
+		xbool matchFloatNumber(const char* string,	s32	stringLen)
 		{
 			s32		dotNum			=	0;
 			for (s32 i=0; i<stringLen; i++)
@@ -394,7 +394,7 @@ namespace xcore
 			return false;
 		}
 
-		bool matchInteger(const char* string, s32 stringLen)
+		xbool matchInteger(const char* string, s32 stringLen)
 		{
 			for (s32 i=0; i<stringLen; i++)
 			{
@@ -404,7 +404,7 @@ namespace xcore
 			return true;
 		}
 
-		bool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const
+		xbool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const
 		{
 			if (matchParameterName(pos, ioOffset))
 			{
@@ -479,7 +479,7 @@ namespace xcore
 			return false;
 		}
 
-		bool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const
+		xbool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const
 		{
 			if (matchParameterName(pos, ioOffset))
 			{
@@ -530,7 +530,7 @@ namespace xcore
 			return false;
 		}
 
-		bool	xparser::matchParameterName(s32 pos, s32& ioOffset) const
+		xbool	xparser::matchParameterName(s32 pos, s32& ioOffset) const
 		{
 			s32 pos2 = pos;
 			pos = advanceWhile(pos, &xparser::matchParameterNameChar);
@@ -543,14 +543,14 @@ namespace xcore
 			return false;
 		}
 
-		bool	xparser::matchParameterSeparator(s32 pos) const
+		xbool	xparser::matchParameterSeparator(s32 pos) const
 		{
 			if (mParametersString[pos] == ':' || mParametersString[pos] == '=' || mParametersString[pos] == ' ')
 				return true;
 			return false;
 		}
 
-		bool	xparser::matchParameterValue(s32 pos, s32& ioOffset) const
+		xbool	xparser::matchParameterValue(s32 pos, s32& ioOffset) const
 		{
 			if (matchQuote(pos))
 			{
@@ -595,7 +595,7 @@ namespace xcore
 			return pos;
 		}
 
-		bool xparser::matchAllNotOf(s32 pos, char* cc) const
+		xbool xparser::matchAllNotOf(s32 pos, char* cc) const
 		{
 			while (*cc != '\0')
 			{
@@ -606,66 +606,66 @@ namespace xcore
 			return true;
 		}
 
-		bool xparser::matchParameterNameChar(s32 pos) const
+		xbool xparser::matchParameterNameChar(s32 pos) const
 		{
 			char cc[] = { ' ', ':', '=', '\0' };
 			return matchAllNotOf(pos, cc);
 		}
 
-		bool xparser::matchParameterValueChar(s32 pos) const
+		xbool xparser::matchParameterValueChar(s32 pos) const
 		{
 			char cc[] = { ' ', '\0' };
 			return matchAllNotOf(pos, cc);
 		}
 
-		bool xparser::matchParameterValueFirstChar(s32 pos) const
+		xbool xparser::matchParameterValueFirstChar(s32 pos) const
 		{
 			char cc[] = { ' ', '/', ':', '-', '=','?', '\0' };
 			return matchAllNotOf(pos, cc);
 		}
 
-		bool xparser::match(s32 pos, char c) const
+		xbool xparser::match(s32 pos, char c) const
 		{
 			return (mParametersString[pos] == c);
 		}
 
-		bool xparser::matchSlash(s32 pos) const
+		xbool xparser::matchSlash(s32 pos) const
 		{
 			return match(pos, '/');
 		}
 
-		bool xparser::matchMinus(s32 pos) const
+		xbool xparser::matchMinus(s32 pos) const
 		{
 			return match(pos, '-');
 		}
 
-		bool	xparser::matchQuestion(s32 pos) const
+		xbool	xparser::matchQuestion(s32 pos) const
 		{
 			return match(pos, '?');
 		}
 
-		bool xparser::matchColon(s32 pos) const
+		xbool xparser::matchColon(s32 pos) const
 		{
 			return match(pos, ':');
 		}
 
-		bool xparser::matchSpace(s32 pos) const
+		xbool xparser::matchSpace(s32 pos) const
 		{
 			return match(pos, ' ');
 		}
 
-		bool xparser::matchQuote(s32 pos) const
+		xbool xparser::matchQuote(s32 pos) const
 		{
 			return match(pos, '\'');
 		}
 
-		bool xparser::matchDoubleQuote(s32 pos) const
+		xbool xparser::matchDoubleQuote(s32 pos) const
 		{
 			return match(pos, '\"');
 		}
 	}
-
-	bool			x_cmdline::JudgeTrueOrFalse(char* _string)
+	
+	xbool			x_cmdline::JudgeTrueOrFalse(char* _string)
 	{
 		ASSERT(_string!=NULL);
 		ASSERT(x_strcmp(_string,"true")==0 || x_strcmp(_string,"false")==0);
@@ -846,7 +846,7 @@ namespace xcore
 		}
 	}
 
-	bool			x_cmdline::regAndSetValue()
+	xbool			x_cmdline::regAndSetValue()
 
 	{
 		if (mParameter == NULL || mParameter->mParams == NULL)
@@ -1005,10 +1005,10 @@ namespace xcore
 		return true;
 	}
 
-	bool			x_cmdline::parse(const char* cmdline)
+	xbool			x_cmdline::parse(const char* cmdline)
 	{
 		xcmdline::xparser parser;
-		bool res = parser.parse(cmdline, *mParameter);
+		xbool res = parser.parse(cmdline, *mParameter);
 
 		if (res)
 		{
@@ -1068,15 +1068,15 @@ namespace xcore
 #endif
 		if (xcmdline::optlist[optNum].type	==	OPT_BOOL)
 		{
-			bool*	xptr;
-			xptr	=	(bool*)xcmdline::optlist[optNum].value;
+			xbool*	xptr;
+			xptr	=	(xbool*)xcmdline::optlist[optNum].value;
 			if(JudgeTrueOrFalse(optValue))
 			{
-				*xptr	=	(bool)true;
+				*xptr	=	(xbool)true;
 			}
 			else
 			{
-				*xptr	=	(bool)false;
+				*xptr	=	(xbool)false;
 			}
 			return;
 		}
@@ -1116,7 +1116,7 @@ namespace xcore
 		}
 	}
 
-	bool			x_cmdline::parse(s32 argc, const char** argv)
+	xbool			x_cmdline::parse(s32 argc, const char** argv)
 	{
 		if (**argv == NULL)
 		{

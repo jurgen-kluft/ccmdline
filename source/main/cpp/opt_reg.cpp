@@ -42,6 +42,8 @@
 #ifdef COUTDEBUG
 #include <iostream>
 #endif
+
+
 namespace xcore
 {
 	namespace xcmdline
@@ -1272,6 +1274,7 @@ namespace xcore
 					}
 					break;
 				}
+				
 				break;
 
 			case OPT_INTLEVEL:

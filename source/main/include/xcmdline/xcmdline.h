@@ -31,14 +31,14 @@ namespace xcore
 		~x_cmdline();
 
 		/*parse the cmdline and store them in xparameters*/
-		bool			parse(const char* cmdline);
-		bool			parse(s32 argc, const char** argv);
+		xbool			parse(const char* cmdline);
+		xbool			parse(s32 argc, const char** argv);
 
 		/*interface to get variable's value by give its name*/
 		void*			getValue(char* name);
 
 		/*Register variables and set value by xparameters*/
-		bool			regAndSetValue();
+		xbool			regAndSetValue();
 
 		/*free memory*/
 		void			clearRegisteredOption();
@@ -178,7 +178,7 @@ namespace xcore
 		s32			findVariable(char*	variableName);
 
 		/*change "true" "false" into 1,0*/
-		bool			JudgeTrueOrFalse(char* _string);
+		xbool			JudgeTrueOrFalse(char* _string);
 
 
 

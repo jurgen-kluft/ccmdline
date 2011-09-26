@@ -555,7 +555,6 @@ namespace xcore
 						/* So we only treat it as a quit signal if using the menu */
 				case QUITCH:
 					goto POSITIONAL;   /* There I go again... */
-					break;
 
 				case BANG:
 					/* If there is a BANG as the first character of a

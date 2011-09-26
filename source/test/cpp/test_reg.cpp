@@ -8,6 +8,7 @@
 
 using namespace xcore;
 
+
 UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 {
 	UNITTEST_FIXTURE(reg_all_types)
@@ -579,9 +580,10 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 		}
 
 		//test all optreg for xbool.
+		//use xbool instead of bool, PS3 may not support bool.
 		UNITTEST_TEST(regxbool)
 		{
-			xbool    regaTest_xbool    =	0;
+			xbool    regaTest_xbool	   =	0;
 			xbool    regTest_xbool     =	0;
 			xbool    regcTest_xbool    =	0;
 			xbool    regcbTest_xbool   =	0;
@@ -620,14 +622,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			xcmdline::opt(&argc, argvv);
 			xcmdline::opt_free();
 
-			CHECK_EQUAL((xbool)1,regaTest_xbool);
-			CHECK_EQUAL((xbool)0,regTest_xbool);
-			CHECK_EQUAL((xbool)1,regcTest_xbool);
-			CHECK_EQUAL((xbool)1,regcbTest_xbool);
-			CHECK_EQUAL((xbool)1,regsTest_xbool);
-			CHECK_EQUAL((xbool)0,regsbTest_xbool);
-			CHECK_EQUAL((xbool)1,regfTest_xbool);
-			CHECK_EQUAL((xbool)0,regpTest_xbool);
+			CHECK_TRUE(regaTest_xbool);
+			CHECK_FALSE(regTest_xbool);
+			CHECK_TRUE(regcTest_xbool);
+			CHECK_TRUE(regcbTest_xbool);
+			CHECK_TRUE(regsTest_xbool);
+			CHECK_FALSE(regsbTest_xbool);
+			CHECK_TRUE(regfTest_xbool);
+			CHECK_FALSE(regpTest_xbool);
 
 		}
 

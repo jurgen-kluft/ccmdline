@@ -42,12 +42,6 @@
 		<Type>Package</Type>
 	</Dependency>
 
-	<Dependency Package="xstl">
-		<Group>com.virtuos.tnt</Group>
-		<Version>[1.0,)</Version>
-		<Type>Package</Type>
-	</Dependency>
-
 	<ProjectProperties>
 		<Properties DependencyType="Root" Platform="*">
 			<PropertyGroup Label="xcmdline_TargetDirs">
@@ -74,7 +68,7 @@
 		</Properties>
 	</ProjectProperties>
 
-	<Project Name="${Name}" Language="${Language}" Location="source\main\cpp" Scope="Public" DependsOn="xbase:xbase;xstl:xstl">
+	<Project Name="${Name}" Language="${Language}" Location="source\main\cpp" Scope="Public" DependsOn="xbase:xbase">
 		<ProjectFile>
 			<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 				<PropertyGroup Label="Globals">

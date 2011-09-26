@@ -85,8 +85,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			char*	test	=	OPT_GETVALUE(char*,c.getValue("s"));
 			char*	test2	=	OPT_GETVALUE(char*,c.getValue("stringVar"));
 
-			bool result1	=	x_strcmp(test, "Jurgen");
-			bool result2	=	x_strcmp(test2, "Today is 10.30");
+			xbool result1	=	x_strcmp(test, "Jurgen");
+			xbool result2	=	x_strcmp(test2, "Today is 10.30");
 
 			c.clearRegisteredOption();
 
@@ -103,9 +103,9 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			c.parse("-a false --boolVar true -c false");
 			c.regAndSetValue();
 
-			bool	test	=	OPT_GETVALUE(bool,c.getValue("a"));
-			bool	test2	=	OPT_GETVALUE(bool,c.getValue("boolVar"));
-			bool	test3	=	OPT_GETVALUE(bool,c.getValue("c"));
+			xbool	test	=	OPT_GETVALUE(xbool,c.getValue("a"));
+			xbool	test2	=	OPT_GETVALUE(xbool,c.getValue("boolVar"));
+			xbool	test3	=	OPT_GETVALUE(xbool,c.getValue("c"));
 
 			c.clearRegisteredOption();
 
@@ -167,7 +167,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			f32	day	=	OPT_GETVALUE(f32,c.getValue("day"));
 			char* who	=	OPT_GETVALUE(char*,c.getValue("who"));
 			char	whoShort	=	OPT_GETVALUE(char,c.getValue("w"));
-			bool	isBirthday	=	OPT_GETVALUE(bool,c.getValue("isBirthday"));
+			xbool	isBirthday	=	OPT_GETVALUE(xbool,c.getValue("isBirthday"));
 
 			CHECK_EQUAL((s32)2011, year);
 			CHECK_EQUAL((s32)12, month);

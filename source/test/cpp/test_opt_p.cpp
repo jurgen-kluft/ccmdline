@@ -54,14 +54,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 
 			xcmdline::opt_get_help('a');
 			char* title = xcmdline::optgetTitle();
-			bool result = x_strcmp("Test_setTitle_opt_p",title);
+			xbool result = x_strcmp("Test_setTitle_opt_p",title);
 
 			s32 n = xcmdline::opt_char_number('b');
 			char* m = xcmdline::optstrval(0);
-			bool result_2 = x_strcmp("12",m);
+			xbool result_2 = x_strcmp("12",m);
 
 			char* k = xcmdline::optstrtyp(2);
-			bool result_3 = x_strcmp("<s8>",k);
+			xbool result_3 = x_strcmp("<s8>",k);
 
 			xcmdline::short_usage();
 			xcmdline::long_usage();
@@ -75,7 +75,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			char* string2 = "string2";
  
  			xcmdline::opt_setstring(string1,string2);
- 			bool result_4 = x_strcmp("string2",*string1);
+ 			xbool result_4 = x_strcmp("string2",*string1);
 
 			char* justifyTest = "Today is Monday.\n      Now I want to sleep.";
  			char* justifyResult = xcmdline::opt_justify(justifyTest,10,5,5,"aaa");
@@ -191,7 +191,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 
 			char programNameTest[] = "xcmdline_test.exe";
 			char* programName = xcmdline::short_progname(programNameTest);
-			bool result = x_strcmp("xcmdline_test",programName);
+			xbool result = x_strcmp("xcmdline_test",programName);
 
 			char* lineProcessTest = "--ProcessTestC=3.324";
 			xcmdline::opt_lineprocess(lineProcessTest);

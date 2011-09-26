@@ -7,10 +7,7 @@
 
 #include "xunittest\xunittest.h"
 
-//----------------------------
-#include "xstl\list.h"
 
-//-----------------------------
 
 
 #ifdef	COUTDEBUG
@@ -114,7 +111,7 @@ namespace xcore
 
 #if TEST_ALLOCATIONS
 			// See if we are freeing memory which has been allocated through allocate()
-			bool was_allocated = false;
+			xbool was_allocated = false;
 			for (s32 i=0; i<mAllocationIdx && !was_allocated; ++i)
 			{
 				was_allocated = (mAllocations[i] == mem);
@@ -175,7 +172,6 @@ xcore::x_iallocator* gSystemAllocator=NULL;
 bool gRunUnitTest(UnitTest::TestReporter& reporter)
 {
 	gSystemAllocator = xcore::gCreateSystemAllocator();
-	xstl::allocator::sSetXAllocator(gSystemAllocator);
 	UnitTestAllocator unittestAllocator( gSystemAllocator );
 	UnitTest::SetAllocator(&unittestAllocator);
 
