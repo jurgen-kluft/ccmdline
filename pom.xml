@@ -401,7 +401,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -412,7 +411,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Xbox 360'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -423,7 +421,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Xbox 360'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -434,7 +431,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -445,7 +441,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -456,7 +451,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|N3DS'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
@@ -467,7 +461,6 @@
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|N3DS'">
 					<ClCompile>
-						<ExceptionHandling>Sync</ExceptionHandling>
 						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
 						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
