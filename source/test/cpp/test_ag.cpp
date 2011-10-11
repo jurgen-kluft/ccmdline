@@ -5,7 +5,6 @@
 #include "xcmdline\private\ag.h"
 
 #include "xunittest\xunittest.h"
-#include <iostream>
 #include "xbase\x_string_std.h"
 
 using namespace xcore;
@@ -63,7 +62,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_ag_tests)
 			test_ag = ag_new(argc,argvp);
 			test_ag->iw = 3;
 
-			s32 tempW = ag_w_number(test_ag);
+			xcore::s32 tempW = ag_w_number(test_ag);
 
 			CHECK_NOT_NULL(test_ag);
 			CHECK_EQUAL(3,tempW);
@@ -86,7 +85,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_ag_tests)
 			test_ag = ag_new(argc,argvp);
 			test_ag->ic = 10;
 
-			s32 test_bool = ag_eow(test_ag);
+			xcore::s32 test_bool = ag_eow(test_ag);
 			CHECK_NOT_NULL(test_ag);
 			CHECK_TRUE(test_bool);
 			ag_free(test_ag);
@@ -98,7 +97,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_ag_tests)
 			test_ag->iw = 3;
 			test_ag->ic = 2;
 
-			s32 test_bool = ag_end(test_ag);
+			xcore::s32 test_bool = ag_end(test_ag);
 			CHECK_NOT_NULL(test_ag);
 			CHECK_TRUE(test_bool);
 			ag_free(test_ag);
@@ -249,7 +248,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_ag_tests)
 
 			ag_w_advance(test_ag);
 			ag_w_advance(test_ag);
-			s32 test_result = ag_argc(test_ag);
+			xcore::s32 test_result = ag_argc(test_ag);
 			CHECK_NOT_NULL(test_ag);
 			CHECK_EQUAL(2,test_result);
 			ag_free(test_ag);

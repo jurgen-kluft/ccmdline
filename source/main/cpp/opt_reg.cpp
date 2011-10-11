@@ -123,6 +123,7 @@ namespace xcore
 					char *s = *((char **)(optlist[i].value));
 					OPT_FREE(s);
 					OPT_FREE(optlist[i].value);
+					OPT_FREE(*(optlist[i].array->value));
 				}
 				OPT_FREE(optlist[i].array);
 			}
@@ -1157,7 +1158,14 @@ namespace xcore
 
 				/* add new element to array */
 				*(arr->size) += 1;
-				*(arr->value) = get_opt_allocator()->reallocate(*(arr->value),*(arr->size)*optsizeof(arr->base_type), 4);
+				if (*(arr->value) == NULL)
+				{
+					*(arr->value) = get_opt_allocator()->allocate(*(arr->size)*optsizeof(arr->base_type), 4);
+				}
+				else
+				{
+					*(arr->value) = get_opt_allocator()->reallocate(*(arr->value),*(arr->size)*optsizeof(arr->base_type), 4);
+				}
 
 				/* v points to the next element in the array */
 				v = (char *)(*(arr->value)) + (*(arr->size)-1)*optsizeof(arr->base_type);

@@ -1,4 +1,5 @@
 #include "xbase\x_types.h"
+#include "xbase\x_string.h"
 #include "xbase\x_string_std.h"
 
 #include "xcmdline\xcmdline.h"
@@ -6,7 +7,10 @@
 
 #include "xunittest\xunittest.h"
 
+#include <stdio.h>
+
 using namespace xcore;
+
 
 UNITTEST_SUITE_BEGIN(test_x_cmdline)
 {
@@ -18,11 +22,11 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_TEST(test_parse_int)
 		{
 			x_cmdline	c;
-			c.parse("-y 2011 --month 12 --day 30");
+			c.parse("--month 12 --day 30 -y 2011");
 			c.regAndSetValue();
  			c.parse("--month 9");
  			c.regAndSetValue();
-
+ 
 			void* y	=	c.getValue("y");
 			void* m	=	c.getValue("month");
 			void* d	=	c.getValue("day"); 
@@ -30,10 +34,10 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32 year	=	OPT_GETVALUE(s32,y);
 			s32	month	=	OPT_GETVALUE(s32,m);
 			s32	day	=	OPT_GETVALUE(s32,d);
-
-			c.clearRegisteredOption();
-
-			xcmdline::opt_free();
+ 
+ 			c.clearRegisteredOption();
+ 
+ 			xcmdline::opt_free();
 
 			CHECK_EQUAL((s32)2011, year);
 			CHECK_EQUAL((s32)9, month);
@@ -97,25 +101,25 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			CHECK_FALSE(result2);
 		}
 
-		UNITTEST_TEST(test_parse_bool)
-		{
-			x_cmdline	c;
-			c.parse("-a false --boolVar true -c false");
-			c.regAndSetValue();
-
-			xbool	test	=	OPT_GETVALUE(xbool,c.getValue("a"));
-			xbool	test2	=	OPT_GETVALUE(xbool,c.getValue("boolVar"));
-			xbool	test3	=	OPT_GETVALUE(xbool,c.getValue("c"));
-
-			c.clearRegisteredOption();
-
-			xcmdline::opt_free();
-
-			CHECK_FALSE(test);
-			CHECK_TRUE(test2);
-			CHECK_FALSE(test3);
-		}
-
+  		UNITTEST_TEST(test_parse_bool)
+  		{
+  			x_cmdline	c;
+  			c.parse("-a false --boolVar true -c false");
+  			c.regAndSetValue();
+  
+  			xbool	test	=	OPT_GETVALUE(xbool,c.getValue("a"));
+  			xbool	test2	=	OPT_GETVALUE(xbool,c.getValue("boolVar"));
+  			xbool	test3	=	OPT_GETVALUE(xbool,c.getValue("c"));
+  
+  			c.clearRegisteredOption();
+  
+  			xcmdline::opt_free();
+  
+  			CHECK_FALSE(test);
+  			CHECK_TRUE(test2);
+  			CHECK_FALSE(test3);
+  		}
+  
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32	   testHelp	=	0;

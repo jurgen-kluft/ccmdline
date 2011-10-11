@@ -42,7 +42,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 		UNITTEST_TEST(full)
 		{	
 			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
-			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
+ 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
 
 			xcmdline::optrega(&month,xcmdline::OPT_INT,'m',"month","Month");
 			xcmdline::opthook(&month,fix_mon);

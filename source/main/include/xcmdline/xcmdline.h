@@ -164,7 +164,8 @@ namespace xcore
 		char*			mNewCmdline;
 		char**			mStringList;
 		int				mStringListNum;
-
+		int				mTotalAllocArgvNum;
+		const int		mAllocArgvBlockSize;
 
 		/*clear the argv allocated by changeParamToArgv()*/
 		void			argvClear();

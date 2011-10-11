@@ -78,7 +78,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
 			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			
 
 			CHECK_EQUAL(2,uArrayNum[0]);
 			CHECK_NOT_NULL(arrayU8);
@@ -139,6 +139,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 			CHECK_EQUAL('t',arrayXtchar[1]);
 			CHECK_EQUAL('q',arrayXtchar[2]);
 
+			xcmdline::opt_free();
 /*
 *		Other functions like optregc_array just call the optrega_array and modify one parameter to NULL
 *		So we needn't to test these functions if we have tested the optrega_array

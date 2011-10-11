@@ -35,8 +35,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			xbool boolVar	=	1;
 
 
-			//test the opthelp function
- 			xcmdline::optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
+//			test the opthelp function
+			xcmdline::optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
 			xcmdline::opthelp(&boolVar,"This is the boolVar help");
 
 			xcmdline::optreg(&longNameTest,xcmdline::OPT_INT,'l',"SetLongNameTest");
@@ -59,16 +59,16 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			{
 				"xcmdline_test_TestDebug_Win32",
 				"--boolVar=0",
-				"--xarray",
-				"10,20,30",
- 				"?b",
-				"--longName",
-				"100",
-				"--nLongName=80",
-				"-s10",
-				"-h",
-				"15",
-				"--testSwitch=1"
+ 				"--xarray",
+ 				"10,20,30",
+  				"?b",
+ 				"--longName",
+ 				"100",
+ 				"--nLongName=80",
+ 				"-s10",
+ 				"-h",
+ 				"15",
+ 				"--testSwitch=1"
 			};
 
 
@@ -78,8 +78,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			char*** argvv = (char***)(&argvp);
 			xcmdline::opt(&argc, argvv);
 			xcmdline::opt_get_help('b');
-			xcmdline::opt_free();
-			 
+			
 			CHECK_EQUAL(0, boolVar);
 			CHECK_EQUAL(100,longNameTest);
 			CHECK_EQUAL(80,longNameTest_n);
@@ -91,7 +90,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			CHECK_EQUAL(20,x[1]);
 			CHECK_EQUAL(30,x[2]);
 			CHECK_EQUAL(1,testSwitch);
-			
+
+			xcmdline::opt_free();
 		}
 
 		s32	   desTest    =    0;

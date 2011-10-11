@@ -1,5 +1,6 @@
 #include "xbase\x_string.h"
 #include "xbase\x_string_std.h"
+#include "xbase\x_types.h"
 
 #include "xcmdline\xcmdline.h"
 
@@ -12,6 +13,9 @@
 #include <iostream>
 using namespace std;
 #endif
+
+#include <stdio.h>
+
 
 namespace xcore
 {
@@ -38,6 +42,7 @@ namespace xcore
 
 		struct xparam
 		{
+		public:
 			xparam() : mNext(NULL), mPrev(NULL)	{mValueType = TYPE_OTHER;}
 
 			xparamstr		mKey;
@@ -55,7 +60,7 @@ namespace xcore
 			xparam*			mNext;
 			xparam*			mPrev;
 
-			void*			operator new(u32 num_bytes, void* mem)		{ return mem; }
+			void*		operator new(xcore::xsize_t num_bytes, void* mem)		{ return mem; }
 			void			operator delete(void* pMem, void* )			{ }
 
 		};
@@ -731,7 +736,7 @@ namespace xcore
 
 
 		/*The program name, the same with argv[0] in main()*/
-		*mArgv	=	"xcmdline";
+		mArgv[0]	=	"xcmdline";
 		mArgc++;
 
 		xcmdline::xparam* tempParam	=	mParameter->mParams;
@@ -747,7 +752,11 @@ namespace xcore
 			case	xcmdline::xparam::TYPE_STRING:
 			case	xcmdline::xparam::TYPE_CHAR:
 
-				mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,(mArgc+2)*sizeof(char*),4);
+				if (mArgc >= mTotalAllocArgvNum)
+				{
+					mTotalAllocArgvNum	+=	mAllocArgvBlockSize;
+					mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,mTotalAllocArgvNum*sizeof(char*),4);
+				}			
 				if(tempParam->mKey.mLen == 1)
 				{
 					mArgv[mArgc]	=	(char*)xcmdline::get_opt_allocator()->allocate(tempParam->mKey.mLen*sizeof(char)+2,4);
@@ -772,7 +781,9 @@ namespace xcore
 				
 			case	xcmdline::xparam::TYPE_BOOL:
 
-				mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,(mArgc + 1)*sizeof(char*),4);
+				mTotalAllocArgvNum	+=	1;
+				mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,mTotalAllocArgvNum*sizeof(char*),4);
+
 				if(tempParam->mKey.mLen == 1)
 				{
 					mArgv[mArgc]	=	(char*)xcmdline::get_opt_allocator()->allocate(
@@ -816,7 +827,9 @@ namespace xcore
 				/*?X : get X's helpful information, X is a shortname of a registered variable*/
 				if (tempParam->mKey.mStr[0]		==	'?')
 				{
-					mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,(mArgc + 1)*sizeof(char*),4);
+					mTotalAllocArgvNum	+=	1;
+					mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,mTotalAllocArgvNum*sizeof(char*),4);
+
 					mArgv[mArgc]	=	(char*)xcmdline::get_opt_allocator()->allocate(tempParam->mKey.mLen*sizeof(char)+1,4);
 					x_strcpy(mArgv[mArgc], tempParam->mKey.mLen+1, argvString);
 					mArgc++;
@@ -826,7 +839,9 @@ namespace xcore
 							x_strcmp("help",argvString)	==	0	||
 							x_strcmp("optVersion",argvString)	==	0)
 				{
-					mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,(mArgc + 1)*sizeof(char*),4);
+					mTotalAllocArgvNum	+=	1;
+					mArgv	=	(char**)xcmdline::get_opt_allocator()->reallocate(mArgv,mTotalAllocArgvNum*sizeof(char*),4);
+
 					mArgv[mArgc]	=	(char*)xcmdline::get_opt_allocator()->allocate(tempParam->mKey.mLen*sizeof(char)+3,4);
 					mArgv[mArgc][0]	=	'-';
 					mArgv[mArgc][1]	=	'-';
@@ -996,11 +1011,14 @@ namespace xcore
 		}
 
 		s32 argc = mArgc;
+
 		xcmdline::opt(&argc,&mArgv);
 
 
 		mParameter->clear();
 		argvClear();
+
+		//printf("%s    %s    %s \n", mArgv[1],mArgv[2],mArgv[3]);
 
 		return true;
 	}
@@ -1683,7 +1701,7 @@ namespace xcore
 		return i ;
 	}
 
-	x_cmdline::x_cmdline()
+	x_cmdline::x_cmdline():mAllocArgvBlockSize(4)
 	{ 
 		mParameter = (xcmdline::xparameters*)xcmdline::get_opt_allocator()->allocate(sizeof(xcmdline::xparameters),4);
 		mParameter->mParams = NULL;
@@ -1695,6 +1713,7 @@ namespace xcore
 		mArgv = (char**)xcmdline::get_opt_allocator()->allocate(sizeof(char*),4);
 		mStringListNum = 0;
 		mStringList = NULL;
+		mTotalAllocArgvNum = 1;
 	}
 
 	void x_cmdline::clearRegisteredOption()
