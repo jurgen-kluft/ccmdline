@@ -1701,7 +1701,7 @@ namespace xcore
 		return i ;
 	}
 
-	x_cmdline::x_cmdline():mAllocArgvBlockSize(4)
+	x_cmdline::x_cmdline():mAllocArgvBlockSize(10)
 	{ 
 		mParameter = (xcmdline::xparameters*)xcmdline::get_opt_allocator()->allocate(sizeof(xcmdline::xparameters),4);
 		mParameter->mParams = NULL;
