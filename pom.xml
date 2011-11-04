@@ -343,16 +343,28 @@
 					<ProjectGuid>{${GUID_UnitTest}}</ProjectGuid>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Win32'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.exe)</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.exe)</ConfigurationType>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|win32'">
+					<TargetExt>.exe</TargetExt>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|win32'">
+					<TargetExt>.exe</TargetExt>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.elf)</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.elf)</ConfigurationType>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'">
+					<TargetExt>.elf</TargetExt>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'">
+					<TargetExt>.elf</TargetExt>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Xbox 360'" Label="Configuration">
 					<ConfigurationType>Application</ConfigurationType>
@@ -361,10 +373,16 @@
 					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.elf)</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application(.elf)</ConfigurationType>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'">
+					<TargetExt>.elf</TargetExt>
+				</PropertyGroup>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'">
+					<TargetExt>.elf</TargetExt>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|N3DS'" Label="Configuration">
 					<ConfigurationType>Application</ConfigurationType>

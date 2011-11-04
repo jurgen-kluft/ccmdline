@@ -78,6 +78,13 @@ namespace xcore
 			static void			opt_fatal(char *);
 			static void			opt_setstring(char **, char *);
 			static char			*opt_justify(char* s, s32 width, s32 indent, s32 initial, char* prefix);
+
+			/*  
+			*/
+			static s32				optBeginRun(OPT_PFI run);
+			static void			optAbortRun();
+			static s32				optBeginMain(OPT_PFI_ARG run_args, s32 argc, char **argv);
+			static void			optAbortMain();
 		};
 
 		class Opt_Num

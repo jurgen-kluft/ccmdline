@@ -195,22 +195,22 @@ namespace xcore
 			return buf;
 		}
 
-		s32  optBeginRun(OPT_PFI run)
+		s32  Opt_Util::optBeginRun(OPT_PFI run)
 		{
 			return (*run)(); 
 		}
 
-		void optAbortRun()
+		void Opt_Util::optAbortRun()
 		{
 			//exit(opt_exit_number); 
 		}
 
-		s32  optBeginMain(OPT_PFI_ARG run_args, s32 argc, char **argv)
+		s32  Opt_Util::optBeginMain(OPT_PFI_ARG run_args, s32 argc, char **argv)
 		{
 			return (*run_args)(argc,argv);
 		}
 
-		void optAbortMain()
+		void Opt_Util::optAbortMain()
 		{
 			optAbortRun(); 
 		}
