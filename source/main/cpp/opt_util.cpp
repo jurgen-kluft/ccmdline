@@ -34,16 +34,26 @@ namespace xcore
 {
 	namespace xcmdline
 	{
-		static x_iallocator*	sCmdLineOptAllocator = NULL;
-		void			set_opt_allocator(x_iallocator* allocator)
+		x_iallocator*	Opt_Allocator::sCmdLineOptAllocator = NULL;
+		void			Opt_Allocator::set_opt_allocator(x_iallocator* allocator)
 		{
 			sCmdLineOptAllocator = allocator;
 		}
-		x_iallocator*	get_opt_allocator()
+		x_iallocator*	Opt_Allocator::get_opt_allocator()
 		{
-			return sCmdLineOptAllocator;
+			return Opt_Allocator::sCmdLineOptAllocator;
 		}
-
+				char* Opt_Allocator::opt_strdup(char *s)
+		{
+			char *sdup;
+			s32 i,n;
+			n = x_strlen(s);
+			sdup = (char*)get_opt_allocator()->allocate(n+1, 4);
+			for (i=0; i<n; ++i)
+				sdup[i] = s[i];
+			sdup[n]='\0';
+			return sdup;
+		}
 		/* If these are not defined on the compile command line, then assume
 		* the worst, that you don't have anything!
 		*/
@@ -60,34 +70,34 @@ namespace xcore
 		/* Provide message/warning/fatal functions */
 		/* Ordinary messages go to stdout, but warn/fatal messages to stderr;
 		* (This convention adopted at suggestion of Jason V. Morgan) */
-		void	opt_message(char *s)
+		void	Opt_Util::opt_message(char *s)
 		{
 			//if (s) fputs(s,stdout);
 		}
-		void	opt_warning(char *s)
+		void	Opt_Util::opt_warning(char *s)
 		{
 			//fputs("OPT Warning: ",stderr);
 			//if (s) fputs(s,stderr);
 			//fputs("\n",stderr);
 		}
-		void	opt_fatal(char *s)
+		void	Opt_Util::opt_fatal(char *s)
 		{
 			//fputs("OPT Fatal error: ",stderr);
 			//if (s) fputs(s,stderr);
 			//exit(opt_exit_number);
 		}
 
-		void	opt_setstring(char **s, char *t)
+		void	Opt_Util::opt_setstring(char **s, char *t)
 		{
 			if (*s) 
-				get_opt_allocator()->deallocate(*s);
-			*s = opt_strdup(t);
+				Opt_Allocator::get_opt_allocator()->deallocate(*s);
+			*s = Opt_Allocator::opt_strdup(t);
 		}
 
 		/* A function to justify text to a given width, useful for      */
 		/* printing long description strings. Returns a pointer to      */
 		/* a malloc'd string buffer which must be free'd by the caller. */
-		char*	opt_justify(char* s, s32 width, s32 indent, s32 initial, char* prefix) 
+		char*	Opt_Util::opt_justify(char* s, s32 width, s32 indent, s32 initial, char* prefix) 
 		{
 			s32 i, j, n, p, len, approxLines, bufSize;
 			s32 k;
@@ -96,7 +106,7 @@ namespace xcore
 			/* If s is null or empty, then return an empty string */
 			if (ISEMPTYSTRING(s)) 
 			{
-				buf = (char*) get_opt_allocator()->allocate(1, 4);
+				buf = (char*) Opt_Allocator::get_opt_allocator()->allocate(1, 4);
 				buf[0] = '\0';
 				return buf;
 			}
@@ -108,13 +118,13 @@ namespace xcore
 			bufSize = initial + width + 1 +         /* The first line, inc. newline */
 				(1 + indent + width) * approxLines * 3; /* Justified lines, assuming bad line breaks */
 
-			buf = (char*) get_opt_allocator()->allocate(bufSize + 1, 4);
+			buf = (char*) Opt_Allocator::get_opt_allocator()->allocate(bufSize + 1, 4);
 #ifdef COUTDEBUG
 			std::cout << "allocate memory size: " << bufSize+1 << std::endl;
 #endif
 
 			if (!buf)
-				opt_fatal("unable to allocate memory for string processing");
+				Opt_Util::opt_fatal("unable to allocate memory for string processing");
 
 			j = 0;
 
@@ -205,16 +215,5 @@ namespace xcore
 			optAbortRun(); 
 		}
 
-		char* opt_strdup(char *s)
-		{
-			char *sdup;
-			s32 i,n;
-			n = x_strlen(s);
-			sdup = (char*)get_opt_allocator()->allocate(n+1, 4);
-			for (i=0; i<n; ++i)
-				sdup[i] = s[i];
-			sdup[n]='\0';
-			return sdup;
-		}
 	}
 }

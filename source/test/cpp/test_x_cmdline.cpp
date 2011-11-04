@@ -37,7 +37,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
  
  			c.clearRegisteredOption();
  
- 			xcmdline::opt_free();
+ 			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((s32)2011, year);
 			CHECK_EQUAL((s32)9, month);
@@ -55,7 +55,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((f32)3.14f, test);
 			CHECK_EQUAL((f32)12.352f, test2);
@@ -72,7 +72,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL('a', test);
 			CHECK_EQUAL('e', test2);
@@ -94,7 +94,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 
 
 			CHECK_FALSE(result1);
@@ -113,7 +113,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
   
   			c.clearRegisteredOption();
   
-  			xcmdline::opt_free();
+  			xcmdline::Opt_Reg::opt_free();
   
   			CHECK_FALSE(test);
   			CHECK_TRUE(test2);
@@ -124,9 +124,9 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			s32	   testHelp	=	0;
 
-			xcmdline::optrega(&testHelp,xcmdline::OPT_INT,'b',"testHelp","testHelp");
-			xcmdline::opthelp(&testHelp,"This is the testHelp help");
-			xcmdline::optVersion("1.0");
+			xcmdline::Opt_Reg::optrega(&testHelp,xcmdline::OPT_INT,'b',"testHelp","testHelp");
+			xcmdline::Opt_Reg::opthelp(&testHelp,"This is the testHelp help");
+			xcmdline::Opt_Reg::optVersion("1.0");
 
 			x_cmdline	c;
 			c.parse("--testHelp 325 --version ?b");
@@ -136,7 +136,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((s32)325, testHelp);
 		}
@@ -182,7 +182,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 		}
 	}
 }

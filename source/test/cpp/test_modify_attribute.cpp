@@ -31,28 +31,28 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			s16*	x	=	NULL;
 			s32    nx	=	0;
 
-			xcmdline::optrega_array(&nx,&x,xcmdline::OPT_SHORT,'x',"xarray","Array for test");
+			xcmdline::Opt_Reg::optrega_array(&nx,&x,xcmdline::OPT_SHORT,'x',"xarray","Array for test");
 			xbool boolVar	=	1;
 
 
 //			test the opthelp function
-			xcmdline::optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
-			xcmdline::opthelp(&boolVar,"This is the boolVar help");
+			xcmdline::Opt_Reg::optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
+			xcmdline::Opt_Reg::opthelp(&boolVar,"This is the boolVar help");
 
-			xcmdline::optreg(&longNameTest,xcmdline::OPT_INT,'l',"SetLongNameTest");
-			xcmdline::optlongname(&longNameTest,"longName");
+			xcmdline::Opt_Reg::optreg(&longNameTest,xcmdline::OPT_INT,'l',"SetLongNameTest");
+			xcmdline::Opt_Reg::optlongname(&longNameTest,"longName");
 
-			s32 n = xcmdline::optreg(&longNameTest_n,xcmdline::OPT_INT,'n',"SetLongNameTest_n");
-			xcmdline::optlongname_n(n,"nLongName");
+			s32 n = xcmdline::Opt_Reg::optreg(&longNameTest_n,xcmdline::OPT_INT,'n',"SetLongNameTest_n");
+			xcmdline::Opt_Reg::optlongname_n(n,"nLongName");
 
-			xcmdline::optregs(&shortNameTest,xcmdline::OPT_INT,"shortName");
-			xcmdline::optchar(&shortNameTest,'s');
+			xcmdline::Opt_Reg::optregs(&shortNameTest,xcmdline::OPT_INT,"shortName");
+			xcmdline::Opt_Reg::optchar(&shortNameTest,'s');
 
-			n = xcmdline::optregsb(&shortNameTest_n,xcmdline::OPT_INT,"shortName","SetShortNameTest_n");
-			xcmdline::optchar_n(n,'h');
+			n = xcmdline::Opt_Reg::optregsb(&shortNameTest_n,xcmdline::OPT_INT,"shortName","SetShortNameTest_n");
+			xcmdline::Opt_Reg::optchar_n(n,'h');
 
-			xcmdline::optrega(&testSwitch,xcmdline::OPT_INT,'t',"testSwitch","Just test the optMode");
-			xcmdline::optmode(&testSwitch,xcmdline::OPT_POSITIONAL);
+			xcmdline::Opt_Reg::optrega(&testSwitch,xcmdline::OPT_INT,'t',"testSwitch","Just test the optMode");
+			xcmdline::Opt_Reg::optmode(&testSwitch,xcmdline::OPT_POSITIONAL);
 
 
 			char*	argv[] =
@@ -76,8 +76,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_get_help('b');
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Proc::opt_get_help('b');
 			
 			CHECK_EQUAL(0, boolVar);
 			CHECK_EQUAL(100,longNameTest);
@@ -91,7 +91,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			CHECK_EQUAL(30,x[2]);
 			CHECK_EQUAL(1,testSwitch);
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 		}
 
 		s32	   desTest    =    0;
@@ -115,17 +115,17 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 		UNITTEST_TEST(test_des_hook)
 		{
-			xcmdline::optrega(&desTest,xcmdline::OPT_INT,'a',"desTest","Test the optdescript function");
-			xcmdline::optdescript(&desTest,"Modify desTest des");
+			xcmdline::Opt_Reg::optrega(&desTest,xcmdline::OPT_INT,'a',"desTest","Test the optdescript function");
+			xcmdline::Opt_Reg::optdescript(&desTest,"Modify desTest des");
 
-			s32 n = xcmdline::optrega(&desTest_n,xcmdline::OPT_INT,'b',"desTest_n","Test the optdescript_n function");
-			xcmdline::optdescript_n(n,"Modify desTest des_n");
+			s32 n = xcmdline::Opt_Reg::optrega(&desTest_n,xcmdline::OPT_INT,'b',"desTest_n","Test the optdescript_n function");
+			xcmdline::Opt_Reg::optdescript_n(n,"Modify desTest des_n");
 
-			xcmdline::optrega(&hookTest,xcmdline::OPT_INT,'c',"hookTest","Test opthook");
-			xcmdline::opthook(&hookTest,check);
+			xcmdline::Opt_Reg::optrega(&hookTest,xcmdline::OPT_INT,'c',"hookTest","Test opthook");
+			xcmdline::Opt_Reg::opthook(&hookTest,check);
 
-			n = xcmdline::optrega(&hookTest_n,xcmdline::OPT_INT,'d',"hookTest_n","Test opthook_n");
-			xcmdline::opthook_n(n,check);
+			n = xcmdline::Opt_Reg::optrega(&hookTest_n,xcmdline::OPT_INT,'d',"hookTest_n","Test opthook_n");
+			xcmdline::Opt_Reg::opthook_n(n,check);
 
 			char*	argv[] =
 			{
@@ -139,8 +139,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL(30,hookTest);
 			CHECK_EQUAL(20,hookTest_n);
@@ -157,16 +157,16 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 		{
 			s32    defaultTest    =    0;
 
-			xcmdline::optUsage("Message for optUsage");
-			xcmdline::optTitle("Test_setTitle");
-			xcmdline::optProgName("Test_setProgName");
-			xcmdline::optVersion("1.0");
-			xcmdline::optEnvVarName("OPT");
-			xcmdline::optDefaultString("?a");
-			xcmdline::optAdditionalUsage(MoreInfo);
+			xcmdline::Opt_Reg::optUsage("Message for optUsage");
+			xcmdline::Opt_Reg::optTitle("Test_setTitle");
+			xcmdline::Opt_Reg::optProgName("Test_setProgName");
+			xcmdline::Opt_Reg::optVersion("1.0");
+			xcmdline::Opt_Reg::optEnvVarName("OPT");
+			xcmdline::Opt_Reg::optDefaultString("?a");
+			xcmdline::Opt_Reg::optAdditionalUsage(MoreInfo);
 
-			xcmdline::optrega(&defaultTest,xcmdline::OPT_INT,'t',"defaultTest","Test the optDefualtString");
-			xcmdline::opthelp(&defaultTest,"Test the optDefualtString");
+			xcmdline::Opt_Reg::optrega(&defaultTest,xcmdline::OPT_INT,'t',"defaultTest","Test the optDefualtString");
+			xcmdline::Opt_Reg::opthelp(&defaultTest,"Test the optDefualtString");
 
 			char*	argv[] =
 			{
@@ -179,10 +179,10 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::optPrintUsage();
-			s32 n = xcmdline::optinvoked(&defaultTest);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Proc::optPrintUsage();
+			s32 n = xcmdline::Opt_Proc::optinvoked(&defaultTest);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL(1,n); 
 			CHECK_EQUAL(10,defaultTest);

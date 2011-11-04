@@ -2,6 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_p.h"
 
 #include "xunittest\xunittest.h"
 
@@ -41,20 +42,20 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 		} 
 		UNITTEST_TEST(full)
 		{	
-			xcmdline::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
- 			xcmdline::opthelp(&day,"Use day of month, should be less than 32");
+			xcmdline::Opt_Reg::optrega(&day,  xcmdline::OPT_INT, 'd', "day", "Day of month");
+ 			xcmdline::Opt_Reg::opthelp(&day,"Use day of month, should be less than 32");
 
-			xcmdline::optrega(&month,xcmdline::OPT_INT,'m',"month","Month");
-			xcmdline::opthook(&month,fix_mon);
+			xcmdline::Opt_Reg::optrega(&month,xcmdline::OPT_INT,'m',"month","Month");
+			xcmdline::Opt_Reg::opthook(&month,fix_mon);
 
-			xcmdline::optreg(&year,xcmdline::OPT_INT,'y',"Year...");
-			xcmdline::optreg(&year,xcmdline::OPT_INT,'Y',"Year");
-			xcmdline::optdescript(&year,"What Year");
-			xcmdline::opthook(&year,checkyear);
+			xcmdline::Opt_Reg::optreg(&year,xcmdline::OPT_INT,'y',"Year...");
+			xcmdline::Opt_Reg::optreg(&year,xcmdline::OPT_INT,'Y',"Year");
+			xcmdline::Opt_Reg::optdescript(&year,"What Year");
+			xcmdline::Opt_Reg::opthook(&year,checkyear);
 
-			xcmdline::optregs(&julian,xcmdline::OPT_BOOL,"julian");
+			xcmdline::Opt_Reg::optregs(&julian,xcmdline::OPT_BOOL,"julian");
 
-			xcmdline::optregp(&who,xcmdline::OPT_STRING,"who","Who to say hello to");
+			xcmdline::Opt_Reg::optregp(&who,xcmdline::OPT_STRING,"who","Who to say hello to");
 
 			char*	argv[] =
 			{
@@ -73,15 +74,15 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL(2011, year);
 			CHECK_EQUAL(12, month);
 			CHECK_EQUAL(30, day);
 			CHECK_NOT_NULL(who);
 
-			xcmdline::get_opt_allocator()->deallocate(who);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(who);
 		}
 	}
 }

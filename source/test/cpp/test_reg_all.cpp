@@ -2,6 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_p.h"
 
 #include "xunittest\xunittest.h"
 
@@ -28,14 +29,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg_all)
 			char   regsbTest	=	'a';
 			char*  regfTest		=	NULL;
 
-			xcmdline::optrega(&regaTest,xcmdline::OPT_INT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest,xcmdline::OPT_DOUBLE,'b',"optreg");
-			xcmdline::optregc(&regcTest,xcmdline::OPT_SHORT,'c');
-			xcmdline::optregcb(&regcbTest,xcmdline::OPT_LONG,'d',"optregcb");
-			xcmdline::optregs(&regsTest,xcmdline::OPT_FLOAT,"regs");
-			xcmdline::optregsb(&regsbTest,xcmdline::OPT_CHAR,"regsb","optregsb");
-			xcmdline::optregf(&regfTest,xcmdline::OPT_STRING,'e',"regf","optregf");
-			xcmdline::optregp(&posVar,xcmdline::OPT_STRING,"inputVar","Read data from txt");
+			xcmdline::Opt_Reg::optrega(&regaTest,xcmdline::OPT_INT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest,xcmdline::OPT_DOUBLE,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest,xcmdline::OPT_SHORT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest,xcmdline::OPT_LONG,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest,xcmdline::OPT_FLOAT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest,xcmdline::OPT_CHAR,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest,xcmdline::OPT_STRING,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&posVar,xcmdline::OPT_STRING,"inputVar","Read data from txt");
 
 			char*	argv[] =
 			{
@@ -56,8 +57,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg_all)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_NOT_NULL(posVar);
 			CHECK_EQUAL(10,regaTest);
@@ -67,8 +68,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg_all)
 			CHECK_EQUAL((f32)8.8f,regsTest);
 			CHECK_EQUAL('b',regsbTest);
 			CHECK_NOT_NULL(regfTest);
-			xcmdline::get_opt_allocator()->deallocate(posVar);
-			xcmdline::get_opt_allocator()->deallocate(regfTest);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(posVar);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regfTest);
 
 		}
 	}

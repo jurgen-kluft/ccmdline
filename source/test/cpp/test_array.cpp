@@ -2,6 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_p.h"
 
 #include "xunittest\xunittest.h"
 using namespace xcore;
@@ -18,7 +19,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 		UNITTEST_TEST(optrega_array)
 		{
 			s32 uArrayNum[6] = {0,0,0,0,0,0};
-			u8*		arrayU8			=	NULL;						
+			u8*   arrayU8			=	NULL;						
 			u16*	arrayU16		=	NULL;
 			u32*	arrayU32		=	NULL;
 			u64*	arrayU64		=	NULL;
@@ -36,17 +37,17 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 			s32 charArrayNum = 0;
 			xtchar* arrayXtchar	=	NULL;
 
-			optrega_array(	&uArrayNum[0],	&arrayU8,	OPT_UBYTE,	'c',	"ubyte",		"unsigned byte");
-			optrega_array(	&uArrayNum[1],	&arrayU16,	OPT_USHORT,	's',	"ushort",		"unsigned short");
-			optrega_array(	&uArrayNum[2],	&arrayU32,	OPT_UINT,	'i',	"uint",			"unsigned int");
-			optrega_array(	&uArrayNum[3],	&arrayU64,	OPT_ULONG,	'l',	"ulong",		"unsigned long");
-			optrega_array(	&sArrayNum[0],	&arrayS8,	OPT_BYTE,	'u',	"byte",			"signed byte");
-			optrega_array(	&sArrayNum[1],	&arrayS16,	OPT_SHORT,	'm',	"sshort",		"signed short");
-			optrega_array(	&sArrayNum[2],	&arrayS32,	OPT_INT,	'x',	"sint",			"signed int");
- 			optrega_array(	&sArrayNum[3],	&arrayS64,	OPT_LONG,	'b',	"slong",		"signed long");
-			optrega_array(	&fArrayNum[0],	&arrayf32,	OPT_FLOAT,	'f',	"float",		"float 32");
-			optrega_array(	&fArrayNum[1],	&arrayf64,	OPT_DOUBLE,	'd',	"double",		"double 64");
-			optrega_array(	&charArrayNum,	&arrayXtchar,OPT_CHAR,	'q',	"char",			"xtchar");
+			Opt_Reg::optrega_array(	&uArrayNum[0],	&arrayU8,	OPT_UBYTE,	'c',	"ubyte",		"unsigned byte");
+			Opt_Reg::optrega_array(	&uArrayNum[1],	&arrayU16,	OPT_USHORT,	's',	"ushort",		"unsigned short");
+			Opt_Reg::optrega_array(	&uArrayNum[2],	&arrayU32,	OPT_UINT,	'i',	"uint",			"unsigned int");
+			Opt_Reg::optrega_array(	&uArrayNum[3],	&arrayU64,	OPT_ULONG,	'l',	"ulong",		"unsigned long");
+			Opt_Reg::optrega_array(	&sArrayNum[0],	&arrayS8,	OPT_BYTE,	'u',	"byte",			"signed byte");
+			Opt_Reg::optrega_array(	&sArrayNum[1],	&arrayS16,	OPT_SHORT,	'm',	"sshort",		"signed short");
+			Opt_Reg::optrega_array(	&sArrayNum[2],	&arrayS32,	OPT_INT,	'x',	"sint",			"signed int");
+ 			Opt_Reg::optrega_array(	&sArrayNum[3],	&arrayS64,	OPT_LONG,	'b',	"slong",		"signed long");
+			Opt_Reg::optrega_array(	&fArrayNum[0],	&arrayf32,	OPT_FLOAT,	'f',	"float",		"float 32");
+			Opt_Reg::optrega_array(	&fArrayNum[1],	&arrayf64,	OPT_DOUBLE,	'd',	"double",		"double 64");
+			Opt_Reg::optrega_array(	&charArrayNum,	&arrayXtchar,OPT_CHAR,	'q',	"char",			"xtchar");
 			char*	argv[] =
 			{
 				"xcmdline_test_TestDebug_Win32",
@@ -77,7 +78,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 			xcore::s32 argc = sizeof(argv)/sizeof(char*);
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
+			xcmdline::Opt_Proc::opt(&argc, argvv);
 			
 
 			CHECK_EQUAL(2,uArrayNum[0]);
@@ -139,7 +140,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_array_register)
 			CHECK_EQUAL('t',arrayXtchar[1]);
 			CHECK_EQUAL('q',arrayXtchar[2]);
 
-			xcmdline::opt_free();
+			xcmdline::Opt_Reg::opt_free();
 /*
 *		Other functions like optregc_array just call the optrega_array and modify one parameter to NULL
 *		So we needn't to test these functions if we have tested the optrega_array

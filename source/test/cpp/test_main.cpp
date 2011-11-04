@@ -177,7 +177,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 
 	xcore::TestHeapAllocator libHeapAllocator(gSystemAllocator);
 	xcore::xstring::sSetAllocator(&libHeapAllocator);
-	xcore::xcmdline::set_opt_allocator(&libHeapAllocator);
+	xcore::xcmdline::Opt_Allocator::set_opt_allocator(&libHeapAllocator);
 	
 	int r = UNITTEST_SUITE_RUN(reporter, xCmdlineUnitTest);
 	if (unittestAllocator.mNumAllocations!=0)
@@ -191,7 +191,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 		r = -1;
 	}
 
-	xcore::xcmdline::set_opt_allocator(NULL);
+	xcore::xcmdline::Opt_Allocator::set_opt_allocator(NULL);
 	xcore::xstring::sSetAllocator(NULL);
 
 	UnitTest::SetAllocator(NULL);

@@ -2,6 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_p.h"
 
 #include "xunittest\xunittest.h"
 
@@ -31,14 +32,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			s32    regfTest_s32	   =	0;
 			s32    regpTest_s32	   =	0;
 
-			xcmdline::optrega(&regaTest_s32,xcmdline::OPT_INT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_s32,xcmdline::OPT_INT,'b',"optreg");
-			xcmdline::optregc(&regcTest_s32,xcmdline::OPT_INT,'c');
-			xcmdline::optregcb(&regcbTest_s32,xcmdline::OPT_INT,'d',"optregcb");
-			xcmdline::optregs(&regsTest_s32,xcmdline::OPT_INT,"regs");
-			xcmdline::optregsb(&regsbTest_s32,xcmdline::OPT_INT,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_s32,xcmdline::OPT_INT,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_s32,xcmdline::OPT_INT,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_s32,xcmdline::OPT_INT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_s32,xcmdline::OPT_INT,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_s32,xcmdline::OPT_INT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_s32,xcmdline::OPT_INT,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_s32,xcmdline::OPT_INT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_s32,xcmdline::OPT_INT,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_s32,xcmdline::OPT_INT,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_s32,xcmdline::OPT_INT,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -60,8 +61,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			//If we want to compare two values, we should convert them to the
 			//same type, or it may cause some dangerous bugs
@@ -91,14 +92,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			s64    regfTest_s64    =	0;
 			s64    regpTest_s64    =	0;
 
-			xcmdline::optrega(&regaTest_s64,xcmdline::OPT_LONG,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_s64,xcmdline::OPT_LONG,'b',"optreg");
-			xcmdline::optregc(&regcTest_s64,xcmdline::OPT_LONG,'c');
-			xcmdline::optregcb(&regcbTest_s64,xcmdline::OPT_LONG,'d',"optregcb");
-			xcmdline::optregs(&regsTest_s64,xcmdline::OPT_LONG,"regs");
-			xcmdline::optregsb(&regsbTest_s64,xcmdline::OPT_LONG,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_s64,xcmdline::OPT_LONG,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_s64,xcmdline::OPT_LONG,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_s64,xcmdline::OPT_LONG,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_s64,xcmdline::OPT_LONG,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_s64,xcmdline::OPT_LONG,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_s64,xcmdline::OPT_LONG,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_s64,xcmdline::OPT_LONG,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_s64,xcmdline::OPT_LONG,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_s64,xcmdline::OPT_LONG,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_s64,xcmdline::OPT_LONG,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -120,8 +121,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((s64)10,regaTest_s64);
 			CHECK_EQUAL((s64)8,regTest_s64);
@@ -147,14 +148,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			s16    regfTest_s16    =	0;
 			s16    regpTest_s16    =	0;
 
-			xcmdline::optrega(&regaTest_s16,xcmdline::OPT_SHORT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_s16,xcmdline::OPT_SHORT,'b',"optreg");
-			xcmdline::optregc(&regcTest_s16,xcmdline::OPT_SHORT,'c');
-			xcmdline::optregcb(&regcbTest_s16,xcmdline::OPT_SHORT,'d',"optregcb");
-			xcmdline::optregs(&regsTest_s16,xcmdline::OPT_SHORT,"regs");
-			xcmdline::optregsb(&regsbTest_s16,xcmdline::OPT_SHORT,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_s16,xcmdline::OPT_SHORT,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_s16,xcmdline::OPT_SHORT,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_s16,xcmdline::OPT_SHORT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_s16,xcmdline::OPT_SHORT,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_s16,xcmdline::OPT_SHORT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_s16,xcmdline::OPT_SHORT,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_s16,xcmdline::OPT_SHORT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_s16,xcmdline::OPT_SHORT,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_s16,xcmdline::OPT_SHORT,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_s16,xcmdline::OPT_SHORT,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -176,8 +177,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((s16)10,regaTest_s16);
 			CHECK_EQUAL((s16)8,regTest_s16);
@@ -203,14 +204,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			s8    regfTest_s8    =	0;
 			s8    regpTest_s8    =	0;
 
-			xcmdline::optrega(&regaTest_s8,xcmdline::OPT_BYTE,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_s8,xcmdline::OPT_BYTE,'b',"optreg");
-			xcmdline::optregc(&regcTest_s8,xcmdline::OPT_BYTE,'c');
-			xcmdline::optregcb(&regcbTest_s8,xcmdline::OPT_BYTE,'d',"optregcb");
-			xcmdline::optregs(&regsTest_s8,xcmdline::OPT_BYTE,"regs");
-			xcmdline::optregsb(&regsbTest_s8,xcmdline::OPT_BYTE,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_s8,xcmdline::OPT_BYTE,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_s8,xcmdline::OPT_BYTE,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_s8,xcmdline::OPT_BYTE,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_s8,xcmdline::OPT_BYTE,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_s8,xcmdline::OPT_BYTE,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_s8,xcmdline::OPT_BYTE,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_s8,xcmdline::OPT_BYTE,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_s8,xcmdline::OPT_BYTE,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_s8,xcmdline::OPT_BYTE,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_s8,xcmdline::OPT_BYTE,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -232,8 +233,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((s8)10,regaTest_s8);
 			CHECK_EQUAL((s8)8,regTest_s8);
@@ -259,14 +260,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			u16    regfTest_u16   =    0;
 			u16    regpTest_u16   =    0;
 
-			xcmdline::optrega(&regaTest_u16,xcmdline::OPT_USHORT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_u16,xcmdline::OPT_USHORT,'b',"optreg");
-			xcmdline::optregc(&regcTest_u16,xcmdline::OPT_USHORT,'c');
-			xcmdline::optregcb(&regcbTest_u16,xcmdline::OPT_USHORT,'d',"optregcb");
-			xcmdline::optregs(&regsTest_u16,xcmdline::OPT_USHORT,"regs");
-			xcmdline::optregsb(&regsbTest_u16,xcmdline::OPT_USHORT,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_u16,xcmdline::OPT_USHORT,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_u16,xcmdline::OPT_USHORT,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_u16,xcmdline::OPT_USHORT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_u16,xcmdline::OPT_USHORT,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_u16,xcmdline::OPT_USHORT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_u16,xcmdline::OPT_USHORT,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_u16,xcmdline::OPT_USHORT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_u16,xcmdline::OPT_USHORT,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_u16,xcmdline::OPT_USHORT,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_u16,xcmdline::OPT_USHORT,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -288,8 +289,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((u16)10,regaTest_u16);
 			CHECK_EQUAL((u16)8,regTest_u16);
@@ -315,14 +316,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			u32    regfTest_u32    =	0;
 			u32    regpTest_u32    =	0;
 
-			xcmdline::optrega(&regaTest_u32,xcmdline::OPT_UINT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_u32,xcmdline::OPT_UINT,'b',"optreg");
-			xcmdline::optregc(&regcTest_u32,xcmdline::OPT_UINT,'c');
-			xcmdline::optregcb(&regcbTest_u32,xcmdline::OPT_UINT,'d',"optregcb");
-			xcmdline::optregs(&regsTest_u32,xcmdline::OPT_UINT,"regs");
-			xcmdline::optregsb(&regsbTest_u32,xcmdline::OPT_UINT,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_u32,xcmdline::OPT_UINT,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_u32,xcmdline::OPT_UINT,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_u32,xcmdline::OPT_UINT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_u32,xcmdline::OPT_UINT,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_u32,xcmdline::OPT_UINT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_u32,xcmdline::OPT_UINT,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_u32,xcmdline::OPT_UINT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_u32,xcmdline::OPT_UINT,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_u32,xcmdline::OPT_UINT,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_u32,xcmdline::OPT_UINT,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -344,8 +345,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((u32)10,regaTest_u32);
 			CHECK_EQUAL((u32)8,regTest_u32);
@@ -371,14 +372,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			u64    regfTest_u64    =	0;
 			u64    regpTest_u64    =	0;
 
-			xcmdline::optrega(&regaTest_u64,xcmdline::OPT_ULONG,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_u64,xcmdline::OPT_ULONG,'b',"optreg");
-			xcmdline::optregc(&regcTest_u64,xcmdline::OPT_ULONG,'c');
-			xcmdline::optregcb(&regcbTest_u64,xcmdline::OPT_ULONG,'d',"optregcb");
-			xcmdline::optregs(&regsTest_u64,xcmdline::OPT_ULONG,"regs");
-			xcmdline::optregsb(&regsbTest_u64,xcmdline::OPT_ULONG,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_u64,xcmdline::OPT_ULONG,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_u64,xcmdline::OPT_ULONG,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_u64,xcmdline::OPT_ULONG,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_u64,xcmdline::OPT_ULONG,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_u64,xcmdline::OPT_ULONG,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_u64,xcmdline::OPT_ULONG,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_u64,xcmdline::OPT_ULONG,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_u64,xcmdline::OPT_ULONG,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_u64,xcmdline::OPT_ULONG,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_u64,xcmdline::OPT_ULONG,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -400,8 +401,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((u64)10,regaTest_u64);
 			CHECK_EQUAL((u64)8,regTest_u64);
@@ -426,14 +427,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			u8    regfTest_u8    =    0;
 			u8    regpTest_u8    =    0;
 
-			xcmdline::optrega(&regaTest_u8,xcmdline::OPT_UBYTE,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_u8,xcmdline::OPT_UBYTE,'b',"optreg");
-			xcmdline::optregc(&regcTest_u8,xcmdline::OPT_UBYTE,'c');
-			xcmdline::optregcb(&regcbTest_u8,xcmdline::OPT_UBYTE,'d',"optregcb");
-			xcmdline::optregs(&regsTest_u8,xcmdline::OPT_UBYTE,"regs");
-			xcmdline::optregsb(&regsbTest_u8,xcmdline::OPT_UBYTE,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_u8,xcmdline::OPT_UBYTE,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_u8,xcmdline::OPT_UBYTE,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_u8,xcmdline::OPT_UBYTE,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_u8,xcmdline::OPT_UBYTE,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_u8,xcmdline::OPT_UBYTE,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_u8,xcmdline::OPT_UBYTE,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_u8,xcmdline::OPT_UBYTE,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_u8,xcmdline::OPT_UBYTE,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_u8,xcmdline::OPT_UBYTE,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_u8,xcmdline::OPT_UBYTE,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -455,8 +456,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((u8)10,regaTest_u8);
 			CHECK_EQUAL((u8)8,regTest_u8);
@@ -481,14 +482,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			f32    regfTest_f32    =	0.0f;
 			f32    regpTest_f32    =	0.0f;
 
-			xcmdline::optrega(&regaTest_f32,xcmdline::OPT_FLOAT,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_f32,xcmdline::OPT_FLOAT,'b',"optreg");
-			xcmdline::optregc(&regcTest_f32,xcmdline::OPT_FLOAT,'c');
-			xcmdline::optregcb(&regcbTest_f32,xcmdline::OPT_FLOAT,'d',"optregcb");
-			xcmdline::optregs(&regsTest_f32,xcmdline::OPT_FLOAT,"regs");
-			xcmdline::optregsb(&regsbTest_f32,xcmdline::OPT_FLOAT,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_f32,xcmdline::OPT_FLOAT,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_f32,xcmdline::OPT_FLOAT,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_f32,xcmdline::OPT_FLOAT,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_f32,xcmdline::OPT_FLOAT,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_f32,xcmdline::OPT_FLOAT,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_f32,xcmdline::OPT_FLOAT,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_f32,xcmdline::OPT_FLOAT,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_f32,xcmdline::OPT_FLOAT,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_f32,xcmdline::OPT_FLOAT,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_f32,xcmdline::OPT_FLOAT,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -510,8 +511,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((f32)10.6f,regaTest_f32);
 			CHECK_EQUAL((f32)8.57f,regTest_f32);
@@ -536,14 +537,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			f64    regfTest_f64    =	0.0;
 			f64    regpTest_f64    =	0.0;
 
-			xcmdline::optrega(&regaTest_f64,xcmdline::OPT_DOUBLE,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_f64,xcmdline::OPT_DOUBLE,'b',"optreg");
-			xcmdline::optregc(&regcTest_f64,xcmdline::OPT_DOUBLE,'c');
-			xcmdline::optregcb(&regcbTest_f64,xcmdline::OPT_DOUBLE,'d',"optregcb");
-			xcmdline::optregs(&regsTest_f64,xcmdline::OPT_DOUBLE,"regs");
-			xcmdline::optregsb(&regsbTest_f64,xcmdline::OPT_DOUBLE,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_f64,xcmdline::OPT_DOUBLE,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_f64,xcmdline::OPT_DOUBLE,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_f64,xcmdline::OPT_DOUBLE,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_f64,xcmdline::OPT_DOUBLE,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_f64,xcmdline::OPT_DOUBLE,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_f64,xcmdline::OPT_DOUBLE,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_f64,xcmdline::OPT_DOUBLE,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_f64,xcmdline::OPT_DOUBLE,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_f64,xcmdline::OPT_DOUBLE,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_f64,xcmdline::OPT_DOUBLE,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -565,8 +566,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL((f64)10.6,regaTest_f64);
 			CHECK_EQUAL((f64)8.57,regTest_f64);
@@ -592,14 +593,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			xbool    regfTest_xbool    =	0;
 			xbool    regpTest_xbool    =	0;
 
-			xcmdline::optrega(&regaTest_xbool,xcmdline::OPT_BOOL,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_xbool,xcmdline::OPT_BOOL,'b',"optreg");
-			xcmdline::optregc(&regcTest_xbool,xcmdline::OPT_BOOL,'c');
-			xcmdline::optregcb(&regcbTest_xbool,xcmdline::OPT_BOOL,'d',"optregcb");
-			xcmdline::optregs(&regsTest_xbool,xcmdline::OPT_BOOL,"regs");
-			xcmdline::optregsb(&regsbTest_xbool,xcmdline::OPT_BOOL,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_xbool,xcmdline::OPT_BOOL,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_xbool,xcmdline::OPT_BOOL,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_xbool,xcmdline::OPT_BOOL,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_xbool,xcmdline::OPT_BOOL,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_xbool,xcmdline::OPT_BOOL,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_xbool,xcmdline::OPT_BOOL,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_xbool,xcmdline::OPT_BOOL,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_xbool,xcmdline::OPT_BOOL,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_xbool,xcmdline::OPT_BOOL,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_xbool,xcmdline::OPT_BOOL,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -619,8 +620,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_TRUE(regaTest_xbool);
 			CHECK_FALSE(regTest_xbool);
@@ -645,14 +646,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			xtchar    regfTest_xtchar    =  'a';
 			xtchar    regpTest_xtchar    =  'a';
 
-			xcmdline::optrega(&regaTest_xtchar,xcmdline::OPT_UCHAR,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_xtchar,xcmdline::OPT_UCHAR,'b',"optreg");
-			xcmdline::optregc(&regcTest_xtchar,xcmdline::OPT_UCHAR,'c');
-			xcmdline::optregcb(&regcbTest_xtchar,xcmdline::OPT_UCHAR,'d',"optregcb");
-			xcmdline::optregs(&regsTest_xtchar,xcmdline::OPT_UCHAR,"regs");
-			xcmdline::optregsb(&regsbTest_xtchar,xcmdline::OPT_UCHAR,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_xtchar,xcmdline::OPT_UCHAR,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_xtchar,xcmdline::OPT_UCHAR,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_xtchar,xcmdline::OPT_UCHAR,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_xtchar,xcmdline::OPT_UCHAR,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_xtchar,xcmdline::OPT_UCHAR,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_xtchar,xcmdline::OPT_UCHAR,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_xtchar,xcmdline::OPT_UCHAR,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_xtchar,xcmdline::OPT_UCHAR,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_xtchar,xcmdline::OPT_UCHAR,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_xtchar,xcmdline::OPT_UCHAR,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -672,8 +673,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_EQUAL('b',regaTest_xtchar);
 			CHECK_EQUAL('e',regTest_xtchar);
@@ -698,14 +699,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			char*    regfTest_char   =    NULL;
 			char*    regpTest_char   =	  NULL;
 
-			xcmdline::optrega(&regaTest_char,xcmdline::OPT_STRING,'a',"rega","optrega");
-			xcmdline::optreg(&regTest_char,xcmdline::OPT_STRING,'b',"optreg");
-			xcmdline::optregc(&regcTest_char,xcmdline::OPT_STRING,'c');
-			xcmdline::optregcb(&regcbTest_char,xcmdline::OPT_STRING,'d',"optregcb");
-			xcmdline::optregs(&regsTest_char,xcmdline::OPT_STRING,"regs");
-			xcmdline::optregsb(&regsbTest_char,xcmdline::OPT_STRING,"regsb","optregsb");
-			xcmdline::optregf(&regfTest_char,xcmdline::OPT_STRING,'e',"regf","optregf");
-			xcmdline::optregp(&regpTest_char,xcmdline::OPT_STRING,"regp","optregp");
+			xcmdline::Opt_Reg::optrega(&regaTest_char,xcmdline::OPT_STRING,'a',"rega","optrega");
+			xcmdline::Opt_Reg::optreg(&regTest_char,xcmdline::OPT_STRING,'b',"optreg");
+			xcmdline::Opt_Reg::optregc(&regcTest_char,xcmdline::OPT_STRING,'c');
+			xcmdline::Opt_Reg::optregcb(&regcbTest_char,xcmdline::OPT_STRING,'d',"optregcb");
+			xcmdline::Opt_Reg::optregs(&regsTest_char,xcmdline::OPT_STRING,"regs");
+			xcmdline::Opt_Reg::optregsb(&regsbTest_char,xcmdline::OPT_STRING,"regsb","optregsb");
+			xcmdline::Opt_Reg::optregf(&regfTest_char,xcmdline::OPT_STRING,'e',"regf","optregf");
+			xcmdline::Opt_Reg::optregp(&regpTest_char,xcmdline::OPT_STRING,"regp","optregp");
 
 			char*	argv[] =
 			{
@@ -725,8 +726,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::opt(&argc, argvv);
-			xcmdline::opt_free();
+			xcmdline::Opt_Proc::opt(&argc, argvv);
+			xcmdline::Opt_Reg::opt_free();
 
 			CHECK_NOT_NULL(regaTest_char);
 			CHECK_NOT_NULL(regTest_char);
@@ -737,14 +738,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg)
 			CHECK_NOT_NULL(regfTest_char);
 			CHECK_NULL(regpTest_char);
 
-			xcmdline::get_opt_allocator()->deallocate(regaTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regcTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regcbTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regsTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regsbTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regfTest_char);
-			xcmdline::get_opt_allocator()->deallocate(regpTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regaTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regcTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regcbTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regsTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regsbTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regfTest_char);
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regpTest_char);
 
 		}
 	}

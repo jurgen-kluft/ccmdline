@@ -12,7 +12,7 @@ namespace xcore
 		#define IsDigit(t) x_isdigit((s32)(t))
 		#define IsSign(t)  ((t)=='+' || (t)=='-')
 
-		s32 opt_isvalidnumber(char *t)
+		s32 Opt_Num::opt_isvalidnumber(char *t)
 		{
 			s32 status = OPT_NUM_VALID; /* innocent until proven guilty */
 
@@ -59,7 +59,7 @@ namespace xcore
 
 		/* return numeric value of string: basically a wrapper on atof() */
 
-		f64 opt_atof(char *s)
+		f64 Opt_Num::opt_atof(char *s)
 		{
 			s32 valid;
 			f64 x;
@@ -75,7 +75,7 @@ namespace xcore
 			}
 			return x;
 		}
-		s64 opt_atoi(char *s)
+		s64 Opt_Num::opt_atoi(char *s)
 		{
 			s32 valid;
 			s64 x;
@@ -93,7 +93,7 @@ namespace xcore
 			return x;
 		}
 
-		u64 opt_atou(char *s)
+		u64 Opt_Num::opt_atou(char *s)
 		{
 			s32 valid;
 			u64 x;

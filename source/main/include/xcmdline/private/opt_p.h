@@ -60,53 +60,77 @@ namespace xcore
 		/******************
 		 * Global variables
 		 */
-		extern	s32		opt_nreg;
-		extern  s32		opt_exit_number;
+
 
 		/*********************
 		 * Function Prototypes
 		 */
 
-		extern void			opt_get_help(char);
-		extern char			*optgetTitle(void);
-		extern s32			opt_char_number(char);
-		   
-		extern char			*optstrval(s32);
-		extern char			*optstrtyp(s32);
-		extern s32			opt_parse_positional(xargv *);
-		extern s32			opt_parse_delim(xargv *);
-		extern s32			opt_parse_longdelim(xargv *);
-
-		extern void			short_usage(void);
-		extern void			long_usage(void);
-
-  
 		#define OPT_NUM_VALID   0x1
 		#define OPT_NUM_FLOAT   0x2
 		#define OPT_NUM_NEG     0x4
 
-		extern f64			opt_atof(char *);
-		extern s64			opt_atoi(char *);
-		extern u64			opt_atou(char *);
-		extern s32			opt_isvalidnumber(char *);
-		extern void			opt_setstring(char **, char *);
-		extern char			*opt_justify(char* s, s32 width, s32 indent, s32 initial, char* prefix); 
+		class Opt_Util
+		{
+		public:
+			static void			opt_message(char *);
+			static void			opt_warning(char *);
+			static void			opt_fatal(char *);
+			static void			opt_setstring(char **, char *);
+			static char			*opt_justify(char* s, s32 width, s32 indent, s32 initial, char* prefix);
+		};
 
-		/* --------------- */
-		/* Process Options */
-		/* --------------- */
+		class Opt_Num
+		{
+		public:
+			static f64			    opt_atof(char *);
+			static s64				opt_atoi(char *);
+			static u64				opt_atou(char *);
+			static s32				opt_isvalidnumber(char *);
+		};
 
-		extern	char		*opt_program_name;
-		extern  OPT_PFI		opt_additional_usage_fcn; 
+		class Opt_Proc
+		{
+		public:
+			/* opt(&argc,&argv) is the main function call that does all the work.
+			* it processes the options on the command line, setting variables,
+			* calling hooks, etc. 
+			*/
+			static void			opt(s32 *,char ***);
 
-		extern  xargv		*opt_process(int,char **);
-		extern  char		*short_progname(char *);
-		extern  s32			opt_lineprocess(char *);
+			static void			opt_get_help(char);
+			static char		    *optgetTitle(void);
+			static s32				opt_char_number(char);
+			static char			*optstrval(s32);
+			static char			*optstrtyp(s32);
+			static s32				opt_parse_positional(xargv *);
+			static s32				opt_parse_delim(xargv *);
+			static s32				opt_parse_longdelim(xargv *);
+			static void			short_usage(void);
+			static void			long_usage(void);
 
-		extern	void		opt_help(char *);
-		extern	void		opt_usage(void);
-		extern  void		opt_readline_init(char *);
-		extern	void		opt_freestrings();
+			/* --------------- */
+			/* Process Options */
+			/* --------------- */
+			static  xargv			*opt_process(int,char **);
+			static  char			*short_progname(char *);
+			static  s32			opt_lineprocess(char *);
+			static  void			opt_help(char *);
+			static  void			opt_usage(void);
+			static  void			opt_readline_init(char *);
+			/* The following routines provide opt-related services that might
+			* be useful after opt() has been set up and run.
+			*/
+			/* optPrintusage() writes the opt usage message to stdout
+			*/
+			static  void			optPrintUsage();
+			/* optinvoked(&var) returns the number of times the option was invoked
+			* on the command line.  This function is not used in the registering
+			* stage, but is used during execution of the code to see whether or
+			* not a value was actually set (or if it's just using the default).
+			*/
+			static  s32			optinvoked(void *);
+		};
 
 		#define opt_mess_1(fmt,var1)                x_printf(fmt,x_va_list(x_va(var1)))
 		#define opt_mess_2(fmt,var1,var2)           x_printf(fmt,x_va_list(x_va(var1),x_va(var2)))
@@ -123,32 +147,31 @@ namespace xcore
 		#define opt_warn_1(fmt,var1) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_1(gstr,OPT_ERRMAXSTRLEN,fmt,var1); \
-				opt_warning(gstr); } while(0)
+				Opt_Util::opt_warning(gstr); } while(0)
 		#define opt_warn_2(fmt,var1,var2) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_2(gstr,OPT_ERRMAXSTRLEN,fmt,var1,var2); \
-			opt_warning(gstr); } while(0)
+			Opt_Util::opt_warning(gstr); } while(0)
 		#define opt_warn_3(fmt,var1,var2,var3) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_3(gstr,OPT_ERRMAXSTRLEN,fmt,var1,var2,var3); \
-			opt_warning(gstr); } while(0)
+			Opt_Util::opt_warning(gstr); } while(0)
 
 		#define opt_fatal_1(fmt,var1) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_1(gstr,OPT_ERRMAXSTRLEN,fmt,var1); \
-			opt_fatal(gstr); } while(0)
+			Opt_Util::opt_fatal(gstr); } while(0)
 		#define opt_fatal_2(fmt,var1,var2) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_2(gstr,OPT_ERRMAXSTRLEN,fmt,var1,var2); \
-			opt_fatal(gstr); } while(0)
+			Opt_Util::opt_fatal(gstr); } while(0)
 		#define opt_fatal_3(fmt,var1,var2,var3) do { \
 			char gstr[OPT_ERRMAXSTRLEN]; \
 				opt_snprintf_3(gstr,OPT_ERRMAXSTRLEN,fmt,var1,var2,var3); \
-			opt_fatal(gstr); } while(0)
+			Opt_Util::opt_fatal(gstr); } while(0)
 
-		#define OPT_FREE(s) do { if (s) { get_opt_allocator()->deallocate(s); s=NULL; } } while (0)
+		#define OPT_FREE(s) do { if (s) { Opt_Allocator::get_opt_allocator()->deallocate(s); s=NULL; } } while (0)
 
-		extern char* opt_strdup(char *s);
 	}
 };
 
