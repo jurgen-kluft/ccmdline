@@ -33,16 +33,10 @@
 #include "xbase\x_types.h"
 #include "xbase\x_string_std.h"
 
-#include "xcmdline\private\opt.h"
 #include "xcmdline\private\ag.h"
-#include "xcmdline\private\opt_p.h"
-
-//#define COUTDEBUG
-
-#ifdef COUTDEBUG
-#include <iostream>
-#endif
-
+#include "xcmdline\private\opt_proc.h"
+#include "xcmdline\private\opt_util.h"
+#include "xcmdline\private\opt_num.h"
 
 namespace xcore
 {
@@ -52,42 +46,47 @@ namespace xcore
 		* But, by #define'ing FLAG_ZERO_ONE, we will use 1 or 0 instead
 		*/
 
-#ifdef FLAG_ZERO_ONE
-#define FLAG_TRUE '1'
-#define FLAG_FALSE '0'        
-#else
-#define FLAG_TRUE '+'
-#define FLAG_FALSE '-'        
-#endif
+		#ifdef FLAG_ZERO_ONE
+			#define FLAG_TRUE '1'
+			#define FLAG_FALSE '0'        
+		#else
+			#define FLAG_TRUE '+'
+			#define FLAG_FALSE '-'        
+		#endif
 
-		s32				Opt_Reg::opt_exit_number=0;     /* if we have to exit(), then exit with this number.*/
-		Option_t *	Opt_Reg::optlist=NULL;             /* array of options */
-		s32				Opt_Reg::opt_nreg=0;                /* number of registered opts */
-		char				Opt_Reg::opt_array_delim=',';    /* the delimiter for arrays. (eads)*/
 
-		void	Opt_Reg::opt_free()
+		Opt_Proc::Opt_Proc()
+			: opt_exit_number(0)		//< if we have to exit(), then exit with this number
+			, optlist(NULL)				//< array of options
+			, opt_nreg(0)				//< number of registered opts
+			, opt_array_delim(',')		//< the delimiter for arrays. (eads)*/
 		{
-			s32 i;
-			for (i=0; i<Opt_Reg::opt_nreg; ++i) 
-			{
-				OPT_FREE(Opt_Reg::optlist[i].longname);
-				OPT_FREE(Opt_Reg::optlist[i].help);
-				OPT_FREE(Opt_Reg::optlist[i].descript);
-				if (Opt_Reg::optlist[i].array && Opt_Reg::optlist[i].type == OPT_STRING)
-				{
-					char *s = *((char **)(Opt_Reg::optlist[i].value));
-					OPT_FREE(s);
-					OPT_FREE(Opt_Reg::optlist[i].value);
-					OPT_FREE(*(Opt_Reg::optlist[i].array->value));
-				}
-				OPT_FREE(Opt_Reg::optlist[i].array);
-			}
-			OPT_FREE(Opt_Reg::optlist);
-			opt_freestrings();
-			Opt_Reg::opt_nreg=0;
+
 		}
 
-		char*	Opt_Reg::optarray_getstrval( s32 size, void *val, opt_TYPE otype, char delim )
+		void	Opt_Proc::opt_free()
+		{
+			s32 i;
+			for (i=0; i<opt_nreg; ++i) 
+			{
+				OPT_FREE(optlist[i].longname);
+				OPT_FREE(optlist[i].help);
+				OPT_FREE(optlist[i].descript);
+				if (optlist[i].array && optlist[i].type == OPT_STRING)
+				{
+					char *s = *((char **)(optlist[i].value));
+					OPT_FREE(s);
+					OPT_FREE(optlist[i].value);
+					OPT_FREE(*(optlist[i].array->value));
+				}
+				OPT_FREE(optlist[i].array);
+			}
+			OPT_FREE(optlist);
+			opt_freestrings();
+			opt_nreg=0;
+		}
+
+		char*	Opt_Proc::optarray_getstrval( s32 size, void *val, opt_TYPE otype, char delim )
 		{
 			s32 n;
 			s32 len=0;
@@ -145,7 +144,7 @@ namespace xcore
 		/* Added by: Damian Eads <dre9227@cs.rit.edu>  */
 		/* ------------------------------------------- */
 
-		s32	Opt_Reg::optrega_array(  s32 *size, void *val, opt_TYPE otype, char name, char *longname, char *descript )
+		s32	Opt_Proc::optrega_array(  s32 *size, void *val, opt_TYPE otype, char name, char *longname, char *descript )
 		{
 #if 0  
 			static char **str_val_array=NULL;
@@ -160,7 +159,7 @@ namespace xcore
 #else
 			char **s = (char **)Opt_Allocator::get_opt_allocator()->allocate(sizeof(char *), 4);
 			*s = optarray_getstrval(*size,val,otype,opt_array_delim);
-			Opt_Reg::optrega( s, OPT_STRING, name, longname, descript );
+			optrega( s, OPT_STRING, name, longname, descript );
 #endif     
 
 			/* Warn if inappropriate base_type is specified */
@@ -190,7 +189,7 @@ namespace xcore
 			case OPT_NEGTOGGLE:
 			case OPT_NEGBOOL:
 			case OPT_NUL:
-				opt_warn_1("Undefined behavior for %s array",Opt_Proc::optstrtyp(Opt_Reg::opt_nreg-1));
+				opt_warn_1("Undefined behavior for %s array", optstrtyp(opt_nreg-1));
 				break;
 
 			default:
@@ -199,47 +198,47 @@ namespace xcore
 			}
 
 			/* Allocate an OptArray_t structure */
-			Opt_Reg::optlist[ Opt_Reg::opt_nreg-1 ].array = (OptArray_t *)Opt_Allocator::get_opt_allocator()->allocate(sizeof(OptArray_t), 4);
+			optlist[ opt_nreg-1 ].array = (OptArray_t *)Opt_Allocator::get_opt_allocator()->allocate(sizeof(OptArray_t), 4);
 
 			/* Then add array-specific information to the registered option */
-			Opt_Reg::optlist[ Opt_Reg::opt_nreg-1 ].array->value     = (void **)val;
-			Opt_Reg::optlist[ Opt_Reg::opt_nreg-1 ].array->size      = size;
-			Opt_Reg::optlist[ Opt_Reg::opt_nreg-1 ].array->base_type = otype;
-			Opt_Reg::optlist[ Opt_Reg::opt_nreg-1 ].array->delim     = opt_array_delim;
+			optlist[ opt_nreg-1 ].array->value     = (void **)val;
+			optlist[ opt_nreg-1 ].array->size      = size;
+			optlist[ opt_nreg-1 ].array->base_type = otype;
+			optlist[ opt_nreg-1 ].array->delim     = opt_array_delim;
 
-			return Opt_Reg::opt_nreg-1;
+			return opt_nreg-1;
 		}
 
-		s32 Opt_Reg::optreg_array( s32 *size, void *val, opt_TYPE otype, char name, char *descript )
+		s32 Opt_Proc::optreg_array( s32 *size, void *val, opt_TYPE otype, char name, char *descript )
 		{
-			return Opt_Reg::optrega_array(size,val,otype,name,NULL,descript);
+			return optrega_array(size,val,otype,name,NULL,descript);
 		}
-		s32 Opt_Reg::optregc_array( s32 *size, void *val, opt_TYPE otype, char name ) 
+		s32 Opt_Proc::optregc_array( s32 *size, void *val, opt_TYPE otype, char name ) 
 		{
-			return Opt_Reg::optrega_array(size,val,otype,name,NULL,NULL);
+			return optrega_array(size,val,otype,name,NULL,NULL);
 		}
-		s32 Opt_Reg::optregcb_array( s32 *size, void *val, opt_TYPE otype, char name, char *descript )
+		s32 Opt_Proc::optregcb_array( s32 *size, void *val, opt_TYPE otype, char name, char *descript )
 		{
-			return Opt_Reg::optrega_array(size,val,otype,name,NULL,descript);
+			return optrega_array(size,val,otype,name,NULL,descript);
 		}
-		s32 Opt_Reg::optregs_array( s32 *size, void *val, opt_TYPE otype, char *longname ) 
+		s32 Opt_Proc::optregs_array( s32 *size, void *val, opt_TYPE otype, char *longname ) 
 		{
-			return Opt_Reg::optrega_array(size,val,otype,'\0',longname,longname);
+			return optrega_array(size,val,otype,'\0',longname,longname);
 		}
-		s32 Opt_Reg::optregsb_array( s32 *size, void *val, opt_TYPE otype, char *longname, char *descript)
+		s32 Opt_Proc::optregsb_array( s32 *size, void *val, opt_TYPE otype, char *longname, char *descript)
 		{
-			return Opt_Reg::optrega_array(size,val,otype,'\0',longname,descript);
+			return optrega_array(size,val,otype,'\0',longname,descript);
 		}
-		s32 Opt_Reg::optregp_array( s32 *size, void *val, opt_TYPE otype, char* longname, char* descript)
+		s32 Opt_Proc::optregp_array( s32 *size, void *val, opt_TYPE otype, char* longname, char* descript)
 		{
-			s32 n = Opt_Reg::optrega_array(size,val,otype,'\0',longname,descript);
-			Opt_Reg::optmode_n(n, OPT_POSITIONAL);
+			s32 n = optrega_array(size,val,otype,'\0',longname,descript);
+			optmode_n(n, OPT_POSITIONAL);
 			return n;
 		}
-		s32 Opt_Reg::optregf_array( s32 *size, void *val, opt_TYPE otype, char name, char* longname, char* descript) 
+		s32 Opt_Proc::optregf_array( s32 *size, void *val, opt_TYPE otype, char name, char* longname, char* descript) 
 		{
-			s32 n = Opt_Reg::optrega_array(size,val,otype,name,longname,descript);
-			Opt_Reg::optmode_n(n, OPT_FLEXIBLE);
+			s32 n = optrega_array(size,val,otype,name,longname,descript);
+			optmode_n(n, OPT_FLEXIBLE);
 			return n;
 		}
 
@@ -248,52 +247,52 @@ namespace xcore
 		/* Routine to register each option */
 		/* ------------------------------- */
 
-		s32 Opt_Reg::optreg(void *val, opt_TYPE otype, char name, char *descript) 
+		s32 Opt_Proc::optreg(void *val, opt_TYPE otype, char name, char *descript) 
 		{
-			return Opt_Reg::optrega(val,otype,name,NULL,descript);
+			return optrega(val,otype,name,NULL,descript);
 		}
-		s32 Opt_Reg::optregc(void *val, opt_TYPE otype, char name) 
+		s32 Opt_Proc::optregc(void *val, opt_TYPE otype, char name) 
 		{
-			return Opt_Reg::optrega(val,otype,name,NULL,NULL);
+			return optrega(val,otype,name,NULL,NULL);
 		}
-		s32 Opt_Reg::optregcb(void *val, opt_TYPE otype, char name, char *descript) 
+		s32 Opt_Proc::optregcb(void *val, opt_TYPE otype, char name, char *descript) 
 		{
-			return Opt_Reg::optrega(val,otype,name,NULL,descript);
+			return optrega(val,otype,name,NULL,descript);
 		}
-		s32 Opt_Reg::optregs(void *val, opt_TYPE otype, char *longname) 
+		s32 Opt_Proc::optregs(void *val, opt_TYPE otype, char *longname) 
 		{
-			return Opt_Reg::optrega(val,otype,'\0',longname,longname);
+			return optrega(val,otype,'\0',longname,longname);
 		}
-		s32 Opt_Reg::optregsb(void *val, opt_TYPE otype, char *longname, char *descript)
+		s32 Opt_Proc::optregsb(void *val, opt_TYPE otype, char *longname, char *descript)
 		{
-			return Opt_Reg::optrega(val,otype,'\0',longname,descript);
+			return optrega(val,otype,'\0',longname,descript);
 		}
-		s32 Opt_Reg::optregp(void *val, opt_TYPE otype, char* longname, char* descript) 
+		s32 Opt_Proc::optregp(void *val, opt_TYPE otype, char* longname, char* descript) 
 		{
-			s32 n = Opt_Reg::optrega(val, otype, '\0', longname, descript);
-			Opt_Reg::optmode_n(n, OPT_POSITIONAL);
+			s32 n = optrega(val, otype, '\0', longname, descript);
+			optmode_n(n, OPT_POSITIONAL);
 			return n;
 		}
-		s32 Opt_Reg::optregf(void *val, opt_TYPE otype, char name, char* longname, char* descript)
+		s32 Opt_Proc::optregf(void *val, opt_TYPE otype, char name, char* longname, char* descript)
 		{
-			s32 n = Opt_Reg::optrega(val, otype, name, longname, descript);
-			Opt_Reg::optmode_n(n, OPT_FLEXIBLE);
+			s32 n = optrega(val, otype, name, longname, descript);
+			optmode_n(n, OPT_FLEXIBLE);
 			return n;
 		}
-		s32 Opt_Reg::optexec(char *longname, OPT_HOOK fcn, char *descript)
+		s32 Opt_Proc::optexec(char *longname, OPT_HOOK fcn, char *descript)
 		{
 			s32 n;
-			n = Opt_Reg::optrega(NULL,OPT_NUL,'\0',longname,descript);
-			Opt_Reg::opthook_n(n,fcn);
+			n = optrega(NULL,OPT_NUL,'\0',longname,descript);
+			opthook_n(n,fcn);
 			return n;
 		}
 
-		s32	Opt_Reg::optrega(void *val, opt_TYPE otype, char name, char *longname, char *descript)
+		s32	Opt_Proc::optrega(void *val, opt_TYPE otype, char name, char *longname, char *descript)
 		{
 			opt_MODE mode = OPT_DELIMITED;
 
 			/* write a warning if that option name has been used before */
-			if( name != '\0' && Opt_Proc::opt_char_number(name) != -1 )
+			if( name != '\0' && opt_char_number(name) != -1 )
 			{
 				opt_warn_1("optrega: Duplicate option name \'%c\'",name);
 			}
@@ -355,158 +354,158 @@ namespace xcore
 			}
 
 			/* reallocate another struct for the new opt */
-			++Opt_Reg::opt_nreg;
-			if (Opt_Reg::optlist == NULL)
-				Opt_Reg::optlist = (Option_t *)Opt_Allocator::get_opt_allocator()->allocate(Opt_Reg::opt_nreg*sizeof(Option_t), 4);
+			++opt_nreg;
+			if (optlist == NULL)
+				optlist = (Option_t *)Opt_Allocator::get_opt_allocator()->allocate(opt_nreg*sizeof(Option_t), 4);
 			else
-				Opt_Reg::optlist = (Option_t *)Opt_Allocator::get_opt_allocator()->reallocate(Opt_Reg::optlist, Opt_Reg::opt_nreg*sizeof(Option_t), 4);
+				optlist = (Option_t *)Opt_Allocator::get_opt_allocator()->reallocate(optlist, opt_nreg*sizeof(Option_t), 4);
 
 			/* Having checked for various warnings, now register the options */
 
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].value         = val;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].type          = otype;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].name          = name;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].longname      = longname ? Opt_Allocator::opt_strdup(longname) : NULL;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].mode          = mode;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].descript      = descript ? Opt_Allocator::opt_strdup(descript) : NULL;
+			optlist[opt_nreg-1].value         = val;
+			optlist[opt_nreg-1].type          = otype;
+			optlist[opt_nreg-1].name          = name;
+			optlist[opt_nreg-1].longname      = longname ? Opt_Allocator::opt_strdup(longname) : NULL;
+			optlist[opt_nreg-1].mode          = mode;
+			optlist[opt_nreg-1].descript      = descript ? Opt_Allocator::opt_strdup(descript) : NULL;
 
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].invoked       = 0;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].help          = NULL;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].hook          = NULL;
-			Opt_Reg::optlist[Opt_Reg::opt_nreg-1].array         = NULL;
+			optlist[opt_nreg-1].invoked       = 0;
+			optlist[opt_nreg-1].help          = NULL;
+			optlist[opt_nreg-1].hook          = NULL;
+			optlist[opt_nreg-1].array         = NULL;
 
-			return Opt_Reg::opt_nreg-1;
+			return opt_nreg-1;
 
 		}
 
-		void Opt_Reg::optchar_n(s32 n, char name)
+		void Opt_Proc::optchar_n(s32 n, char name)
 		{
 			if (OPT_isvalidnum(n)) 
-				Opt_Reg::optlist[n].name = name;
+				optlist[n].name = name;
 		}    
-		void Opt_Reg::optmode_n(s32 n, opt_MODE mode)
+		void Opt_Proc::optmode_n(s32 n, opt_MODE mode)
 		{
 			if (OPT_isvalidnum(n))
 			{
 				if (!(mode == OPT_POSITIONAL || mode == OPT_DELIMITED || mode == OPT_FLEXIBLE))
 					Opt_Util::opt_warning("optmode() was passed an invalid mode");
-				Opt_Reg::optlist[n].mode = mode;
+				optlist[n].mode = mode;
 			}
 		}
-		void Opt_Reg::optdescript_n(s32 n, char *descript)
+		void Opt_Proc::optdescript_n(s32 n, char *descript)
 		{
 			if (OPT_isvalidnum(n))
-				Opt_Util::opt_setstring(&Opt_Reg::optlist[n].descript,descript);
+				Opt_Util::opt_setstring(&optlist[n].descript,descript);
 		}
-		void Opt_Reg::opthelp_n(s32 n, char *help)
+		void Opt_Proc::opthelp_n(s32 n, char *help)
 		{
 			if (OPT_isvalidnum(n)) 
-				Opt_Util::opt_setstring(&Opt_Reg::optlist[n].help,help);
+				Opt_Util::opt_setstring(&optlist[n].help,help);
 		}
-		void Opt_Reg::optlongname_n(s32 n, char *longname)
+		void Opt_Proc::optlongname_n(s32 n, char *longname)
 		{
 			if (OPT_isvalidnum(n)) 
-				Opt_Util::opt_setstring(&Opt_Reg::optlist[n].longname,longname);
+				Opt_Util::opt_setstring(&optlist[n].longname,longname);
 		}
-		void Opt_Reg::opthook_n(s32 n, OPT_HOOK hook)
+		void Opt_Proc::opthook_n(s32 n, OPT_HOOK hook)
 		{
 			if (OPT_isvalidnum(n)) 
-				Opt_Reg::optlist[n].hook = hook;
+				optlist[n].hook = hook;
 		}
-		s32 Opt_Reg::optinvoked_n(s32 n)
+		s32 Opt_Proc::optinvoked_n(s32 n)
 		{
 			if (OPT_isvalidnum(n))
 				return optlist[n].invoked;
 			return 0;
 		}
 
-		void Opt_Reg::optchar(void *v,  char name) 
+		void Opt_Proc::optchar(void *v,  char name) 
 		{ 
-			Opt_Reg::optchar_n( opt_number(v),   name ); 
+			optchar_n( opt_number(v),   name ); 
 		}
-		void Opt_Reg::opthelp(void *v,  char *help) 
+		void Opt_Proc::opthelp(void *v,  char *help) 
 		{ 
-			Opt_Reg::opthelp_n( opt_number(v),  help ); 
+			opthelp_n( opt_number(v),  help ); 
 		}
-		void Opt_Reg::opthook(void *v,  OPT_HOOK hook)
+		void Opt_Proc::opthook(void *v,  OPT_HOOK hook)
 		{
-			Opt_Reg::opthook_n( opt_number(v), hook ); 
+			opthook_n( opt_number(v), hook ); 
 		}      
-		void Opt_Reg::optlongname(void *v, char *longname)
+		void Opt_Proc::optlongname(void *v, char *longname)
 		{
-			Opt_Reg::optlongname_n( opt_number(v), longname );
+			optlongname_n( opt_number(v), longname );
 		}
-		void Opt_Reg::optmode(void* v, opt_MODE mode) 
+		void Opt_Proc::optmode(void* v, opt_MODE mode) 
 		{
-			Opt_Reg::optmode_n( opt_number(v), mode );
+			optmode_n( opt_number(v), mode );
 		}
-		void Opt_Reg::optdescript(void *v, char *descript)
+		void Opt_Proc::optdescript(void *v, char *descript)
 		{
-			Opt_Reg::optdescript_n( opt_number(v), descript );
+			optdescript_n( opt_number(v), descript );
 		}
-		void Opt_Reg::optarraydelim_n(s32 n, char delim)
+		void Opt_Proc::optarraydelim_n(s32 n, char delim)
 		{
-			if (OPT_isvalidnum(n) && Opt_Reg::optlist[n].array)
+			if (OPT_isvalidnum(n) && optlist[n].array)
 			{
-				if (Opt_Reg::optlist[n].array->delim != delim)
+				if (optlist[n].array->delim != delim)
 				{
-					Opt_Reg::optlist[n].array->delim = delim;
-					if (*(Opt_Reg::optlist[n].array->size) > 0)
+					optlist[n].array->delim = delim;
+					if (*(optlist[n].array->size) > 0)
 					{
-						OPT_SET_ITH_VALUE(char *,n, optarray_getstrval(*(Opt_Reg::optlist[n].array->size), Opt_Reg::optlist[n].array->value, Opt_Reg::optlist[n].array->base_type, Opt_Reg::optlist[n].array->delim));
+						OPT_SET_ITH_VALUE(char *,n, optarray_getstrval(*(optlist[n].array->size), optlist[n].array->value, optlist[n].array->base_type, optlist[n].array->delim));
 					}
 
 				}
 			}
 		}  
-		void Opt_Reg::optarraydelim(void *v, char delim)
+		void Opt_Proc::optarraydelim(void *v, char delim)
 		{
 			s32 n;
 			if (v == NULL) 
 			{
 				/* then reset default array delim and all opt delims*/
 				opt_array_delim = delim;
-				for (n=0; n<Opt_Reg::opt_nreg; ++n)
+				for (n=0; n<opt_nreg; ++n)
 				{
-					Opt_Reg::optarraydelim_n(n,delim);
+					optarraydelim_n(n,delim);
 				}
 			}
 			else 
 			{
 				/* just reset for the specific option */
 				n = opt_number(v);
-				Opt_Reg::optarraydelim_n(n,delim);
+				optarraydelim_n(n,delim);
 			}
 		}
 
-		void  Opt_Reg::optExitNumber(s32 n)
+		void  Opt_Proc::optExitNumber(s32 n)
 		{
-			Opt_Reg::opt_exit_number = n;
+			opt_exit_number = n;
 		}
 
-		s32	Opt_Reg::opt_number(void *v)
+		s32	Opt_Proc::opt_number(void *v)
 		{
 			s32 i;                         /* see which registered option */
-			for(i=0; i<Opt_Reg::opt_nreg; ++i) 
+			for(i=0; i<opt_nreg; ++i) 
 			{
-				if (Opt_Reg::optlist[i].array && v == Opt_Reg::optlist[i].array->value)
+				if (optlist[i].array && v == optlist[i].array->value)
 					return i;
-				if (!Opt_Reg::optlist[i].array && v == Opt_Reg::optlist[i].value ) 
+				if (!optlist[i].array && v == optlist[i].value ) 
 					return i;
 			}
 			return -1;                     /* to signify not an option */
 		}
-		s32	Opt_Reg::opt_longname_number(char *s)
+		s32	Opt_Proc::opt_longname_number(char *s)
 		{
 			s32 i;                         /* see which registered option */
 			if ( ISEMPTYSTRING(s) )
 				return -1;
 
-			for(i=0; i<Opt_Reg::opt_nreg; ++i)
+			for(i=0; i<opt_nreg; ++i)
 			{
-				if ( !ISEMPTYSTRING(Opt_Reg::optlist[i].longname) ) 
+				if ( !ISEMPTYSTRING(optlist[i].longname) ) 
 				{
-					if (0==x_strcmp(s, Opt_Reg::optlist[i].longname)) 
+					if (0==x_strcmp(s, optlist[i].longname)) 
 					{
 						return i;
 					}
@@ -520,7 +519,7 @@ namespace xcore
 		/* without specifying an index. (eads)          */
 		/* -------------------------------------------- */
 
-		char*	Opt_Reg::opt_getstrval( void *val, opt_TYPE typ )
+		char*	Opt_Proc::opt_getstrval( void *val, opt_TYPE typ )
 		{
 			s32 maybe;
 			static char stval_buf[80];
@@ -613,7 +612,7 @@ namespace xcore
 			return stval_buf;
 		}/* opt_getstrval */
 
-		s32	Opt_Reg::optsizeof( opt_TYPE typ )
+		s32	Opt_Proc::optsizeof( opt_TYPE typ )
 		{
 			s32 retval=0;
 
@@ -701,7 +700,7 @@ namespace xcore
 
 
 
-		void Opt_Reg::opt_setvalue(void *v, opt_TYPE o, char *s)
+		void Opt_Proc::opt_setvalue(void *v, opt_TYPE o, char *s)
 		{
 			switch(o)
 			{
@@ -753,7 +752,7 @@ namespace xcore
 			}
 		}
 
-		void Opt_Reg::optarray_action(OptArray_t *arr, char *stmp)
+		void Opt_Proc::optarray_action(OptArray_t *arr, char *stmp)
 		{
 			char *s = Opt_Allocator::opt_strdup(stmp);
 			char *t = s;
@@ -808,7 +807,7 @@ namespace xcore
 				/* v points to the next element in the array */
 				v = (char *)(*(arr->value)) + (*(arr->size)-1)*optsizeof(arr->base_type);
 				/* set the value of v according to the string t */
-				Opt_Reg::opt_setvalue(v,arr->base_type,t);
+				opt_setvalue(v,arr->base_type,t);
 				/* now go to the next word */
 				if (cu)
 					t = u+1;
@@ -818,7 +817,7 @@ namespace xcore
 			Opt_Allocator::get_opt_allocator()->deallocate(s);
 		}
 
-		s32 Opt_Reg::opt_action(s32 i, xargv *ag)
+		s32 Opt_Proc::opt_action(s32 i, xargv *ag)
 		{
 			/* ------------- */
 			/* act on option */
@@ -834,7 +833,7 @@ namespace xcore
 				return 0; /* failure */
 			}
 
-			switch( o=Opt_Reg::optlist[i].type ) 
+			switch( o=optlist[i].type ) 
 			{
 			case OPT_INT:
 			case OPT_UINT:
@@ -850,7 +849,7 @@ namespace xcore
 			case OPT_ULONG:
 			case OPT_FLOAT:
 			case OPT_DOUBLE:
-				Opt_Reg::opt_setvalue(Opt_Reg::optlist[i].value,o,Ag_Func::argnext(ag));
+				opt_setvalue(optlist[i].value,o,Ag_Func::argnext(ag));
 				break;
 			case OPT_CHAR:
 //				OPT_SET_ITH_VALUE(char,i,ag_c_advance(ag));
@@ -947,7 +946,7 @@ namespace xcore
 
 			case OPT_STRING:
 				s = Ag_Func::argnext(ag);
-				if (optinvoked_n(i) && Opt_Reg::optlist[i].value != NULL)
+				if (optinvoked_n(i) && optlist[i].value != NULL)
 				{
 					/* if this option has been invoked before, then we can be
 					* confident that it can be safely freed, before reassigning
@@ -956,15 +955,15 @@ namespace xcore
 #if 0
 					fprintf(stderr,"invoked opt[%d] for %d times:s=%s\n",i,optinvoked_n(i),s);
 #endif          
-					Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(Opt_Reg::optlist[i].value)));
+					Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(optlist[i].value)));
 				}
 				OPT_SET_ITH_VALUE(char *,i, Opt_Allocator::opt_strdup(s));
 				
 
 				/* If this type is really an array, then act accordingly */
-				if (Opt_Reg::optlist[i].array) 
+				if (optlist[i].array) 
 				{
-					optarray_action(Opt_Reg::optlist[i].array,s);
+					optarray_action(optlist[i].array,s);
 				}
 				break;
 
@@ -977,13 +976,13 @@ namespace xcore
 			}
 
 			/* Indicate that the option was invoked */
-			Opt_Reg::optlist[i].invoked += 1;
+			optlist[i].invoked += 1;
 
 			/* Run the hook if its defined */
-			if (Opt_Reg::optlist[i].hook) 
+			if (optlist[i].hook) 
 			{
 				s32 retval;
-				retval = Opt_Reg::optlist[i].hook(Opt_Reg::optlist[i].value);
+				retval = optlist[i].hook(optlist[i].value);
 
 				if (retval == OPT_ERROR) 
 				{
@@ -1001,10 +1000,10 @@ namespace xcore
 			return 1;                  /* success */
 		}
 
-		static char *optquotedstrtyp(s32 i)
+		char*	Opt_Proc::optquotedstrtyp(s32 i)
 		{
 			char *s,*ss;
-			ss = s = Opt_Proc::optstrtyp(i);
+			ss = s = optstrtyp(i);
 			while (*s) 
 			{
 				if (*s == '<') 

@@ -2,7 +2,8 @@
 
 #include "xcmdline\private\opt.h"
 #include "xcmdline\private\ag.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_util.h"
+#include "xcmdline\private\opt_num.h"
 
 namespace xcore
 {
@@ -16,7 +17,7 @@ namespace xcore
 		{
 			s32 status = OPT_NUM_VALID; /* innocent until proven guilty */
 
-			if (!t) return FALSE;       /* null string is not a number */
+			if (!t) return xFALSE;       /* null string is not a number */
 
 			while( *t != '\0' && IsSpace(*t) ) ++t;   /* leading white space */
 
@@ -26,7 +27,7 @@ namespace xcore
 				++t;  
 			}
 
-			if   (*t=='e' || *t=='E' ) return FALSE;  /* 'e5' not allowed! */
+			if   (*t=='e' || *t=='E' ) return xFALSE;  /* 'e5' not allowed! */
 
 			while( *t != '\0' && IsDigit(*t) ) ++t;   /* many digits */
 			if   ( *t != '\0' && ( *t=='.' ) ) 
@@ -40,7 +41,7 @@ namespace xcore
 			if   (*t=='e' || *t=='E' )
 			{
 				++t;
-				if ( *t == '\0' ) return FALSE;  /* '5e' isn't a number! */
+				if ( *t == '\0' ) return xFALSE;  /* '5e' isn't a number! */
 				if ( *t != '\0' && IsSign(*t) )
 				{  
 					if ( *t == '-' ) status |= OPT_NUM_FLOAT;  /* '1e-3' = 0.001 is FLOAT */
@@ -53,7 +54,7 @@ namespace xcore
 			while( *t != '\0' && IsSpace(*t) ) ++t; 
 
 			/* if made it to the end then its a real */
-			return (*t=='\0') ? status : FALSE;
+			return (*t=='\0') ? status : xFALSE;
 
 		}
 

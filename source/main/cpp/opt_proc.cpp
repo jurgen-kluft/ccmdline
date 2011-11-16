@@ -4,7 +4,9 @@
 
 #include "xcmdline\private\opt.h"
 #include "xcmdline\private\ag.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
+#include "xcmdline\private\opt_util.h"
+#include "xcmdline\private\opt_num.h"
 
 namespace xcore
 {
@@ -16,31 +18,29 @@ namespace xcore
 			#define OPT_VERSION 3.19
 		#endif
 
-		OPT_PFI  Opt_Reg::opt_additional_usage_fcn=NULL;
-		char	*Opt_Reg::opt_program_name = NULL;
-
-		/* Global to this file */
-
-		static s32   opt_menuflag = 0;
-		static s32   opt_fileflag = OPT_FALSE;
-		static s32   opt_menu_enabled = OPT_TRUE;
-		static char *opt_filename = NULL;
-		static char *opt_defaultfile = NULL;
-		static char *opt_titlestring = NULL;
-		static char *opt_usagestring = NULL;
-		static char *opt_envstring=NULL;
-		static char *opt_defstring=NULL;
-		static char *opt_pkg_version=NULL;
-
-		static OPT_PFI	   opt_quit_fcn=NULL;
-		static OPT_PFI	   opt_run_fcn=NULL;
-		static OPT_PFI_ARG opt_main_fcn=NULL;
+		Opt_Proc::Opt_Proc()
+			: opt_array_delim(',')
+			, opt_program_name(NULL)
+			, opt_additional_usage_fcn(NULL)
+			, opt_nreg(0)
+			, opt_exit_number(0)
+			, opt_fileflag(OPT_FALSE)
+			, opt_menu_enabled(OPT_TRUE)
+			, opt_filename(NULL)
+			, opt_defaultfile(NULL)
+			, opt_titlestring(NULL)
+			, opt_usagestring(NULL)
+			, opt_envstring(NULL)
+			, opt_defstring(NULL)
+			, opt_pkg_version(NULL)
+		{
+		}
 
 		/****************************
 		* Static Function prototypes 
 		*/
 
-		static char	*append_string(char *, char *);
+		static char*	append_string(char *, char *);
 		static s32		line2argv(s32 *, char ***, char *);
 		static s32		l2a(char *, char **);
 		static s32		break_word(s32, char *);
@@ -49,7 +49,7 @@ namespace xcore
 		* free various strings
 		*/
 
-		void	Opt_Reg::opt_freestrings()
+		Opt_Proc::~Opt_Proc()
 		{
 			OPT_FREE( opt_filename );
 			OPT_FREE( opt_defaultfile );
@@ -63,65 +63,45 @@ namespace xcore
 		/***************************
 		* set title, usage, etc.  *
 		***************************/
-		void	Opt_Reg::optTitle(char *s)
+		void	Opt_Proc::optTitle(char *s)
 		{
-			Opt_Util::opt_setstring(&opt_titlestring,s);
+			Opt_Util::opt_setstring(&opt_titlestring, s);
 		}
 		
 		/* Allow the user to explicitly set the program name */
 		/* Note that this routine strips off the leading directory */
 		/* so that you can safely use optProgName(argv[0]) */
-		void Opt_Reg::optProgName(char* progname)
+		void Opt_Proc::optProgName(char* progname)
 		{
-			Opt_Reg::opt_program_name = Opt_Proc::short_progname(progname);
+			opt_program_name = short_progname(progname);
 		}
-		void	Opt_Reg::optVersion(char *s)
+		void	Opt_Proc::optVersion(char *s)
 		{
 			if (!ISEMPTYSTRING(s)) 
 				Opt_Util::opt_setstring(&opt_pkg_version,s);
 		}
-		void	Opt_Reg::optUsage(char *s)
+		void	Opt_Proc::optUsage(char *s)
 		{
 			Opt_Util::opt_setstring(&opt_usagestring,s);
 		}
-		void	Opt_Reg::optEnvVarName(char *s)
+		void	Opt_Proc::optEnvVarName(char *s)
 		{
 			Opt_Util::opt_setstring(&opt_envstring,s);
 		}
-		void	Opt_Reg::optDefaultString(char *s)
+		void	Opt_Proc::optDefaultString(char *s)
 		{
 			Opt_Util::opt_setstring(&opt_defstring,s);
 		}
-		void	Opt_Reg::optAdditionalUsage(OPT_PFI fcn)
+		void	Opt_Proc::optAdditionalUsage(OPT_PFI fcn)
 		{
-			Opt_Reg::opt_additional_usage_fcn = fcn;
-		}
-		void	optDefaultFile(char *s)
-		{
-			Opt_Util::opt_setstring(&opt_defaultfile,s);
-		}
-		void	optQuit(OPT_PFI fcn)
-		{
-			opt_quit_fcn = fcn;
-		}
-		void	optRun(OPT_PFI fcn)
-		{
-			opt_run_fcn = fcn;
-		}
-		void	optMain(OPT_PFI_ARG fcn)
-		{
-			opt_main_fcn = fcn;
-		}
-		void	optDisableMenu()
-		{
-			opt_menu_enabled = OPT_FALSE;
+			opt_additional_usage_fcn = fcn;
 		}
 
 
-		static void	optWriteVersion()
+		void	Opt_Proc::optWriteVersion()
 		{
 			char *opt_pkg;
-			opt_pkg = Opt_Proc::optgetTitle();
+			opt_pkg = optgetTitle();
 
 	#ifdef VERSION
 			if (ISEMPTYSTRING(opt_pkg_version))
@@ -150,27 +130,26 @@ namespace xcore
 		* recommended that you use opt(), which takes &argc,&argv as arguments,
 		* and then returns new argc,argv through the pointers on the arg list.
 		*/
-		static s32 getopts(s32 argc, char **argv)
+		s32		Opt_Proc::getopts(s32 argc, char **argv)
 		{
-
 			/*
 			* Before processing, set the global variables
 			* opt_program_name : name of routine that is running
 			* opt_filename     : default name of options file
 			*/
-			if (ISEMPTYSTRING(Opt_Reg::getProgramName()))
-				Opt_Reg::optProgName(argv[0]);
-			opt_filename = append_string(Opt_Reg::getProgramName(),OPT_EXT);
-			//opt_readline_init(opt_program_name);
+			if (ISEMPTYSTRING(getProgramName()))
+				optProgName(argv[0]);
+
+			opt_filename = append_string(getProgramName(),OPT_EXT);
 
 			/* Begin options processing */
 			/* ------------------------ */
 
 			/* First process default string */
-			Opt_Proc::opt_lineprocess(opt_defstring);
+			opt_lineprocess(opt_defstring);
 
 			/* Finally, parse the command line */
-			Opt_Proc::opt_process(argc-1,argv+1);
+			opt_process(argc-1,argv+1);
 
 			return(argc);
 		}
@@ -194,8 +173,8 @@ namespace xcore
 			* opt_program_name : name of routine that is running
 			* opt_filename     : default name of options file
 			*/
-			if (ISEMPTYSTRING(Opt_Reg::opt_program_name))
-				Opt_Reg::opt_program_name = Opt_Proc::short_progname(argv[0]);
+			if (ISEMPTYSTRING(opt_program_name))
+				opt_program_name = short_progname(argv[0]);
 
 			//opt_filename = append_string(opt_program_name,OPT_EXT);
 			//opt_readline_init(opt_program_name);
@@ -204,27 +183,13 @@ namespace xcore
 			/* ------------------------ */
 
 			/* First process default string */
-			Opt_Proc::opt_lineprocess(opt_defstring);
-
-			/* Second, check the default file (eg ~/.programrc) */
-			//if (!ISEMPTYSTRING(opt_defaultfile)) 
-			//{
-			//	opt_fromfname(opt_defaultfile);
-			//}
-
-			/* Third, check environment variable */
-			//if(opt_envstring != NULL)
-			//{
-			//	char	*s;
-			//	s = getenv(opt_envstring);
-			//	opt_lineprocess(s);
-			//}
+			opt_lineprocess(opt_defstring);
 
 			/* Finally, parse the command line */
 			if (argc == 0)
 				return;      /* assuming there is one... */
 
-			ag = Opt_Proc::opt_process(argc-1,argv+1);
+			ag = opt_process(argc-1,argv+1);
 			/* And, return the leftover argc/argv, but first prepends argv[0]
 			* to this!
 			*/
@@ -265,10 +230,10 @@ namespace xcore
 		void	Opt_Proc::opt_get_help(char c)
 		{
 			s32 n;
-			n = Opt_Proc::opt_char_number(c);
-			if (OPT_isvalidnum(n) && Opt_Reg::optlist[n].help != NULL)
+			n = opt_char_number(c);
+			if (OPT_isvalidnum(n) && optlist[n].help != NULL)
 			{
-				opt_mess_2("%c: %s\n",c,Opt_Reg::optlist[n].help);
+				opt_mess_2("%c: %s\n",c,optlist[n].help);
 
 				//test whether the result is right
 				//std::cout<< c << "     " <<optlist[n].help<<std::endl;
@@ -305,7 +270,7 @@ namespace xcore
 			}
 			else
 			{
-				return( Opt_Proc::short_progname(++p) );
+				return( short_progname(++p) );
 			}
 		}
 
@@ -314,7 +279,7 @@ namespace xcore
 			if (!ISEMPTYSTRING(opt_titlestring))
 				return opt_titlestring;
 			else
-				return Opt_Reg::opt_program_name;
+				return opt_program_name;
 		}
 
 		/* opt_XXX_number(): Get number corresponding to option name; return
@@ -327,9 +292,9 @@ namespace xcore
 		s32	Opt_Proc::opt_char_number(char c)
 		{
 			s32 i;                         /* see which registered option */
-			for(i=0; i<Opt_Reg::opt_nreg; ++i)
+			for(i=0; i<opt_nreg; ++i)
 			{
-				if( c == Opt_Reg::optlist[i].name )
+				if( c == optlist[i].name )
 					return i;
 			}
 			return -1;
@@ -352,7 +317,7 @@ namespace xcore
 
 		char*	Opt_Proc::optstrval(s32 i)
 		{
-			return Opt_Reg::opt_getstrval(Opt_Reg::optlist[i].value,Opt_Reg::optlist[i].type);
+			return opt_getstrval(optlist[i].value,optlist[i].type);
 		}
 
 		/* optstrtyp:
@@ -366,7 +331,7 @@ namespace xcore
 			static char	sttyp_buf[80];
 			opt_TYPE o;
 
-			o = (Opt_Reg::optlist[i].array) ? Opt_Reg::optlist[i].array->base_type : Opt_Reg::optlist[i].type;
+			o = (optlist[i].array) ? optlist[i].array->base_type : optlist[i].type;
 
 			switch( o ) 
 			{
@@ -402,7 +367,7 @@ namespace xcore
 			}
 
 			/* If it's an array, then add " ARRAY" to the name of the type */
-			if ( Opt_Reg::optlist[i].array )
+			if ( optlist[i].array )
 			{
 				x_strcat(sttyp_buf, sizeof(sttyp_buf), " ARRAY");
 			}
@@ -420,11 +385,11 @@ namespace xcore
 			* option has been invoked, it cannot be un-invoked.
 			*/
 
-			for (i=0; i<Opt_Reg::opt_nreg; ++i) 
+			for (i=0; i<opt_nreg; ++i) 
 			{
-				if (Opt_Reg::optlist[i].invoked || Opt_Reg::optlist[i].mode == OPT_DELIMITED) 
+				if (optlist[i].invoked || optlist[i].mode == OPT_DELIMITED) 
 					continue;
-				return Opt_Reg::opt_action(i,ag);
+				return opt_action(i,ag);
 			}
 			/* If we get here, we didn't find an un-invoked positional option */
 			return 0;
@@ -440,14 +405,14 @@ namespace xcore
 			char     c;
 
 			c = Ag_Func::ag_c_advance(ag);		/* first character gives name of option */
-			i = Opt_Proc::opt_char_number(c);		/* this is number of option w/ name 'c' */
+			i = opt_char_number(c);		/* this is number of option w/ name 'c' */
 
 			if(! OPT_isvalidnum(i))
 			{	/* if invalid option name */
 				opt_warn_1("%c not a registered option name\n",c);
 				return 0;
 			}
-			return Opt_Reg::opt_action(i,ag);
+			return opt_action(i,ag);
 		}
 
 		s32	Opt_Proc::opt_parse_longdelim(xargv *ag)
@@ -471,14 +436,14 @@ namespace xcore
 				++scptr;
 			}
 
-			i  = Opt_Reg::opt_longname_number(sc);   /* this is number of option w/ name `sc' */
+			i  = opt_longname_number(sc);   /* this is number of option w/ name `sc' */
 			if (! OPT_isvalidnum(i))
 			{
 				opt_warn_1("%s not a registered option name\n",sc);
 				return 0;
 			}
 			Opt_Allocator::get_opt_allocator()->deallocate((char *)sc); 
-			return Opt_Reg::opt_action(i,ag);
+			return opt_action(i,ag);
 		}
 
 		/* ----------------------------------------------------------------- */
@@ -551,7 +516,7 @@ namespace xcore
 						/* unadorned "-" will be treated as a positional option */
 						/* Try to process it as an positional option */
 						Ag_Func::ag_backspace(ag);
-						if( Opt_Proc::opt_parse_positional(ag) == 0) 
+						if( opt_parse_positional(ag) == 0) 
 						{
 							/* if not successful...then stop processing */
 							return ag;
@@ -572,7 +537,7 @@ namespace xcore
 							/* Special cases: --help, --optVersion, --menu, etc.. */
 							if (0==x_strcmp("help",Ag_Func::ag_s(ag))) 
 							{ 
-								Opt_Proc::long_usage();
+								long_usage();
 
 								/*We remove the menu part*/
 
@@ -626,7 +591,7 @@ namespace xcore
 							else 
 							{
 								/* if a generic "--longoption" */
-								Opt_Proc::opt_parse_longdelim(ag);
+								opt_parse_longdelim(ag);
 							}
 						}
 						/* if "-something" */
@@ -635,7 +600,7 @@ namespace xcore
 					{
 						iword = Ag_Func::ag_w_number(ag);
 						while( iword==Ag_Func::ag_w_number(ag) && !Ag_Func::ag_eow(ag) )
-							Opt_Proc::opt_parse_delim(ag);
+							opt_parse_delim(ag);
 					}
 					break;
 
@@ -654,7 +619,7 @@ namespace xcore
 
 				case HELPCH:
 					if( !opt_fileflag)
-						Opt_Proc::opt_help(Ag_Func::argnext(ag));
+						opt_help(Ag_Func::argnext(ag));
 					break;
 
 				case INTERACT:
@@ -669,84 +634,11 @@ namespace xcore
 					Ag_Func::ag_clear(ag);
 					break;
 
-				case RUN:
-					/* If we're on the command line then treat this as a positional option */
-					if (!(opt_menuflag || opt_fileflag))
-						goto POSITIONAL;    /* I used goto! Hey, that felt ... good */
-
-					/* Give precedence to optMain, then optRun */
-					if ( opt_main_fcn != NULL ) 
-					{
-						/*
-						s32 retval;
-						s32 ac;
-						char **av;
-						ac = ag_argc(ag);
-						av = ag_argv(ag);
-						ag_clear(ag);
-						retval = optBeginMain(opt_main_fcn,ac,av);
-						if (retval == OPT_ABORT)
-							optAbortMain();
-						if (retval == OPT_QUIT)
-							opt_quit();
-						if (retval == OPT_EXIT)
-							exit(opt_exit_number);
-						*/
-					}
-					else if ( opt_run_fcn != NULL ) 
-					{
-						/*
-						s32 retval;
-						retval = optBeginRun(opt_run_fcn);
-						if (retval == OPT_ABORT)
-							optAbortRun();
-						if (retval == OPT_QUIT)
-							opt_quit();
-						if (retval == OPT_EXIT)
-							exit(opt_exit_number);
-						*/
-					} 
-					else 
-					{
-						/* if opt_run_fcn is not set, and 'RUN' is called
-						* from the menu, then exit the menu, so that
-						* the routine is run, and then program will exit
-						*/
-						if ( opt_menuflag )
-						{
-							opt_menuflag=OPT_FALSE;			/* turn off menu */
-							Ag_Func::ag_clear(ag);
-						}
-						else
-						{
-							/* RUN called from a file or the command line:
-							* There is no reason to be doing this.
-							*/
-							Opt_Util::opt_warning("No Run Function has been registered");
-						}
-						break;
-
-						/* Note that the QUITCH '.' is quite a common positional option! */
-						/* So we only treat it as a quit signal if using the menu */
-				case QUITCH:
-					goto POSITIONAL;   /* There I go again... */
-
-				case BANG:
-					/* If there is a BANG as the first character of a
-					* menuline, then we shouldn't even get here.
-					*/
-					if (!opt_menuflag)
-						goto POSITIONAL;     /* Can't ... stop ... */
-					else {
-						opt_warn_1("Shell to system invalid unless \'%c\' is the first character in the line\n",BANG);
-					}
-
 				case ' ':		/* blanks and empty characters, ignore */
 				case '\t':
 				case '\0':
 					break;
 
-	POSITIONAL:
 				default:
 					/* in the default case, option may be positional */
 					/* ---------------------------------------------- */
@@ -762,7 +654,7 @@ namespace xcore
 					}
 					
 					/* Try to process it as an positional option */
-					if( Opt_Proc::opt_parse_positional(ag) == 0)
+					if( opt_parse_positional(ag) == 0)
 					{
 						/* if not successful...then stop processing */
 						//if (DEBUG)
@@ -771,7 +663,7 @@ namespace xcore
 					}
 					break;
 					/* last case */
-					}
+
 				}
 			}
 			Ag_Func::ag_free(ag);
@@ -792,7 +684,7 @@ namespace xcore
 			if( line==NULL || *line=='\0') return(0);
 
 			line2argv(&nargc,&nargv,line);
-			Opt_Proc::opt_process(nargc,nargv);
+			opt_process(nargc,nargv);
 
 			/* Now free nargv */
 			for (i=0; i<nargc; ++i)
@@ -937,27 +829,27 @@ namespace xcore
 		/* print the usage. */
 		void Opt_Proc::optPrintUsage()
 		{
-			Opt_Proc::long_usage();
+			long_usage();
 		}
 
 		void Opt_Proc::short_usage(void)
 		{
 			Opt_Util::opt_message(opt_titlestring);
-			opt_mess_1("Usage: %s ",Opt_Reg::opt_program_name);
+			opt_mess_1("Usage: %s ",opt_program_name);
 			opt_mess_1("%s\n", opt_usagestring ? opt_usagestring : "[options] ");
 			if (opt_menu_enabled)
-				opt_mess_1("To invoke the menu, type:\n\t%s --menu\n", Opt_Reg::opt_program_name);
+				opt_mess_1("To invoke the menu, type:\n\t%s --menu\n", opt_program_name);
 		}
 
 		void Opt_Proc::long_usage(void)
 		{
-			Opt_Proc::short_usage();
-			Opt_Proc::opt_usage();
+			short_usage();
+			opt_usage();
 		}
 
 		s32 Opt_Proc::optinvoked(void *v) 
 		{ 
-			return Opt_Reg::optinvoked_n( Opt_Reg::opt_number(v) );
+			return optinvoked_n( opt_number(v) );
 		}
 		/* ------------------- */
 		/* basic help function */
@@ -969,28 +861,16 @@ namespace xcore
 			{
 				opt_mess_2("\t%c %-20s\n",DELIM,"Options delimiter"); 
 				opt_mess_2("\t%c %-20s\n",HELPCH,"Help");
-				opt_mess_2("\t%c %-20s\n",RUN,"Run program and return to menu");
-				opt_mess_2("\t%c %-20s\n",BANG,"Shell to Operating System"); 
-				if (opt_menuflag)
-					opt_mess_2("\t%c %-20s\n",INTERACT,"Exit menu"); 
-				else
-					opt_mess_2("\t%c %-20s\n",INTERACT,"Invoke menu"); 
-				opt_mess_2("\t%c %-20s\n",ADDITIONAL_OPTS,"Additional options");
-				opt_mess_3("\t%c<filename> %-20s [%s]\n",OPTFROMFILE,
-					"Get options from file",opt_filename);
-				opt_mess_4("\t%c%c %-2s [%s]\n",OPTFROMFILE,OPTFROMFILE,
-					"Get options from file",opt_filename);
-				opt_mess_2("\t%c<filename> %-20s\n",OPTTOFILE,
-					"Put options in file");
-				opt_mess_4("\t%c%c %-2s [%s]\n",OPTTOFILE,OPTTOFILE,
-					"Put options in file",opt_filename);
-				opt_mess_2("\t%c %-20s\n",QUITCH,"Quit");
+				opt_mess_3("\t%c<filename> %-20s [%s]\n",OPTFROMFILE,"Get options from file",opt_filename);
+				opt_mess_4("\t%c%c %-2s [%s]\n",OPTFROMFILE,OPTFROMFILE,"Get options from file",opt_filename);
+				opt_mess_2("\t%c<filename> %-20s\n",OPTTOFILE,"Put options in file");
+				opt_mess_4("\t%c%c %-2s [%s]\n",OPTTOFILE,OPTTOFILE,"Put options in file",opt_filename);
 			} 
 			else 
 			{
 				if( s[1]=='\0')
 				{
-					Opt_Proc::opt_get_help(s[0]); 
+					opt_get_help(s[0]); 
 				}
 				else
 				{
@@ -1021,9 +901,9 @@ namespace xcore
 
 			/* First we print the positional options */
 			initial = 1;
-			for (i = 0; i < Opt_Reg::opt_nreg; ++i) 
+			for (i = 0; i < opt_nreg; ++i) 
 			{
-				if (Opt_Reg::optlist[i].mode != OPT_DELIMITED) 
+				if (optlist[i].mode != OPT_DELIMITED) 
 				{
 					if (initial) 
 					{
@@ -1033,14 +913,14 @@ namespace xcore
 					/* Get a suitably formatted version of the description  */
 					/* descript may be NULL, but opt_justify always returns */
 					/* a valid (perhaps empty) string.                      */
-					justified_descript = Opt_Util::opt_justify(Opt_Reg::optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
+					justified_descript = Opt_Util::opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
 					if (OPTUSAGEDEBUG) 
 						x_printf("%2d u ",i);
 
-					if (!ISEMPTYSTRING(Opt_Reg::optlist[i].descript))
-						opt_mess_3(pformat,Opt_Reg::optlist[i].longname,Opt_Proc::optstrtyp(i),justified_descript);
+					if (!ISEMPTYSTRING(optlist[i].descript))
+						opt_mess_3(pformat,optlist[i].longname,optstrtyp(i),justified_descript);
 					else
-						opt_mess_2(uformat,Opt_Proc::optstrtyp(i),justified_descript);
+						opt_mess_2(uformat,optstrtyp(i),justified_descript);
 
 #ifdef COUTDEBUG
 					std::cout << "deallocate memory size" << sizeof(justified_descript) << std::endl;
@@ -1051,9 +931,9 @@ namespace xcore
 
 			/* Second we print the delimited options */
 			initial = 1;
-			for(i=0; i<Opt_Reg::opt_nreg; ++i) 
+			for(i=0; i<opt_nreg; ++i) 
 			{
-				if (Opt_Reg::optlist[i].mode != OPT_POSITIONAL && (Opt_Reg::optlist[i].name != '\0' || !ISEMPTYSTRING(Opt_Reg::optlist[i].longname))) 
+				if (optlist[i].mode != OPT_POSITIONAL && (optlist[i].name != '\0' || !ISEMPTYSTRING(optlist[i].longname))) 
 				{
 					if (initial) 
 					{
@@ -1062,56 +942,56 @@ namespace xcore
 					} 
 					/* Get a suitably formatted version of the description */
 					/* If the option is positional, then refer to the argument description */
-					if (Opt_Reg::optlist[i].mode == OPT_FLEXIBLE) 
+					if (optlist[i].mode == OPT_FLEXIBLE) 
 					{
 						justified_descript = Opt_Util::opt_justify("(See argument description above)", OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
 					} 
-					else if (Opt_Reg::optlist[i].longname && x_strlen(Opt_Reg::optlist[i].longname) > OPTMAXLONGNAMELEN) 
+					else if (optlist[i].longname && x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
 					{
-						justified_descript = Opt_Util::opt_justify(Opt_Reg::optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET, OPTDESCRIPTOFFSET,0);
+						justified_descript = Opt_Util::opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET, OPTDESCRIPTOFFSET,0);
 					} 
 					else 
 					{
-						justified_descript = Opt_Util::opt_justify(Opt_Reg::optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
+						justified_descript = Opt_Util::opt_justify(optlist[i].descript, OPTDESCRIPTWIDTH, OPTDESCRIPTOFFSET,0,0);
 					}
 
-					if (Opt_Reg::optlist[i].name == '\0') 
+					if (optlist[i].name == '\0') 
 					{
 						if(OPTUSAGEDEBUG) 
 							x_printf("a ");
 
-						if (x_strlen(Opt_Reg::optlist[i].longname) > OPTMAXLONGNAMELEN) 
+						if (x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
 						{
-							opt_mess_3(aformat,Opt_Reg::optlist[i].longname, Opt_Proc::optstrtyp(i),"");
+							opt_mess_3(aformat,optlist[i].longname, optstrtyp(i),"");
 							opt_mess_1("%s\n",justified_descript);
 						} 
 						else
 						{
-							opt_mess_3(aformat,Opt_Reg::optlist[i].longname, Opt_Proc::optstrtyp(i),justified_descript);
+							opt_mess_3(aformat,optlist[i].longname, optstrtyp(i),justified_descript);
 						}            
 					}
 					else
 					{
-						if (!ISEMPTYSTRING(Opt_Reg::optlist[i].longname)) 
+						if (!ISEMPTYSTRING(optlist[i].longname)) 
 						{
 							if(OPTUSAGEDEBUG) 
 								x_printf("l ");
 
-							if (x_strlen(Opt_Reg::optlist[i].longname) > OPTMAXLONGNAMELEN) 
+							if (x_strlen(optlist[i].longname) > OPTMAXLONGNAMELEN) 
 							{
-								opt_mess_4(lformat,Opt_Reg::optlist[i].name,Opt_Reg::optlist[i].longname, Opt_Proc::optstrtyp(i),"");
+								opt_mess_4(lformat,optlist[i].name,optlist[i].longname, optstrtyp(i),"");
 								opt_mess_1("%s\n",justified_descript);
 							} 
 							else
 							{
-								opt_mess_4(lformat,Opt_Reg::optlist[i].name,Opt_Reg::optlist[i].longname, Opt_Proc::optstrtyp(i),justified_descript);
+								opt_mess_4(lformat,optlist[i].name,optlist[i].longname, optstrtyp(i),justified_descript);
 							}            
 						} 
 						else 
 						{
 							if (OPTUSAGEDEBUG) 
 								x_printf("d ");
-							opt_mess_3(dformat,Opt_Reg::optlist[i].name, Opt_Proc::optstrtyp(i),justified_descript);
+							opt_mess_3(dformat,optlist[i].name, optstrtyp(i),justified_descript);
 						}
 					}
 #ifdef COUTDEBUG
@@ -1121,14 +1001,14 @@ namespace xcore
 				}
 			}
 
-			if (Opt_Reg::opt_additional_usage_fcn != NULL)
+			if (opt_additional_usage_fcn != NULL)
 			{
 				/* precede additional usage by -- to indicate that we
 				* are finished with the options
 				*/
 				Opt_Util::opt_message(" --\n");
 				/* return value is ignored */
-				(*Opt_Reg::opt_additional_usage_fcn)();
+				(*opt_additional_usage_fcn)();
 			}
 		}
 

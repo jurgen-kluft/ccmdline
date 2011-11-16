@@ -22,8 +22,8 @@
 #include "xbase\x_string_std.h"
 
 #include "xcmdline\private\ag.h"
-#include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
+#include "xcmdline\private\opt_util.h"
 
 //#define COUTDEBUG
 
@@ -104,7 +104,7 @@ namespace xcore
 			char* buf;
 
 			/* If s is null or empty, then return an empty string */
-			if (ISEMPTYSTRING(s)) 
+			if (s==NULL || *s=='\0') 
 			{
 				buf = (char*) Opt_Allocator::get_opt_allocator()->allocate(1, 4);
 				buf[0] = '\0';
@@ -193,26 +193,6 @@ namespace xcore
 
 			/* Return the justified buffer - remember to free this! */
 			return buf;
-		}
-
-		s32  Opt_Util::optBeginRun(OPT_PFI run)
-		{
-			return (*run)(); 
-		}
-
-		void Opt_Util::optAbortRun()
-		{
-			//exit(opt_exit_number); 
-		}
-
-		s32  Opt_Util::optBeginMain(OPT_PFI_ARG run_args, s32 argc, char **argv)
-		{
-			return (*run_args)(argc,argv);
-		}
-
-		void Opt_Util::optAbortMain()
-		{
-			optAbortRun(); 
 		}
 
 	}

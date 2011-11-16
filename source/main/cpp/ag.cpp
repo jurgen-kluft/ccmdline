@@ -1,7 +1,7 @@
 #include "xbase\x_string_std.h"
 
 #include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
 #include "xcmdline\private\ag.h"
 
 namespace xcore
@@ -80,10 +80,10 @@ namespace xcore
 		s32 Ag_Func::ag_eow(xargv *ag)
 		{
 			if( ag->iw >= ag->c )
-				return(TRUE);
+				return(xTRUE);
 			if( ag->ic >= (s32)x_strlen(ag->v[ag->iw]) )
-				return(TRUE);
-			return(FALSE);
+				return(xTRUE);
+			return(xFALSE);
 		}
 		/*      ag_end: end of command line
 		flag whether current position is at end of command line 
@@ -91,10 +91,10 @@ namespace xcore
 		s32 Ag_Func::ag_end(xargv *ag)
 		{
 			if( ag->iw >= ag->c )
-				return(TRUE);
+				return(xTRUE);
 			if( ag_eow(ag) && ag->iw == (ag->c)-1 )
-				return(TRUE);
-			return(FALSE);
+				return(xTRUE);
+			return(xFALSE);
 		}
 		/*      ag_c:   return current character
 		do not advance
