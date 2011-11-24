@@ -9,6 +9,7 @@
 // INCLUDES
 //==============================================================================
 #include "xbase\x_types.h"
+#include "xcmdline\private\opt_proc.h"
 //==============================================================================
 // xcore namespace
 //==============================================================================
@@ -19,7 +20,7 @@ namespace xcore
 
 	namespace xcmdline
 	{
-		struct Opt_Proc;
+		class Opt_Proc;
 		struct xparams;
 	}
 
@@ -38,6 +39,9 @@ namespace xcore
 
 		/*Register variables and set value by xparams*/
 		xbool			regAndSetValue();
+
+		/*get the optlist*/
+		xcmdline::Opt_Proc*	getOptProc() { return &mOptProc;}
 
 		/*free memory*/
 		void			clearRegisteredOption();
@@ -166,7 +170,7 @@ namespace xcore
 		int				mTotalAllocArgvNum;
 		const int		mAllocArgvBlockSize;
 
-		xcmdline::Opt_Proc*	mOptProc;
+		xcmdline::Opt_Proc	mOptProc;
 
 		/*clear the argv allocated by changeParamToArgv()*/
 		void			argvClear();

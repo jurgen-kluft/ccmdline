@@ -20,6 +20,7 @@ namespace xcore
 
 		Opt_Proc::Opt_Proc()
 			: opt_array_delim(',')
+			, optlist(NULL)	
 			, opt_program_name(NULL)
 			, opt_additional_usage_fcn(NULL)
 			, opt_nreg(0)

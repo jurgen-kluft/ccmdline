@@ -55,14 +55,14 @@ namespace xcore
 		#endif
 
 
-		Opt_Proc::Opt_Proc()
-			: opt_exit_number(0)		//< if we have to exit(), then exit with this number
-			, optlist(NULL)				//< array of options
-			, opt_nreg(0)				//< number of registered opts
-			, opt_array_delim(',')		//< the delimiter for arrays. (eads)*/
-		{
-
-		}
+// 		Opt_Proc::Opt_Proc()
+// 			: opt_exit_number(0)		//< if we have to exit(), then exit with this number
+// 			, optlist(NULL)				//< array of options
+// 			, opt_nreg(0)				//< number of registered opts
+// 			, opt_array_delim(',')		//< the delimiter for arrays. (eads)*/
+// 		{
+// 
+// 		}
 
 		void	Opt_Proc::opt_free()
 		{
@@ -82,7 +82,7 @@ namespace xcore
 				OPT_FREE(optlist[i].array);
 			}
 			OPT_FREE(optlist);
-			opt_freestrings();
+//			opt_freestrings();
 			opt_nreg=0;
 		}
 

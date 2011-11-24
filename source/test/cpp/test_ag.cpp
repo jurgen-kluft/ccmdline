@@ -3,6 +3,7 @@
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
 #include "xcmdline\private\ag.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 #include "xbase\x_string_std.h"

@@ -2,7 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 
@@ -29,14 +29,16 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg_all)
 			char   regsbTest	=	'a';
 			char*  regfTest		=	NULL;
 
-			xcmdline::Opt_Reg::optrega(&regaTest,xcmdline::OPT_INT,'a',"rega","optrega");
-			xcmdline::Opt_Reg::optreg(&regTest,xcmdline::OPT_DOUBLE,'b',"optreg");
-			xcmdline::Opt_Reg::optregc(&regcTest,xcmdline::OPT_SHORT,'c');
-			xcmdline::Opt_Reg::optregcb(&regcbTest,xcmdline::OPT_LONG,'d',"optregcb");
-			xcmdline::Opt_Reg::optregs(&regsTest,xcmdline::OPT_FLOAT,"regs");
-			xcmdline::Opt_Reg::optregsb(&regsbTest,xcmdline::OPT_CHAR,"regsb","optregsb");
-			xcmdline::Opt_Reg::optregf(&regfTest,xcmdline::OPT_STRING,'e',"regf","optregf");
-			xcmdline::Opt_Reg::optregp(&posVar,xcmdline::OPT_STRING,"inputVar","Read data from txt");
+			xcmdline::Opt_Proc opt_proc;
+
+			opt_proc.optrega(&regaTest,xcmdline::OPT_INT,'a',"rega","optrega");
+			opt_proc.optreg(&regTest,xcmdline::OPT_DOUBLE,'b',"optreg");
+			opt_proc.optregc(&regcTest,xcmdline::OPT_SHORT,'c');
+			opt_proc.optregcb(&regcbTest,xcmdline::OPT_LONG,'d',"optregcb");
+			opt_proc.optregs(&regsTest,xcmdline::OPT_FLOAT,"regs");
+			opt_proc.optregsb(&regsbTest,xcmdline::OPT_CHAR,"regsb","optregsb");
+			opt_proc.optregf(&regfTest,xcmdline::OPT_STRING,'e',"regf","optregf");
+			opt_proc.optregp(&posVar,xcmdline::OPT_STRING,"inputVar","Read data from txt");
 
 			char*	argv[] =
 			{
@@ -57,8 +59,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_reg_all)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			opt_proc.opt(&argc, argvv);
+			opt_proc.opt_free();
 
 			CHECK_NOT_NULL(posVar);
 			CHECK_EQUAL(10,regaTest);

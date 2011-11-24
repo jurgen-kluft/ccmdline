@@ -2,7 +2,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 
@@ -53,9 +53,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
-
+			c.getOptProc()->opt(&argc, argvv);
+			
 			CHECK_EQUAL((s32)329,regTest1);
 			CHECK_EQUAL((s32)-234,regTest2);
 			CHECK_EQUAL((s32)66,regTest3);
@@ -64,6 +63,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((s32)34,regTest6);
 			CHECK_EQUAL((s32)56,regTest7);
 			CHECK_EQUAL((s32)78,regTest8);
+
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_s16)
@@ -104,8 +105,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((s16)329,regTest1);
 			CHECK_EQUAL((s16)-234,regTest2);
@@ -115,6 +116,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((s16)34,regTest6);
 			CHECK_EQUAL((s16)56,regTest7);
 			CHECK_EQUAL((s16)78,regTest8);
+
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_s64)
@@ -155,8 +158,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((s64)329,regTest1);
 			CHECK_EQUAL((s64)-234,regTest2);
@@ -166,6 +169,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((s64)34,regTest6);
 			CHECK_EQUAL((s64)56,regTest7);
 			CHECK_EQUAL((s64)78,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_u16)
@@ -206,8 +211,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((u16)329,regTest1);
 			CHECK_EQUAL((u16)-234,regTest2);
@@ -217,6 +222,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((u16)34,regTest6);
 			CHECK_EQUAL((u16)56,regTest7);
 			CHECK_EQUAL((u16)78,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_u32)
@@ -257,8 +264,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((u32)329,regTest1);
 			CHECK_EQUAL((u32)-234,regTest2);
@@ -268,6 +275,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((u32)34,regTest6);
 			CHECK_EQUAL((u32)56,regTest7);
 			CHECK_EQUAL((u32)78,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_u64)
@@ -308,8 +317,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((u64)329,regTest1);
 			CHECK_EQUAL((u64)-234,regTest2);
@@ -319,6 +328,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((u64)34,regTest6);
 			CHECK_EQUAL((u64)56,regTest7);
 			CHECK_EQUAL((u64)78,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_f32)
@@ -359,8 +370,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((f32)329.456f,regTest1);
 			CHECK_EQUAL((f32)-234.5655f,regTest2);
@@ -370,6 +381,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((f32)34.33f,regTest6);
 			CHECK_EQUAL((f32)56.87987f,regTest7);
 			CHECK_EQUAL((f32)78.444f,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_f64)
@@ -410,8 +423,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL((f64)329.4523,regTest1);
 			CHECK_EQUAL((f64)-234,regTest2);
@@ -421,6 +434,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL((f64)34.888,regTest6);
 			CHECK_EQUAL((f64)56,regTest7);
 			CHECK_EQUAL((f64)78,regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_char)
@@ -459,8 +474,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL('b',regTest1);
 			CHECK_EQUAL('d',regTest2);
@@ -470,6 +485,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL('y',regTest6);
 			CHECK_EQUAL('z',regTest7);
 			CHECK_EQUAL('m',regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_uchar)
@@ -508,8 +525,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_EQUAL('b',regTest1);
 			CHECK_EQUAL('d',regTest2);
@@ -519,6 +536,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_EQUAL('y',regTest6);
 			CHECK_EQUAL('z',regTest7);
 			CHECK_EQUAL('m',regTest8);
+			
+			c.getOptProc()->opt_free();
 		}
 
 		UNITTEST_TEST(test_reg_opt_string)
@@ -558,8 +577,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 
 			char** argvp = argv;
 			char*** argvv = &argvp;
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt(&argc, argvv);
+			
 
 			CHECK_NOT_NULL(regTest1);
 			CHECK_NOT_NULL(regTest2);
@@ -569,6 +588,8 @@ UNITTEST_SUITE_BEGIN(test_xcmdline_reg_opt)
 			CHECK_NOT_NULL(regTest6);
 			CHECK_NOT_NULL(regTest7);
 			CHECK_NULL(regTest8);
+			
+			c.getOptProc()->opt_free();
 
 			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regTest1);
 			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(regTest2);

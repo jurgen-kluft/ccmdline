@@ -1,8 +1,9 @@
 #include "xbase\x_types.h"
+#include "xbase\x_allocator.h"
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 
@@ -31,28 +32,30 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			s16*	x	=	NULL;
 			s32    nx	=	0;
 
-			xcmdline::Opt_Reg::optrega_array(&nx,&x,xcmdline::OPT_SHORT,'x',"xarray","Array for test");
+			xcmdline::Opt_Proc opt_proc;
+
+			opt_proc.optrega_array(&nx,&x,xcmdline::OPT_SHORT,'x',"xarray","Array for test");
 			xbool boolVar	=	1;
 
 
 //			test the opthelp function
-			xcmdline::Opt_Reg::optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
-			xcmdline::Opt_Reg::opthelp(&boolVar,"This is the boolVar help");
+			opt_proc.optrega(&boolVar,xcmdline::OPT_BOOL,'b',"boolVar","boolVar");
+			opt_proc.opthelp(&boolVar,"This is the boolVar help");
 
-			xcmdline::Opt_Reg::optreg(&longNameTest,xcmdline::OPT_INT,'l',"SetLongNameTest");
-			xcmdline::Opt_Reg::optlongname(&longNameTest,"longName");
+			opt_proc.optreg(&longNameTest,xcmdline::OPT_INT,'l',"SetLongNameTest");
+			opt_proc.optlongname(&longNameTest,"longName");
 
-			s32 n = xcmdline::Opt_Reg::optreg(&longNameTest_n,xcmdline::OPT_INT,'n',"SetLongNameTest_n");
-			xcmdline::Opt_Reg::optlongname_n(n,"nLongName");
+			s32 n = opt_proc.optreg(&longNameTest_n,xcmdline::OPT_INT,'n',"SetLongNameTest_n");
+			opt_proc.optlongname_n(n,"nLongName");
 
-			xcmdline::Opt_Reg::optregs(&shortNameTest,xcmdline::OPT_INT,"shortName");
-			xcmdline::Opt_Reg::optchar(&shortNameTest,'s');
+			opt_proc.optregs(&shortNameTest,xcmdline::OPT_INT,"shortName");
+			opt_proc.optchar(&shortNameTest,'s');
 
-			n = xcmdline::Opt_Reg::optregsb(&shortNameTest_n,xcmdline::OPT_INT,"shortName","SetShortNameTest_n");
-			xcmdline::Opt_Reg::optchar_n(n,'h');
+			n = opt_proc.optregsb(&shortNameTest_n,xcmdline::OPT_INT,"shortName","SetShortNameTest_n");
+			opt_proc.optchar_n(n,'h');
 
-			xcmdline::Opt_Reg::optrega(&testSwitch,xcmdline::OPT_INT,'t',"testSwitch","Just test the optMode");
-			xcmdline::Opt_Reg::optmode(&testSwitch,xcmdline::OPT_POSITIONAL);
+			opt_proc.optrega(&testSwitch,xcmdline::OPT_INT,'t',"testSwitch","Just test the optMode");
+			opt_proc.optmode(&testSwitch,xcmdline::OPT_POSITIONAL);
 
 
 			char*	argv[] =
@@ -76,8 +79,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Proc::opt_get_help('b');
+			opt_proc.opt(&argc, argvv);
+			opt_proc.opt_get_help('b');
 			
 			CHECK_EQUAL(0, boolVar);
 			CHECK_EQUAL(100,longNameTest);
@@ -91,7 +94,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 			CHECK_EQUAL(30,x[2]);
 			CHECK_EQUAL(1,testSwitch);
 
-			xcmdline::Opt_Reg::opt_free();
+			opt_proc.opt_free();
 		}
 
 		s32	   desTest    =    0;
@@ -115,17 +118,19 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 		UNITTEST_TEST(test_des_hook)
 		{
-			xcmdline::Opt_Reg::optrega(&desTest,xcmdline::OPT_INT,'a',"desTest","Test the optdescript function");
-			xcmdline::Opt_Reg::optdescript(&desTest,"Modify desTest des");
+			xcmdline::Opt_Proc opt_proc;
 
-			s32 n = xcmdline::Opt_Reg::optrega(&desTest_n,xcmdline::OPT_INT,'b',"desTest_n","Test the optdescript_n function");
-			xcmdline::Opt_Reg::optdescript_n(n,"Modify desTest des_n");
+			opt_proc.optrega(&desTest,xcmdline::OPT_INT,'a',"desTest","Test the optdescript function");
+			opt_proc.optdescript(&desTest,"Modify desTest des");
 
-			xcmdline::Opt_Reg::optrega(&hookTest,xcmdline::OPT_INT,'c',"hookTest","Test opthook");
-			xcmdline::Opt_Reg::opthook(&hookTest,check);
+			s32 n = opt_proc.optrega(&desTest_n,xcmdline::OPT_INT,'b',"desTest_n","Test the optdescript_n function");
+			opt_proc.optdescript_n(n,"Modify desTest des_n");
 
-			n = xcmdline::Opt_Reg::optrega(&hookTest_n,xcmdline::OPT_INT,'d',"hookTest_n","Test opthook_n");
-			xcmdline::Opt_Reg::opthook_n(n,check);
+			opt_proc.optrega(&hookTest,xcmdline::OPT_INT,'c',"hookTest","Test opthook");
+			opt_proc.opthook(&hookTest,check);
+
+			n = opt_proc.optrega(&hookTest_n,xcmdline::OPT_INT,'d',"hookTest_n","Test opthook_n");
+			opt_proc.opthook_n(n,check);
 
 			char*	argv[] =
 			{
@@ -139,8 +144,8 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Reg::opt_free();
+			opt_proc.opt(&argc, argvv);
+			opt_proc.opt_free();
 
 			CHECK_EQUAL(30,hookTest);
 			CHECK_EQUAL(20,hookTest_n);
@@ -156,17 +161,17 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 		UNITTEST_TEST(test_optForWholeProgram)
 		{
 			s32    defaultTest    =    0;
+			xcmdline::Opt_Proc opt_proc;
 
-			xcmdline::Opt_Reg::optUsage("Message for optUsage");
-			xcmdline::Opt_Reg::optTitle("Test_setTitle");
-			xcmdline::Opt_Reg::optProgName("Test_setProgName");
-			xcmdline::Opt_Reg::optVersion("1.0");
-			xcmdline::Opt_Reg::optEnvVarName("OPT");
-			xcmdline::Opt_Reg::optDefaultString("?a");
-			xcmdline::Opt_Reg::optAdditionalUsage(MoreInfo);
-
-			xcmdline::Opt_Reg::optrega(&defaultTest,xcmdline::OPT_INT,'t',"defaultTest","Test the optDefualtString");
-			xcmdline::Opt_Reg::opthelp(&defaultTest,"Test the optDefualtString");
+			opt_proc.optUsage("Message for optUsage");
+			opt_proc.optTitle("Test_setTitle");
+			opt_proc.optProgName("Test_setProgName");
+			opt_proc.optVersion("1.0");
+			opt_proc.optEnvVarName("OPT");
+			opt_proc.optDefaultString("?a");
+			opt_proc.optAdditionalUsage(MoreInfo);
+			opt_proc.optrega(&defaultTest,xcmdline::OPT_INT,'t',"defaultTest","Test the optDefualtString");
+			opt_proc.opthelp(&defaultTest,"Test the optDefualtString");
 
 			char*	argv[] =
 			{
@@ -179,10 +184,10 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_attribute)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::Opt_Proc::opt(&argc, argvv);
-			xcmdline::Opt_Proc::optPrintUsage();
-			s32 n = xcmdline::Opt_Proc::optinvoked(&defaultTest);
-			xcmdline::Opt_Reg::opt_free();
+			opt_proc.opt(&argc, argvv);
+			opt_proc.optPrintUsage();
+			s32 n = opt_proc.optinvoked(&defaultTest);
+			opt_proc.opt_free();
 
 			CHECK_EQUAL(1,n); 
 			CHECK_EQUAL(10,defaultTest);

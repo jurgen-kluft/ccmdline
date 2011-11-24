@@ -4,6 +4,7 @@
 #include "xbase\x_allocator.h"
 
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 

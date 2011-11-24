@@ -869,7 +869,7 @@ namespace xcore
 			char*	getKey	=	cutString(tempParams->mKey.mStr,tempParams->mKey.mLen);
 			s32 num = -1;
 
-			if (mOptProc->getNumReg() > 0)
+			if (mOptProc.getNumReg() > 0)
 			{
 				num = findVariable(getKey);
 			}
@@ -953,9 +953,9 @@ namespace xcore
 						int i = 0;
 						for (s32 j=0;j<mRegListNum;j++)
 						{
-							if(mOptProc->optlist[mRegList[j]].type==OPT_STRING)
+							if(mOptProc.getOptlist()[mRegList[j]].type==OPT_STRING)
 							{
-								mOptProc->optlist[mRegList[j]].value = &mStringList[i];
+								mOptProc.getOptlist()[mRegList[j]].value = &mStringList[i];
 								i++;							
 							}
 						}							
@@ -1006,7 +1006,7 @@ namespace xcore
 
 		s32 argc = mArgc;
 
-		mOptProc->opt(&argc,&mArgv);
+		mOptProc.opt(&argc,&mArgv);
 
 		mParameter->clear();
 		argvClear();
@@ -1035,29 +1035,29 @@ namespace xcore
 	s32			x_cmdline::findVariable(char* variableName)
 	{
 		ASSERT(variableName);
-		ASSERT(mOptProc->getNumReg()>0);
+		ASSERT(mOptProc.getNumReg()>0);
 
 		int len = x_strlen(variableName);
-		int num = mOptProc->getNumReg()-1;
+		int num = mOptProc.getNumReg()-1;
 		while(num >= 0)
 		{
 			/*len==1, so it's only a character*/
 			if(len	==	1)
 			{
 				/*here we first assume that the optlist.longname's length longer than 1*/
-				if(mOptProc->optlist[num].name	!=	NULL	&&	variableName[0]	==	mOptProc->optlist[num].name)
+				if(mOptProc.getOptlist()[num].name	!=	NULL	&&	variableName[0]	==	mOptProc.getOptlist()[num].name)
 				{
 					return	num;
 				}
 				/*if names are incompatible, then maybe the longnames are the same and the length is 1*/
-				else if(mOptProc->optlist[num].longname	!=	NULL	&&	x_strcmp(variableName,	mOptProc->optlist[num].longname)	==	0)
+				else if(mOptProc.getOptlist()[num].longname	!=	NULL	&&	x_strcmp(variableName,	mOptProc.getOptlist()[num].longname)	==	0)
 				{
 					return num;
 				}
 			}//end if
 			else
 			{
-				if(mOptProc->optlist[num].longname	!=	NULL	&&	x_strcmp(variableName, mOptProc->optlist[num].longname)	==	0)
+				if(mOptProc.getOptlist()[num].longname	!=	NULL	&&	x_strcmp(variableName, mOptProc.getOptlist()[num].longname)	==	0)
 					return num;
 			}//end else
 			num--;
@@ -1075,10 +1075,10 @@ namespace xcore
 		cout << "optValue   " << optValue << endl << "optNum   " << optNum << endl;
 		cout << "oldValue  " << xcmdline::Opt_Proc::optstrval(optNum) << endl;
 #endif
-		if (mOptProc->optlist[optNum].type	==	OPT_BOOL)
+		if (mOptProc.getOptlist()[optNum].type	==	OPT_BOOL)
 		{
 			xbool*	xptr;
-			xptr	=	(xbool*)mOptProc->optlist[optNum].value;
+			xptr	=	(xbool*)mOptProc.getOptlist()[optNum].value;
 			if(JudgeTrueOrFalse(optValue))
 			{
 				*xptr	=	(xbool)true;
@@ -1090,12 +1090,12 @@ namespace xcore
 			return;
 		}
 
-		if (mOptProc->optlist[optNum].value	&&	mOptProc->optlist[optNum].type	==	OPT_STRING)
+		if (mOptProc.getOptlist()[optNum].value	&&	mOptProc.getOptlist()[optNum].type	==	OPT_STRING)
 		{
-			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(mOptProc->optlist[optNum].value)));
+			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(mOptProc.getOptlist()[optNum].value)));
 		}
 
-		mOptProc->opt_setvalue(mOptProc->optlist[optNum].value,mOptProc->optlist[optNum].type,optValue);
+		mOptProc.opt_setvalue(mOptProc.getOptlist()[optNum].value,mOptProc.getOptlist()[optNum].type,optValue);
 
 #ifdef	OUTDEBUG
 		cout	<< "newValue  " << xcmdline::Opt_Proc::optstrval(optNum) << endl;
@@ -1161,534 +1161,534 @@ namespace xcore
 	{
 		s32 num = findVariable(name);
 		ASSERT(num != -1);
-		return mOptProc->optlist[num].value;
+		return mOptProc.getOptlist()[num].value;
 	}
 
 	s32 x_cmdline::reg_opt(char *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_CHAR,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_CHAR,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(char *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_CHAR,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_CHAR,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(char *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(char *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(char *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_CHAR,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_CHAR,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(char *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_CHAR,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_CHAR,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(char *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(char *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(s16 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_SHORT,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_SHORT,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_SHORT,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_SHORT,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_SHORT,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_SHORT,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_SHORT,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_SHORT,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s16 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_USHORT,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_USHORT,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_USHORT,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_USHORT,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(u16 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_USHORT,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_USHORT,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_USHORT,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_USHORT,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u16 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_INT,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_INT,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_INT,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_INT,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_INT,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_INT,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_INT,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_INT,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s32 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_UINT,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_UINT,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_UINT,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_UINT,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(u32 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_UINT,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_UINT,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_UINT,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_UINT,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u32 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_DOUBLE,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_DOUBLE,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_DOUBLE,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_DOUBLE,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_DOUBLE,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_DOUBLE,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_DOUBLE,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_DOUBLE,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f64 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_LONG,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_LONG,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_LONG,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_LONG,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_LONG,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_LONG,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_LONG,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_LONG,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(s64 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_ULONG,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_ULONG,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_ULONG,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_ULONG,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_ULONG,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_ULONG,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_ULONG,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_ULONG,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(u64 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(char **v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_STRING,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_STRING,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(char **v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_STRING,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_STRING,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_STRING,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_STRING,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_STRING,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_STRING,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(char **v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_FLOAT,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_FLOAT,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_FLOAT,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_FLOAT,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_FLOAT,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_FLOAT,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_FLOAT,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_FLOAT,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32	x_cmdline::reg_opt(f32 *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,xcmdline::OPT_UCHAR,c,n,B);
+		return mOptProc.optrega(v,xcmdline::OPT_UCHAR,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,xcmdline::OPT_UCHAR,n,B);
+		return mOptProc.optregsb(v,xcmdline::OPT_UCHAR,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, EOptType o, char c, char *n, char *B)
 	{
-		return mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		return mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, EOptType o, char *n, char *B)
 	{
-		return mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		return mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
 	}
 
 	s32	x_cmdline::reg_opt(unsigned char *v, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,xcmdline::OPT_UCHAR,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,xcmdline::OPT_UCHAR,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,xcmdline::OPT_UCHAR,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,xcmdline::OPT_UCHAR,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, EOptType o, EOptMode m, char c, char *n, char *B)
 	{
-		s32 i = mOptProc->optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optrega(v,(xcmdline::opt_TYPE)o,c,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
 	s32 x_cmdline::reg_opt(unsigned char *v, EOptType o, EOptMode m, char *n, char *B)
 	{
-		s32 i = mOptProc->optregsb(v,(xcmdline::opt_TYPE)o,n,B);
-		mOptProc->optmode_n(i,(xcmdline::opt_MODE)m);
+		s32 i = mOptProc.optregsb(v,(xcmdline::opt_TYPE)o,n,B);
+		mOptProc.optmode_n(i,(xcmdline::opt_MODE)m);
 		return i ;
 	}
 
@@ -1711,16 +1711,16 @@ namespace xcore
 	{
 		for (s32 i=0;i<mRegListNum;i++)
 		{
-			if (mOptProc->optlist[mRegList[i]].value && mOptProc->optlist[mRegList[i]].type == OPT_STRING)
+			if (mOptProc.getOptlist()[mRegList[i]].value && mOptProc.getOptlist()[mRegList[i]].type == OPT_STRING)
 			{
-				xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(mOptProc->optlist[mRegList[i]].value)));
-				mOptProc->optlist[mRegList[i]].value = NULL;
+				xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(*((char **)(mOptProc.getOptlist()[mRegList[i]].value)));
+				mOptProc.getOptlist()[mRegList[i]].value = NULL;
 				continue;
 			}
-			if(mOptProc->optlist[mRegList[i]].value)
+			if(mOptProc.getOptlist()[mRegList[i]].value)
 			{
-				xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(mOptProc->optlist[mRegList[i]].value);
-				mOptProc->optlist[mRegList[i]].value = NULL;
+				xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(mOptProc.getOptlist()[mRegList[i]].value);
+				mOptProc.getOptlist()[mRegList[i]].value = NULL;
 			}
 		}
 	}
@@ -1738,5 +1738,6 @@ namespace xcore
 			xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(mNewCmdline);
 		}
 		xcmdline::Opt_Allocator::get_opt_allocator()->deallocate(mArgv);
+
 	}
 }

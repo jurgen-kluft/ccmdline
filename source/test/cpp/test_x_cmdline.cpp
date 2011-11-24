@@ -4,6 +4,7 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
+#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 
@@ -36,8 +37,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32	day	=	OPT_GETVALUE(s32,d);
  
  			c.clearRegisteredOption();
- 
- 			xcmdline::Opt_Reg::opt_free();
+			
+			c.getOptProc()->opt_free();
 
 			CHECK_EQUAL((s32)2011, year);
 			CHECK_EQUAL((s32)9, month);
@@ -55,7 +56,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt_free();
 
 			CHECK_EQUAL((f32)3.14f, test);
 			CHECK_EQUAL((f32)12.352f, test2);
@@ -72,7 +73,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt_free();
 
 			CHECK_EQUAL('a', test);
 			CHECK_EQUAL('e', test2);
@@ -94,7 +95,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt_free();
 
 
 			CHECK_FALSE(result1);
@@ -113,7 +114,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
   
   			c.clearRegisteredOption();
   
-  			xcmdline::Opt_Reg::opt_free();
+  			c.getOptProc()->opt_free();
   
   			CHECK_FALSE(test);
   			CHECK_TRUE(test2);
@@ -123,12 +124,13 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32	   testHelp	=	0;
-
-			xcmdline::Opt_Reg::optrega(&testHelp,xcmdline::OPT_INT,'b',"testHelp","testHelp");
-			xcmdline::Opt_Reg::opthelp(&testHelp,"This is the testHelp help");
-			xcmdline::Opt_Reg::optVersion("1.0");
-
 			x_cmdline	c;
+
+			c.getOptProc()->optrega(&testHelp,xcmdline::OPT_INT,'b',"testHelp","testHelp");
+			c.getOptProc()->opthelp(&testHelp,"This is the testHelp help");
+			c.getOptProc()->optVersion("1.0");
+
+			
 			c.parse("--testHelp 325 --version ?b");
 			c.regAndSetValue();
 
@@ -136,7 +138,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt_free();
 
 			CHECK_EQUAL((s32)325, testHelp);
 		}
@@ -182,7 +184,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			c.clearRegisteredOption();
 
-			xcmdline::Opt_Reg::opt_free();
+			c.getOptProc()->opt_free();
 		}
 	}
 }

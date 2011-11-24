@@ -2,7 +2,9 @@
 
 #include "xcmdline\xcmdline.h"
 #include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_p.h"
+#include "xcmdline\private\opt_proc.h"
+#include "xcmdline\private\opt_util.h"
+#include "xcmdline\private\opt_num.h"
 
 #include "xunittest\xunittest.h"
 #include "xcmdline\private\ag.h"
@@ -23,17 +25,19 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			s64    s64Var	=	0;
 			s8     s8Var	=	0;
 
-			xcmdline::Opt_Reg::optrega(&s32Var,xcmdline::OPT_INT,'a',"s32Var","Register a s32 var");
-			xcmdline::Opt_Reg::opthelp(&s32Var,"This is the help for s32Var.");
-			xcmdline::Opt_Reg::optmode(&s32Var,xcmdline::OPT_POSITIONAL);
+			xcmdline::Opt_Proc opt_proc;
 
-			xcmdline::Opt_Reg::optrega(&s64Var,xcmdline::OPT_LONG,'b',"s64Var","Register a s64 var");
-			xcmdline::Opt_Reg::optmode(&s64Var,xcmdline::OPT_POSITIONAL);
+			opt_proc.optrega(&s32Var,xcmdline::OPT_INT,'a',"s32Var","Register a s32 var");
+			opt_proc.opthelp(&s32Var,"This is the help for s32Var.");
+			opt_proc.optmode(&s32Var,xcmdline::OPT_POSITIONAL);
 
-			xcmdline::Opt_Reg::optrega(&s8Var,xcmdline::OPT_BYTE,'c',"s8Var","Register a s8 var");
+			opt_proc.optrega(&s64Var,xcmdline::OPT_LONG,'b',"s64Var","Register a s64 var");
+			opt_proc.optmode(&s64Var,xcmdline::OPT_POSITIONAL);
+
+			opt_proc.optrega(&s8Var,xcmdline::OPT_BYTE,'c',"s8Var","Register a s8 var");
 
 
-			xcmdline::Opt_Reg::optTitle("Test_setTitle_opt_p");
+			opt_proc.optTitle("Test_setTitle_opt_p");
 
 
 			char*	argv[] =
@@ -50,21 +54,21 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 
 			char** argvp = argv;
 			char*** argvv = (char***)(&argvp);
-			xcmdline::Opt_Proc::opt(&argc, argvv);
+			opt_proc.opt(&argc, argvv);
 
-			xcmdline::Opt_Proc::opt_get_help('a');
-			char* title = xcmdline::Opt_Proc::optgetTitle();
+			opt_proc.opt_get_help('a');
+			char* title = opt_proc.optgetTitle();
 			xbool result = x_strcmp("Test_setTitle_opt_p",title);
 
-			s32 n = xcmdline::Opt_Proc::opt_char_number('b');
-			char* m = xcmdline::Opt_Proc::optstrval(0);
+			s32 n = opt_proc.opt_char_number('b');
+			char* m = opt_proc.optstrval(0);
 			xbool result_2 = x_strcmp("12",m);
 
-			char* k = xcmdline::Opt_Proc::optstrtyp(2);
+			char* k = opt_proc.optstrtyp(2);
 			xbool result_3 = x_strcmp("<s8>",k);
 
-			xcmdline::Opt_Proc::short_usage();
-			xcmdline::Opt_Proc::long_usage();
+			opt_proc.short_usage();
+			opt_proc.long_usage();
 
 			char* string1Temp;
 			string1Temp = (char* )xcmdline::Opt_Allocator::get_opt_allocator()->allocate(sizeof("aaa"),4);
@@ -80,7 +84,7 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			char* justifyTest = "Today is Monday.\n      Now I want to sleep.";
  			char* justifyResult = xcmdline::Opt_Util::opt_justify(justifyTest,10,5,5,"aaa");
 
- 			xcmdline::Opt_Reg::opt_free();
+ 			opt_proc.opt_free();
  
 			CHECK_FALSE(result);
 			CHECK_EQUAL(1,n);
@@ -102,12 +106,14 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			s64    testParseDelim  =	0;
 			s32    testParseLongDelim	=	0;
 
-			xcmdline::Opt_Reg::optrega(&testParsePos,xcmdline::OPT_INT,'d',"testParsePos","Register a s32 var");
-			xcmdline::Opt_Reg::optmode(&testParsePos,xcmdline::OPT_POSITIONAL);
+			xcmdline::Opt_Proc opt_proc;
 
-			xcmdline::Opt_Reg::optrega(&testParseDelim,xcmdline::OPT_LONG,'e',"testParseDelim","Register a s32 var");
+			opt_proc.optrega(&testParsePos,xcmdline::OPT_INT,'d',"testParsePos","Register a s32 var");
+			opt_proc.optmode(&testParsePos,xcmdline::OPT_POSITIONAL);
 
-			xcmdline::Opt_Reg::optrega(&testParseLongDelim,xcmdline::OPT_INT,'f',"testParseLongDelim","Register a s32 var");
+			opt_proc.optrega(&testParseDelim,xcmdline::OPT_LONG,'e',"testParseDelim","Register a s32 var");
+
+			opt_proc.optrega(&testParseLongDelim,xcmdline::OPT_INT,'f',"testParseLongDelim","Register a s32 var");
 
 			char*	ag[] = 
 			{
@@ -130,16 +136,16 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 
 			xcmdline::xargv* forTestLongDelim = xcmdline::Ag_Func::ag_new(1,ag_3);
 
-			xcmdline::Opt_Proc::opt_parse_positional(forTestPos);
- 			xcmdline::Opt_Proc::opt_parse_delim(forTestDelim);
- 			xcmdline::Opt_Proc::opt_parse_longdelim(forTestLongDelim);
+			opt_proc.opt_parse_positional(forTestPos);
+ 			opt_proc.opt_parse_delim(forTestDelim);
+ 			opt_proc.opt_parse_longdelim(forTestLongDelim);
 
 			CHECK_EQUAL(14,testParsePos);
  			CHECK_EQUAL(25,testParseDelim);
  			CHECK_EQUAL(78,testParseLongDelim);
 
 
-			xcmdline::Opt_Reg::opt_free();
+			opt_proc.opt_free();
 
 			xcmdline::Ag_Func::ag_free(forTestPos);
  			xcmdline::Ag_Func::ag_free(forTestDelim);
@@ -176,9 +182,11 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 			s8     optProcessTestB	=	0;
 			f64    optProcessTestC	=	0.0;
 
-			xcmdline::Opt_Reg::optrega(&optProcessTestA,xcmdline::OPT_INT,'a',"ProcessTestA","Register a s32 var");
-			xcmdline::Opt_Reg::optrega(&optProcessTestB,xcmdline::OPT_BYTE,'b',"ProcessTestB","Register a s8 var");
-			xcmdline::Opt_Reg::optrega(&optProcessTestC,xcmdline::OPT_DOUBLE,'c',"ProcessTestC","Register a f64 var");
+			xcmdline::Opt_Proc opt_proc;
+
+			opt_proc.optrega(&optProcessTestA,xcmdline::OPT_INT,'a',"ProcessTestA","Register a s32 var");
+			opt_proc.optrega(&optProcessTestB,xcmdline::OPT_BYTE,'b',"ProcessTestB","Register a s8 var");
+			opt_proc.optrega(&optProcessTestC,xcmdline::OPT_DOUBLE,'c',"ProcessTestC","Register a f64 var");
 		
 			char*	ag[] =
 			{
@@ -187,19 +195,19 @@ UNITTEST_SUITE_BEGIN(xcmdline_tests_opt_p)
 				"-b-9"
 			};
 
-			xcmdline::Opt_Proc::opt_process(2,ag);
+			opt_proc.opt_process(2,ag);
 
 			char programNameTest[] = "xcmdline_test.exe";
-			char* programName = xcmdline::Opt_Proc::short_progname(programNameTest);
+			char* programName =opt_proc.short_progname(programNameTest);
 			xbool result = x_strcmp("xcmdline_test",programName);
 
 			char* lineProcessTest = "--ProcessTestC=3.324";
-			xcmdline::Opt_Proc::opt_lineprocess(lineProcessTest);
+			opt_proc.opt_lineprocess(lineProcessTest);
 
-			xcmdline::Opt_Proc::opt_help(NULL);
-			xcmdline::Opt_Proc::opt_usage();
+			opt_proc.opt_help(NULL);
+			opt_proc.opt_usage();
 
- 			xcmdline::Opt_Reg::opt_free();
+ 			opt_proc.opt_free();
 
 			CHECK_EQUAL(98,optProcessTestA);
 			CHECK_EQUAL(-9,optProcessTestB);

@@ -314,6 +314,7 @@ namespace xcore
 			void		optExitNumber(s32 n);
 
 			void		optWriteVersion();
+			Option_t*getOptlist()	{return optlist;}
 
 		protected:
 			s32			getopts(s32 argc, char **argv);
