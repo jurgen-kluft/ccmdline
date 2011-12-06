@@ -339,8 +339,6 @@ namespace xcore
 
 			s32			opt_fileflag;
 			s32			opt_menu_enabled;
-			char		*opt_filename;
-			char		*opt_defaultfile;
 			char		*opt_titlestring;
 			char		*opt_usagestring;
 			char		*opt_envstring;

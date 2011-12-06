@@ -27,8 +27,6 @@ namespace xcore
 			, opt_exit_number(0)
 			, opt_fileflag(OPT_FALSE)
 			, opt_menu_enabled(OPT_TRUE)
-			, opt_filename(NULL)
-			, opt_defaultfile(NULL)
 			, opt_titlestring(NULL)
 			, opt_usagestring(NULL)
 			, opt_envstring(NULL)
@@ -41,7 +39,6 @@ namespace xcore
 		* Static Function prototypes 
 		*/
 
-		static char*	append_string(char *, char *);
 		static s32		line2argv(s32 *, char ***, char *);
 		static s32		l2a(char *, char **);
 		static s32		break_word(s32, char *);
@@ -52,8 +49,6 @@ namespace xcore
 
 		Opt_Proc::~Opt_Proc()
 		{
-			OPT_FREE( opt_filename );
-			OPT_FREE( opt_defaultfile );
 			OPT_FREE( opt_titlestring );
 			OPT_FREE( opt_usagestring );
 			OPT_FREE( opt_envstring );
@@ -141,8 +136,6 @@ namespace xcore
 			if (ISEMPTYSTRING(getProgramName()))
 				optProgName(argv[0]);
 
-			opt_filename = append_string(getProgramName(),OPT_EXT);
-
 			/* Begin options processing */
 			/* ------------------------ */
 
@@ -177,9 +170,6 @@ namespace xcore
 			if (ISEMPTYSTRING(opt_program_name))
 				opt_program_name = short_progname(argv[0]);
 
-			//opt_filename = append_string(opt_program_name,OPT_EXT);
-			//opt_readline_init(opt_program_name);
-
 			/* Begin options processing */
 			/* ------------------------ */
 
@@ -210,22 +200,8 @@ namespace xcore
 										* that will ruin the new argv strings
 										*/
 			}
-			Ag_Func::ag_free(ag);
 
-			/* Now that we are done processing, free what we no longer need */
-			OPT_FREE(opt_filename);
-		}
-		static char * append_string(char *s, char *t)
-		{
-			/* input two strings "s" and "t":
-			* concatenates them to get string "st"
-			* which it allocates space for and returns
-			*/
-			s32 sts = x_strlen(s)+x_strlen(t)+1;
-			char *st = (char *)Opt_Allocator::get_opt_allocator()->allocate( sts, 4 );
-			x_strcpy(st,sts,s);
-			x_strcat(st,sts,t);
-			return(st);
+			Ag_Func::ag_free(ag);
 		}
 
 		void	Opt_Proc::opt_get_help(char c)
@@ -862,10 +838,6 @@ namespace xcore
 			{
 				opt_mess_2("\t%c %-20s\n",DELIM,"Options delimiter"); 
 				opt_mess_2("\t%c %-20s\n",HELPCH,"Help");
-				opt_mess_3("\t%c<filename> %-20s [%s]\n",OPTFROMFILE,"Get options from file",opt_filename);
-				opt_mess_4("\t%c%c %-2s [%s]\n",OPTFROMFILE,OPTFROMFILE,"Get options from file",opt_filename);
-				opt_mess_2("\t%c<filename> %-20s\n",OPTTOFILE,"Put options in file");
-				opt_mess_4("\t%c%c %-2s [%s]\n",OPTTOFILE,OPTTOFILE,"Put options in file",opt_filename);
 			} 
 			else 
 			{
