@@ -9,7 +9,7 @@
 // INCLUDES
 //==============================================================================
 #include "xbase\x_types.h"
-#include "xcmdline\private\opt_proc.h"
+
 //==============================================================================
 // xcore namespace
 //==============================================================================
@@ -17,10 +17,10 @@ namespace xcore
 {
 	// Forward declares
 	struct xargv;
+	class x_iallocator;
 
 	namespace xcmdline
 	{
-		class Opt_Proc;
 		struct xparams;
 	}
 
@@ -40,123 +40,7 @@ namespace xcore
 		/*Register variables and set value by xparams*/
 		xbool			regAndSetValue();
 
-		/*get the optlist*/
-		xcmdline::Opt_Proc*	getOptProc() { return &mOptProc;}
-
-		/*free memory*/
-		void			clearRegisteredOption();
-
-		enum EOptType
-		{
-			OPT_NUL,
-			OPT_INT,        OPT_SHORT,      OPT_LONG,       OPT_CHAR,
-			OPT_UINT,       OPT_USHORT,     OPT_ULONG,      OPT_UCHAR,
-
-			// Add this two types to deal with the s8 and u8
-			OPT_BYTE,       OPT_UBYTE,
-
-			OPT_FLOAT,      OPT_DOUBLE,
-			OPT_TOGGLE,     OPT_BOOL,
-			OPT_NEGTOGGLE,  OPT_NEGBOOL,    OPT_INTLEVEL,       
-			OPT_STRING,     
-		};
-
-		enum EOptMode
-		{
-			OPT_POSITIONAL,
-			OPT_DELIMITED,
-			OPT_FLEXIBLE
-		};
-
-		s32				reg_opt(char *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(char *v, char *n, char *B=0);
-		s32				reg_opt(char *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(char *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(char *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(char *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(char *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(char *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s16 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(s16 *v, char *n, char *B=0);
-		s32				reg_opt(s16 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(s16 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(s16 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s16 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s16 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s16 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u16 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(u16 *v, char *n, char *B=0);
-		s32				reg_opt(u16 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(u16 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(u16 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u16 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u16 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u16 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s32 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(s32 *v, char *n, char *B=0);
-		s32				reg_opt(s32 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(s32 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(s32 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s32 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s32 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s32 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u32 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(u32 *v, char *n, char *B=0);
-		s32				reg_opt(u32 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(u32 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(u32 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u32 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u32 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u32 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(f64 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(f64 *v, char *n, char *B=0);
-		s32				reg_opt(f64 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(f64 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(f64 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(f64 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(f64 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(f64 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s64 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(s64 *v, char *n, char *B=0);
-		s32				reg_opt(s64 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(s64 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(s64 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s64 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(s64 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(s64 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u64 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(u64 *v, char *n, char *B=0);
-		s32				reg_opt(u64 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(u64 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(u64 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u64 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(u64 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(u64 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(char **v, char c, char *n=0, char *B=0);
-		s32				reg_opt(char **v, char *n, char *B=0);
-		s32				reg_opt(char **v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(char **v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(char **v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(char **v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(char **v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(char **v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(f32 *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(f32 *v, char *n, char *B=0);
-		s32				reg_opt(f32 *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(f32 *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(f32 *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(f32 *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(f32 *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(f32 *v, EOptType o, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(unsigned char *v, char c, char *n=0, char *B=0);
-		s32				reg_opt(unsigned char *v, char *n, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptType o, char c, char *n=0, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptType o, char *n, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptMode m, char *n, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptType o, EOptMode m, char c, char *n=0, char *B=0);
-		s32				reg_opt(unsigned char *v, EOptType o, EOptMode m, char *n, char *B=0);
-
+		
 	private:
 		xargv*			mArgVector;
 		char**			mArgv;
@@ -170,28 +54,10 @@ namespace xcore
 		int				mTotalAllocArgvNum;
 		const int		mAllocArgvBlockSize;
 
-		xcmdline::Opt_Proc	mOptProc;
-
-		/*clear the argv allocated by changeParamToArgv()*/
-		void			argvClear();
-
-		/*Change the param to argv,argc in order to call opt()*/
-		void			changeParamToArgv();
-
-		/*Remember what argv is automatically registered*/
-		void			setRegList(s32 regNum);
-
-		s32				findVariable(char*	variableName);
+		x_iallocator*	mAllocator;
 
 		/*change "true" "false" into 1,0*/
 		xbool			JudgeTrueOrFalse(char* _string);
-
-
-
-		/*Since we use opt() to process the argv, we don't need to write 
-		  the setvalue. So this two functions are not used now.*/
-		void			setValueForOpt(xcmdline::xparams*	parameters);
-		void			setValue(s32	optNum,	char* optValue);
 
 	};
 
