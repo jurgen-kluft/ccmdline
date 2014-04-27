@@ -18,22 +18,105 @@ namespace xcore
 			{
 
 			}
+			xparamstr(char* str, s32 len)
+				: mStr(str)
+				, mLen(len)
+			{
+			}
 
-			const char*		mStr;
-			s32				mLen;
+			bool	empty() const					{ return mStr == NULL || mLen == 0; }
+			s32		len() const						{ return mLen; }
 
 			void	clear()
 			{
 				mStr = NULL;
 				mLen = 0;
 			}
+
+			bool	startsWith(char c) const
+			{
+				if (empty())
+					return false;
+				return mStr[0] == c;
+			}
+
+			bool	endsWith(char c) const
+			{
+				if (empty())
+					return false;
+				return mStr[mLen - 1] == c;
+			}
+
+			void	trim(char c)
+			{
+				if (startsWith(c))
+				{
+					mStr++;
+					--mLen;
+				}
+				if (endsWith(c))
+				{
+					--mLen;
+				}
+			}
+
+			void	set(xparamstr const& other)
+			{
+				mStr = other.mStr;
+				mLen = other.mLen;
+			}
+
+			s32		compare(xparamstr const& other) const
+			{
+				return x_strCompareNoCase(mStr, mLen, other.mStr, other.mLen);
+			}
+
+		private:
+			char*	mStr;
+			s32		mLen;
 		};
 
 		struct xparam
 		{
 		public:
-			xparam() : mNext(NULL), mPrev(NULL)	{mValueType = TYPE_OTHER;}
+			inline			xparam() : mNext(NULL), mPrev(NULL)	{mValueType = TYPE_UNSUPPORTED;}
+			inline			xparam(xparamstr const& key, xparamstr const& value) 
+				: mKey(key)
+				, mValue(value)
+				, mNext(NULL)
+				, mPrev(NULL)
+			{
+				mValueType = TYPE_UNSUPPORTED;
+			}
 
+			void			insertAfter(xparam* new_node)
+			{
+				new_node->mNext = this->mNext;
+				if (this->mNext != NULL)
+				{
+					new_node->mPrev = this->mNext->mPrev;
+					this->mNext->mPrev = new_node;
+				}
+				this->mNext = new_node;
+			}
+
+			void			insertBefore(xparam* new_node)
+			{
+				new_node->mPrev = NULL;
+				new_node->mNext = this;
+				this->mPrev = new_node;
+			}
+
+			xparam*			next()													{ return mNext; }
+
+			void			overrideValue(xparamstr const& value)					{ mValue = value; }
+
+			void*			operator new(xcore::xsize_t num_bytes, void* mem)		{ return mem; }
+			void			operator delete(void* pMem, void* )						{ }
+
+			s32				compareKey(const xparamstr& otherkey) const				{ return mKey.compare(otherkey); }
+
+		private:
 			xparamstr		mKey;
 			xparamstr		mValue;
 			enum EValueType
@@ -43,27 +126,27 @@ namespace xcore
 				TYPE_FLOAT,
 				TYPE_STRING,
 				TYPE_CHAR,
-				TYPE_OTHER						//like --version,?a,etc				
+				TYPE_UNSUPPORTED
 			};
 			EValueType		mValueType;
 			xparam*			mNext;
 			xparam*			mPrev;
-
-			void*		operator new(xcore::xsize_t num_bytes, void* mem)		{ return mem; }
-			void			operator delete(void* pMem, void* )			{ }
-
 		};
 
 		struct xparams
 		{
-			xparams() 
-				: mParams(NULL)
+			xparams(x_iallocator* allocator) 
+				: mParametersString(NULL)
+				, mAllocator(allocator)
+				, mParams(NULL)
 				, mCaseSensitive(true)
 			{
 
 			}
+
+			XCORE_CLASS_PLACEMENT_NEW_DELETE
 			
-			const char*		mParametersString;
+			char*			mParametersString;
 			x_iallocator*	mAllocator;
 			xparam*			mParams;
 			xparamstr		mCmd;
@@ -73,67 +156,18 @@ namespace xcore
 			{
 				mCmd.clear();
 				mCaseSensitive = true;
-				// deallocate every node
+
+				// deallocate parameter list
 				xparam* i = mParams;
 				while (i!=NULL)
 				{
 					xparam* d = i;
-					i = i->mNext;
+					i = i->next();
 					
 					d->~xparam();
 					mAllocator->deallocate(d);
 				}
 				mParams = NULL;
-			}
-
-			void			add(xparam const& _param)
-			{
-				xparam* p = NULL;
-				xparam* i = mParams;
-				while (i!=NULL)
-				{
-					s32 e = x_strCompareNoCase(_param.mKey.mStr, _param.mKey.mLen, i->mKey.mStr, i->mKey.mLen);
-					if (e == 0)
-					{
-						i->mValue.mStr = _param.mValue.mStr;
-						i->mValue.mLen = _param.mValue.mLen;
-						return;
-					}
-					else if (e == -1)
-						break;
-					p = i;
-					i = i->mNext;
-				}
-
-				// Key doesn't exist yet
-				void* new_node_mem = mAllocator->allocate(sizeof(xparam), 4);
-				xparam* new_node = new (new_node_mem) xparam();
-				new_node->mKey = _param.mKey;
-				new_node->mValue = _param.mValue;
-				new_node->mValueType = _param.mValueType;
-
-				if (p!=NULL)
-				{
-					// Insert after p
-					new_node->mNext = p->mNext;
-					if (p->mNext != NULL)
-					{
-						new_node->mPrev = p->mNext->mPrev;
-						p->mNext->mPrev = new_node;
-					}
-					p->mNext = new_node;
-				}
-				else if (mParams==NULL)
-				{
-					mParams = new_node;
-				}
-				else if (i!=NULL)
-				{
-					// Insert before head
-					new_node->mNext = i;
-					i->mPrev = new_node;
-					mParams = new_node;
-				}
 			}
 
 			void			add(xparamstr const& _key, xparamstr const& _value)
@@ -142,46 +176,40 @@ namespace xcore
 				xparam* i = mParams;
 				while (i!=NULL)
 				{
-					s32 e = x_strCompareNoCase(_key.mStr, _key.mLen, i->mKey.mStr, i->mKey.mLen);
+					s32 e = i->compareKey(_key);
 					if (e == 0)
 					{
-						i->mValue.mStr = _value.mStr;
-						i->mValue.mLen = _value.mLen;
+						i->overrideValue(_value);
 						return;
 					}
-					else if (e == -1)
+					else if (e == 1)
+					{
 						break;
-					p = i;
-					i = i->mNext;
+					}
+					else
+					{
+						p = i;
+						i = i->next();
+					}
 				}
 
 				// Key doesn't exist yet
 				void* new_node_mem = mAllocator->allocate(sizeof(xparam), 4);
-				xparam* new_node = new (new_node_mem) xparam();
-				new_node->mKey = _key;
-				new_node->mValue = _value;
+				xparam* new_node = new (new_node_mem) xparam(_key, _value);
 
-				if (p!=NULL)
-				{
-					// Insert after p
-					new_node->mNext = p->mNext;
-					if (p->mNext != NULL)
-					{
-						new_node->mPrev = p->mNext->mPrev;
-						p->mNext->mPrev = new_node;
-					}
-					p->mNext = new_node;
-				}
-				else if (mParams==NULL)
+				if (mParams == NULL)
 				{
 					mParams = new_node;
+				}
+				else if (p!=NULL)
+				{
+					p->insertAfter(new_node);
 				}
 				else if (i!=NULL)
 				{
-					// Insert before head
-					new_node->mNext = i;
-					i->mPrev = new_node;
-					mParams = new_node;
+					i->insertBefore(new_node);
+					if (i==mParams)
+						mParams = new_node;
 				}
 			}
 		};
@@ -190,14 +218,20 @@ namespace xcore
 		class xparser
 		{
 		public:
-			xbool			parse(const char* parameters_string, xparams& outParams);
+			inline			xparser(x_iallocator* allocator)
+				: mAllocator(allocator)
+				, mParametersStringLen(0)
+				, mParametersString(NULL)
+			{
+				x_strcpy(mValueBooleanTrue, sizeof(mValueBooleanTrue), "true");
+			}
+
+			xbool			parse(char* parameters_string, xparams& outParams);
 
 		private:
 			xbool			matchParameters(s32 pos, s32 offset, xparams& params) const;
 			xbool			matchParameter(s32 pos, s32& ioOffset, xparams& params) const;
-			xbool			matchParameter(s32 pos, s32&	ioOffset, xparams& params, int overload) const;
 			xbool			matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const;
-			xbool			matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const;
 			xbool			matchParameterName(s32 pos, s32& ioOffset) const;
 			xbool			matchParameterSeparator(s32 pos) const;
 			xbool			matchParameterValue(s32 pos, s32& ioOffset) const;
@@ -223,14 +257,17 @@ namespace xcore
 			xbool			matchSpace(s32 pos) const;
 			xbool			matchQuote(s32 pos) const;
 			xbool			matchDoubleQuote(s32 pos) const;
+			xbool			matchTerminator(s32 pos)  const;
 
 			x_iallocator*	mAllocator;
 			s32				mParametersStringLen;
-			const char*		mParametersString;
+			char*			mParametersString;
+
+			char			mValueBooleanTrue[5];
 		};
 		
 
-		xbool	xparser::parse(const char* parameters_string, xparams& outParams)
+		xbool	xparser::parse(char* parameters_string, xparams& outParams)
 		{
 			if (parameters_string==NULL)
 				return false;
@@ -247,12 +284,12 @@ namespace xcore
 				if (matchParameterValueFirstChar(offset))
 				{
 					//local definition: pos
-					s32 pos = advanceWhile(offset, &xparser::matchParameterValueChar);
+					s32 tmp_pos = advanceWhile(offset, &xparser::matchParameterValueChar);
 
-					outParams.mCmd.mStr = mParametersString + offset;
-					outParams.mCmd.mLen = pos - offset;
+					xparamstr param(mParametersString + offset, tmp_pos - offset);
+					outParams.mCmd.set(param);
 
-					offset = pos;
+					offset = tmp_pos;
 					//pos released
 				}
 
@@ -274,7 +311,7 @@ namespace xcore
 		xbool	xparser::matchParameters(s32 pos, s32 offset, xparams& params) const
 		{
 			/*overload matchParameter function*/
-			while (pos < mParametersStringLen && matchParameter(pos, offset, params,1))
+			while (pos < mParametersStringLen && matchParameter(pos, offset, params))
 			{
 				pos = offset;
 				pos = advanceWhile(pos, &xparser::matchSpace);
@@ -285,44 +322,6 @@ namespace xcore
 				return true;
 			}
 
-			return false;
-		}
-
-		/*just overload the matchParameters to fit for the xparam argument in the matchParameterStruct function.*/
-		xbool		xparser::matchParameter(s32 pos, s32&	ioOffset, xparams& params, int overload) const
-		{
-			if (matchSlash(pos))
-			{
-				pos++;
-			}
-			else if (matchMinus(pos))
-			{
-				pos++;
-
-				if (matchMinus(pos))
-				{
-					pos++;
-				}
-			}
-			else if(!matchQuestion(pos))
-			{
-				return false;
-			}
-
-			xparam parameters;
-			if (matchParameterStruct(pos, ioOffset, parameters))
-			{
-				params.add(parameters);
-
-				pos = ioOffset;
-
-				// Error? (pos < (mParametersString.Length-1))
-				if (pos < mParametersStringLen && !matchSpace(pos))
-				{
-					return false;
-				}
-				return true;
-			}
 			return false;
 		}
 
@@ -404,90 +403,12 @@ namespace xcore
 			return true;
 		}
 
-		xbool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparam& params) const
-		{
-			if (matchParameterName(pos, ioOffset))
-			{
-				params.mKey.mStr	=	mParametersString	+	pos;
-				params.mKey.mLen	=	ioOffset	-	pos;
-
-				params.mValue.mStr	=	"true";
-				params.mValue.mLen	=	x_strlen(params.mValue.mStr);
-
-				pos = ioOffset;
-
-				if (pos < mParametersStringLen)
-				{
-					if (matchParameterSeparator(pos))
-					{
-						while (matchSpace(pos + 1)) 
-							pos++;
-
-						if (matchParameterValue(pos+1, ioOffset))
-						{
-							pos++;
-
-							params.mValue.mStr = mParametersString + pos;
-							params.mValue.mLen = ioOffset - pos;
-
-							if (params.mValue.mLen == 0)
-							{
-								params.mValue.mStr = "true";
-								params.mValue.mLen = x_strlen(params.mValue.mStr);
-							}
-							else if (params.mValue.mStr[0] == '\'' )
-							{
-								params.mValueType = xcmdline::xparam::TYPE_CHAR;
-								params.mValue.mStr += 1;
-								params.mValue.mLen -= 1;
-								if (params.mValue.mStr[params.mValue.mLen-1] == '\'')
-									params.mValue.mLen -= 1;
-							}
-							else if( params.mValue.mStr[0] == '\"')
-							{
-								params.mValueType = xcmdline::xparam::TYPE_STRING;
-								params.mValue.mStr += 1;
-								params.mValue.mLen -= 1;
-								if (params.mValue.mStr[params.mValue.mLen-1] == '\"')
-									params.mValue.mLen -= 1;
-							}
-							else if (matchBoolean(params.mValue.mStr,params.mValue.mLen))
-							{
-								params.mValueType = xcmdline::xparam::TYPE_BOOL;
-							}
-							else if (matchFloatNumber(params.mValue.mStr,params.mValue.mLen))
-							{
-								params.mValueType = xcmdline::xparam::TYPE_FLOAT;
-								if(params.mValue.mStr[params.mValue.mLen-1] == 'f' ||
-									params.mValue.mStr[params.mValue.mLen-1] == 'F')
-									params.mValue.mLen -= 1;
-							}
-							else if (matchInteger(params.mValue.mStr,params.mValue.mLen))
-							{
-								params.mValueType = xcmdline::xparam::TYPE_INT;
-							}
-
-							pos = ioOffset;
-						}
-					}
-				}
-
-				ioOffset = pos;
-				return true;
-			}
-
-			return false;
-		}
-
 		xbool	xparser::matchParameterStruct(s32 pos, s32& ioOffset, xparamstr& outName, xparamstr& outValue) const
 		{
 			if (matchParameterName(pos, ioOffset))
 			{
-				outName.mStr = mParametersString + pos;
-				outName.mLen = ioOffset - pos;
-
-				outValue.mStr = "true";
-				outValue.mLen = x_strlen(outValue.mStr);
+				outName = xparamstr(mParametersString + pos, ioOffset - pos);
+				outValue = xparamstr((char*)&mValueBooleanTrue[0], x_strlen(mValueBooleanTrue));
 
 				pos = ioOffset;
 
@@ -495,27 +416,25 @@ namespace xcore
 				{
 					if (matchParameterSeparator(pos))
 					{
-						while (matchSpace(pos + 1)) 
+						pos++;
+						while (matchSpace(pos)) 
 							pos++;
 
-						if (matchParameterValue(pos+1, ioOffset))
+						if (matchParameterValue(pos, ioOffset))
 						{
-							pos++;
+							outValue = xparamstr(mParametersString + pos, ioOffset - pos);
 
-							outValue.mStr = mParametersString + pos;
-							outValue.mLen = ioOffset - pos;
-
-							if (outValue.mLen == 0)
+							if (outValue.len() == 0)
 							{
-								outValue.mStr = "true";
-								outValue.mLen = x_strlen(outValue.mStr);
+								outValue = xparamstr((char*)&mValueBooleanTrue[0], x_strlen(mValueBooleanTrue));
 							}
-							else if (outValue.mStr[0] == '\'' || outValue.mStr[0] == '\"')
+							else if (outValue.startsWith('\''))
 							{
-								outValue.mStr += 1;
-								outValue.mLen -= 1;
-								if (outValue.mStr[outValue.mLen-1] == '\'' || outValue.mStr[outValue.mLen-1] == '\"')
-									outValue.mLen -= 1;
+								outValue.trim('\'');
+							}
+							else if (outValue.startsWith('\"'))
+							{
+								outValue.trim('\"');
 							}
 
 							pos = ioOffset;
@@ -663,64 +582,79 @@ namespace xcore
 		{
 			return match(pos, '\"');
 		}
-	}
-	
-	xbool			x_cmdline::JudgeTrueOrFalse(char* _string)
-	{
-		ASSERT(_string!=NULL);
-		ASSERT(x_strcmp(_string,"true")==0 || x_strcmp(_string,"false")==0);
 
-		if(x_strcmp("true",_string)==0)
-			return true;
-		else 	if(x_strcmp("false",_string)==0)
-			return false;
-		/*the function should never go to here*/
-		else
-			return false;
+		xbool xparser::matchTerminator(s32 pos) const
+		{
+			return match(pos, '\0');
+		}
+
 	}
 
-
-
-	xbool			x_cmdline::parse(const char* cmdline)
+	xbool			x_cmdline::parse()
 	{
-		xcmdline::xparser parser;
-		xbool res = parser.parse(cmdline, *mParameter);
+		xcmdline::xparser parser(mAllocator);
+		xbool res = parser.parse(mCmdline, *mParameter);
 
-
-		/*now cmdline are correctly parsed and stored in the params
-		* what we should do now is set the values according the identifier
-		*/
+		// now cmdline is correctly parsed and stored in the params
+		// what we should do now is set the values according the identifier
 
 		return res;
 	}
 
+	xbool			x_cmdline::parse(const char* cmdline)
+	{
+		s32 const cmdline_len = x_strlen(cmdline);
+		mCmdline = (char*)mAllocator->allocate(cmdline_len + 1,4);
+		x_strcpy(mCmdline, cmdline_len+1, cmdline);
+		return parse();
+	}
 
-	x_cmdline::x_cmdline():mAllocArgvBlockSize(10)
+	xbool			x_cmdline::parse(s32 argc, const char** argv)
+	{
+		s32 cmdline_len = 0;
+		for (s32 i=0; i<argc; ++i)
+		{
+			const char* arg = argv[i];
+			s32 const arg_len = x_strlen(arg);
+			cmdline_len += arg_len + 1; 
+		}
+
+		s32 const cmdline_len_alloc = cmdline_len;
+		mCmdline = (char*)mAllocator->allocate(cmdline_len_alloc+ 1,4);
+		mCmdline[cmdline_len_alloc] = '\0';
+
+		cmdline_len = 0;
+		for (s32 i=0; i<argc; ++i)
+		{
+			const char* arg = argv[i];
+			x_strcpy(&mCmdline[cmdline_len], cmdline_len_alloc - cmdline_len, arg);
+			s32 const arg_len = x_strlen(arg);
+			mCmdline[cmdline_len + arg_len] = ' ';
+			cmdline_len += arg_len + 1; 
+		}
+
+		return parse();
+	}
+
+	x_cmdline::x_cmdline(x_iallocator* allocator)
+		: mAllocator(allocator)
+		, mCmdline(NULL)
 	{ 
-		mParameter = (xcmdline::xparams*)mAllocator->allocate(sizeof(xcmdline::xparams),4);
-		mParameter->mParams = NULL;
-		mParameter->mParametersString = NULL;
-		mRegList = NULL;
-		mRegListNum = 0;
-		mNewCmdline = NULL;
-		mArgc = 0;
-		mArgv = (char**)mAllocator->allocate(sizeof(char*),4);
-		mStringListNum = 0;
-		mStringList = NULL;
-		mTotalAllocArgvNum = 1;
+		void* params_mem = mAllocator->allocate(sizeof(xcmdline::xparams),4);
+		mParameter = new (params_mem) xcmdline::xparams(mAllocator);
 	}
 
 
 	x_cmdline::~x_cmdline()
 	{
-		mAllocator->deallocate(mParameter);
-		mAllocator->deallocate(mRegList);
-
-		if (mNewCmdline != NULL)
+		if (mParameter!=NULL)
 		{
-			mAllocator->deallocate(mNewCmdline);
+			mParameter->clear();
+			mAllocator->deallocate(mParameter);
 		}
-		mAllocator->deallocate(mArgv);
-
+		if (mCmdline != NULL)
+		{
+			mAllocator->deallocate(mCmdline);
+		}
 	}
 }

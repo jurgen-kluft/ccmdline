@@ -3,15 +3,12 @@
 #include "xbase\x_string_std.h"
 
 #include "xcmdline\xcmdline.h"
-#include "xcmdline\private\opt.h"
-#include "xcmdline\private\opt_proc.h"
 
 #include "xunittest\xunittest.h"
 
-#include <stdio.h>
-
 using namespace xcore;
 
+extern xcore::x_iallocator* gHeapAllocator;
 
 UNITTEST_SUITE_BEGIN(test_x_cmdline)
 {
@@ -22,46 +19,39 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 		UNITTEST_TEST(test_parse_int)
 		{
-			x_cmdline	c;
-			c.parse("--month 12 --day 30 -y 2011");
-			
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse("--month 12 --day 30 -y 2011"));
 		}
 
 		UNITTEST_TEST(test_parse_float)
 		{
-			x_cmdline	c;
-			c.parse("-t 3.14 --test 12.352");
-			
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse("-t 3.14 --test 12.352"));
 		}
 
 		UNITTEST_TEST(test_parse_char)
 		{
-			x_cmdline	c;
-			c.parse("-c 'a' --charVar 'e'");
-			
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse("-c 'a' --charVar 'e'"));
 		}
 
 		UNITTEST_TEST(test_parse_string)
 		{
-			x_cmdline	c;
-			c.parse("-s \"String\" --stringVar \"Today is 9.30\"");
-			
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse("-s \"String\" --stringVar \"Today is 9.30\""));
 		}
 
   		UNITTEST_TEST(test_parse_bool)
   		{
-  			x_cmdline	c;
-  			c.parse("-a false --boolVar true -c false");
-  			
+  			x_cmdline	c(gHeapAllocator);
+  			CHECK_TRUE(c.parse("-a false --boolVar true -c false"));
   		}
   
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32	   testHelp	=	0;
-			x_cmdline	c;
-			
-			c.parse("--testHelp 325 --version ?b");
-
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse("--testHelp 325 --version \"v1.0\""));
 		}
 
 		UNITTEST_TEST(test_another_parse)
@@ -85,9 +75,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			const char** argvp = argv;
 
-			x_cmdline	c;
-			c.parse(argc,argvp);
-
+			x_cmdline	c(gHeapAllocator);
+			CHECK_TRUE(c.parse(argc,argvp));
 		}
 	}
 }

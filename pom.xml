@@ -343,10 +343,10 @@
 					<ProjectGuid>{${GUID_UnitTest}}</ProjectGuid>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Win32'" Label="Configuration">
-					<ConfigurationType>Application(.exe)</ConfigurationType>
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'" Label="Configuration">
-					<ConfigurationType>Application(.exe)</ConfigurationType>
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|win32'">
 					<TargetExt>.exe</TargetExt>

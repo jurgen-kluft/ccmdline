@@ -16,49 +16,33 @@
 namespace xcore
 {
 	// Forward declares
-	struct xargv;
 	class x_iallocator;
 
 	namespace xcmdline
 	{
+		struct xargv;
 		struct xparams;
 	}
 
 	class x_cmdline
 	{
 	public:
-						x_cmdline();
-						~x_cmdline();
+							x_cmdline(x_iallocator* allocator);
+							~x_cmdline();
 
 		/*parse the cmdline and store them in xparams*/
-		xbool			parse(const char* cmdline);
-		xbool			parse(s32 argc, const char** argv);
+		xbool				parse(const char* cmdline);
+		xbool				parse(s32 argc, const char** argv);
 
-		/*interface to get variable's value by give its name*/
-		void*			getValue(char* name);
+		/*interface to get variable's value by giving its name*/
+		void*				getValue(char const* name);
 
-		/*Register variables and set value by xparams*/
-		xbool			regAndSetValue();
-
-		
 	private:
-		xargv*			mArgVector;
-		char**			mArgv;
-		s32				mArgc;
+		xbool				parse();
+
+		x_iallocator*		mAllocator;
 		xcmdline::xparams*	mParameter;
-		s32*			mRegList;
-		s32				mRegListNum;
-		char*			mNewCmdline;
-		char**			mStringList;
-		int				mStringListNum;
-		int				mTotalAllocArgvNum;
-		const int		mAllocArgvBlockSize;
-
-		x_iallocator*	mAllocator;
-
-		/*change "true" "false" into 1,0*/
-		xbool			JudgeTrueOrFalse(char* _string);
-
+		char*				mCmdline;
 	};
 
 
