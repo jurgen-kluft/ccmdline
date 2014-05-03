@@ -48,6 +48,7 @@
 				<xcmdline_RootDir>$(SolutionDir)</xcmdline_RootDir> 
 				<xcmdline_LibraryDir>$(SolutionDir)target\xcmdline\outdir\xbase_$(Configuration)_$(Platform)\</xcmdline_LibraryDir>
 				<xcmdline_IncludeDir>$(SolutionDir)source\main\include\</xcmdline_IncludeDir>
+				<xcmdline_TestIncludeDir>$(SolutionDir)source\test\include\</xcmdline_TestIncludeDir>
 			</PropertyGroup>
 		</Properties>
 				
@@ -56,6 +57,7 @@
 				<xcmdline_RootDir>${Location}</xcmdline_RootDir> 
 				<xcmdline_LibraryDir>${Location}libs\</xcmdline_LibraryDir>
 				<xcmdline_IncludeDir>${Location}source\main\include\</xcmdline_IncludeDir>
+				<xcmdline_TestIncludeDir>${Location}source\test\include\</xcmdline_TestIncludeDir>
 			</PropertyGroup>
 		</Properties>
 	
@@ -64,6 +66,7 @@
 				<xcmdline_RootDir>$(SolutionDir)target\xcmdline\</xcmdline_RootDir> 
 				<xcmdline_LibraryDir>$(SolutionDir)target\xcmdline\target\xcmdline\outdir\xcmdline_$(Configuration)_$(Platform)\</xcmdline_LibraryDir>
 				<xcmdline_IncludeDir>$(SolutionDir)target\xcmdline\source\main\include\</xcmdline_IncludeDir>
+				<xcmdline_TestIncludeDir>$(SolutionDir)target\xcmdline\source\test\include\</xcmdline_TestIncludeDir>
 			</PropertyGroup>
 		</Properties>
 	</ProjectProperties>
@@ -79,252 +82,182 @@
 				</ImportGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|Win32'">
 					<ClCompile>
-						<PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|Win32'">
 					<ClCompile>
-						<PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|Win32'">
 					<ClCompile>
-						<PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevFinal_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Win32'">
 					<ClCompile>
-						<PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'">
 					<ClCompile>
-						<PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevFinal_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevFinal_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestDebug_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_IncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestRelease_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevDebug_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevRelease_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevFinal_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestDebug_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestRelease_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevDebug|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevDebug_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevRelease|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevRelease_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevFinal|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_DevFinal_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestDebug_$(Platform).lib</AdditionalDependencies>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>#$(${Name}_TargetDir)source\main\include;@$(SolutionDir)source\main\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalLibraryDirectories>#$(${Name}_TargetDir)libs</AdditionalLibraryDirectories>
-						<AdditionalDependencies>#${Name}_TestRelease_$(Platform).lib</AdditionalDependencies>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir);</AdditionalLibraryDirectories>
+						<AdditionalDependencies>#${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemGroup>
@@ -348,23 +281,23 @@
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'" Label="Configuration">
 					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|win32'">
-					<TargetExt>.exe</TargetExt>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|x64'" Label="Configuration">
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|win32'">
-					<TargetExt>.exe</TargetExt>
+				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|x64'" Label="Configuration">
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'" Label="Configuration">
-				  <ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'" Label="Configuration">
-				  <ConfigurationType>Application</ConfigurationType>
+					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'">
-				  <TargetExt>.elf</TargetExt>
+				    <TargetExt>.elf</TargetExt>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'">
-				  <TargetExt>.elf</TargetExt>
+				    <TargetExt>.elf</TargetExt>
 				</PropertyGroup>
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Xbox 360'" Label="Configuration">
 					<ConfigurationType>Application</ConfigurationType>
@@ -372,119 +305,76 @@
 				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Xbox 360'" Label="Configuration">
 					<ConfigurationType>Application</ConfigurationType>
 				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
-				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
-				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'">
-				    <TargetExt>.elf</TargetExt>
-				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'">
-				    <TargetExt>.elf</TargetExt>
-				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|N3DS'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
-				</PropertyGroup>
-				<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|N3DS'" Label="Configuration">
-					<ConfigurationType>Application</ConfigurationType>
-				</PropertyGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Win32'">
 					<ClCompile>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Win32'">
 					<ClCompile>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
+					</Link>
+				</ItemDefinitionGroup>
+				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|x64'">
+					<ClCompile>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
+					</ClCompile>
+					<Link>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|PS3'">
 					<ClCompile>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|PS3'">
 					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|Xbox 360'">
 					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+						<AdditionalIncludeDirectories>$(${Name}_TestIncludeDir)</AdditionalIncludeDirectories>
 					</ClCompile>
 					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|WII'">
-					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestDebug|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
-					</Link>
-				</ItemDefinitionGroup>
-				<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestRelease|N3DS'">
-					<ClCompile>
-						<PreprocessorDefinitions>%()</PreprocessorDefinitions>
-						<AdditionalIncludeDirectories>$(SolutionDir)source\test\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-					</ClCompile>
-					<Link>
-						<AdditionalDependencies>${Name}_$(Configuration)_$(Platform).lib</AdditionalDependencies>
-						<AdditionalLibraryDirectories>$(SolutionDir)target\${Name}\outdir\${Name}_$(Configuration)_$(Platform)\</AdditionalLibraryDirectories>
+						<AdditionalLibraryDirectories>$(${Name}_LibraryDir)</AdditionalLibraryDirectories>
+						<AdditionalDependencies>${Name}_$(PackageSignature).lib</AdditionalDependencies>
 					</Link>
 				</ItemDefinitionGroup>
 				<ItemGroup>
