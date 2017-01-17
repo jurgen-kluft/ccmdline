@@ -1,14 +1,15 @@
 #ifndef __XCORE_CMDLINE_H__
 #define __XCORE_CMDLINE_H__
 #include "xbase\x_target.h"
-#ifdef USE_PRAGMA_ONCE 
-#pragma once 
+#ifdef USE_PRAGMA_ONCE
+#pragma once
 #endif
 
 //==============================================================================
 // INCLUDES
 //==============================================================================
 #include "xbase\x_types.h"
+#include "xbase\x_va_list.h"
 
 //==============================================================================
 // xcore namespace
@@ -18,33 +19,60 @@ namespace xcore
 	// Forward declares
 	class x_iallocator;
 
-	namespace xcmdline
+	namespace xcli
 	{
-		struct xargv;
-		struct xparams;
-	}
+		struct params;
 
-	class x_cmdline
-	{
-	public:
-							x_cmdline(x_iallocator* allocator);
-							~x_cmdline();
+		enum eoption
+		{
+			eOPT_OPTIONAL,
+			eOPT_REQUIRED
+		};
 
-		/*parse the cmdline and store them in xparams*/
-		xbool				parse(const char* cmdline);
-		xbool				parse(s32 argc, const char** argv);
+		struct argV
+		{
+			const char*			mShort;						// e.g. f
+			const char*			mLong;						// e.g. force
+			const char*			mDescription;				// "Force to add files"
+			eoption				mOption;					// OPTIONAL
+			x_va_r				mValue;						// false -> boolean
+		};
 
-		/*interface to get variable's value by giving its name*/
-		void*				getValue(char const* name);
+		struct argL
+		{
+			const char*			mName;						// "add"
+			s32					mArgC;
+			argV*				mArgV;
+		};
 
-	private:
-		xbool				parse();
+		struct cmds
+		{
+			s32					mArgC;
+			argL*				mArgL;
+		};
 
-		x_iallocator*		mAllocator;
-		xcmdline::xparams*	mParameter;
-		char*				mCmdline;
+		class parser
+		{
+		public:
+								parser(x_iallocator* allocator);
+								~parser();
+
+			/*parse the cmdline and store them in xparams*/
+			xbool				parse(const char* cmdline);
+			xbool				parse(s32 argc, const char** argv);
+
+			xbool				compile(argL& args) const;
+			xbool				compile(cmds& cmds) const;
+
+		private:
+			xbool				parse();
+
+			x_iallocator*		mAllocator;
+			params*				mParameter;
+			char*				mCmdline;
+		};
+
 	};
-
 
 	//==============================================================================
 	// END xcore namespace
