@@ -1,5 +1,4 @@
 #include "xbase\x_target.h"
-#include "xbase\x_types.h"
 #include "xbase\x_allocator.h"
 
 #include "xunittest\xunittest.h"
@@ -67,15 +66,19 @@ public:
 		mAllocator = allocator;
 	}
 
-	virtual void*	Allocate(int size)
+	void*	Allocate(size_t size)
 	{
 		++mNumAllocations;
 		return mAllocator->allocate(size, 4);
 	}
-	virtual void	Deallocate(void* ptr)
+	void	Deallocate(void* ptr)
 	{
 		--mNumAllocations;
 		mAllocator->deallocate(ptr);
+	}
+	void	Release()
+	{
+		mAllocator->release();
 	}
 };
 
@@ -85,6 +88,7 @@ xcore::x_iallocator* gHeapAllocator=NULL;
 bool gRunUnitTest(UnitTest::TestReporter& reporter)
 {
 	gSystemAllocator = xcore::gCreateSystemAllocator();
+
 
 	UnitTestAllocator unittestAllocator( gSystemAllocator );
 	UnitTest::SetAllocator(&unittestAllocator);

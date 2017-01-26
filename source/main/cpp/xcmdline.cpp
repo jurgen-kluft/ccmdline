@@ -1,659 +1,708 @@
-#include "xbase\x_string.h"
-#include "xbase\x_string_std.h"
-#include "xbase\x_types.h"
+#include "xbase\x_target.h"
 #include "xbase\x_allocator.h"
+#include "xbase\x_string_ascii.h"
 
 #include "xcmdline\xcmdline.h"
 
 
 namespace xcore
 {
-	namespace xcli
+	namespace cli
 	{
+		argV	argV::nil(NULL, NULL, NULL, eOPT_OPTIONAL, x_va());
+		argL	argL::nil(NULL, NULL);
+
 		struct paramstr
 		{
-			paramstr()
-				: mStr(NULL)
-				, mLen(0)
-			{
+			inline		paramstr() : mStr(NULL), mLen(0) { }
+			inline		paramstr(const char* str) : mStr(str), mLen(0) { while (str[mLen] != '\0') { ++mLen; } }
+			inline		paramstr(const char* str, s32 len) : mStr(str), mLen(len) { }
 
-			}
-			paramstr(char* str, s32 len)
-				: mStr(str)
-				, mLen(len)
-			{
-			}
+			bool		empty() const { return mStr == NULL || mLen == 0; }
+			s32			len() const { return mLen; }
 
-			bool	empty() const					{ return mStr == NULL || mLen == 0; }
-			s32		len() const						{ return mLen; }
+			bool		startsWith(char c) const;
+			bool		endsWith(char c) const;
 
-			void	clear()
-			{
-				mStr = NULL;
-				mLen = 0;
-			}
+			void		clear() { mStr = NULL; mLen = 0; }
+			void		trim(char c);
 
-			bool	startsWith(char c) const
-			{
-				if (empty())
-					return false;
-				return mStr[0] == c;
-			}
-
-			bool	endsWith(char c) const
-			{
-				if (empty())
-					return false;
-				return mStr[mLen - 1] == c;
-			}
-
-			void	trim(char c)
-			{
-				if (startsWith(c))
-				{
-					mStr++;
-					--mLen;
-				}
-				if (endsWith(c))
-				{
-					--mLen;
-				}
-			}
-
-			void	set(paramstr const& other)
-			{
-				mStr = other.mStr;
-				mLen = other.mLen;
-			}
-
-			s32		compare(paramstr const& other) const
-			{
-				return x_strCompareNoCase(mStr, mLen, other.mStr, other.mLen);
-			}
+			s32			compare(const char* str) const;
+			s32			compare(paramstr const& other) const;
 
 		private:
-			char*	mStr;
-			s32		mLen;
+			const char*	mStr;
+			s32			mLen;
 		};
+
+		bool	paramstr::startsWith(char c) const
+		{
+			if (empty())
+				return false;
+			return mStr[0] == c;
+		}
+
+		bool	paramstr::endsWith(char c) const
+		{
+			if (empty())
+				return false;
+			return mStr[mLen - 1] == c;
+		}
+
+		void	paramstr::trim(char c)
+		{
+			if (startsWith(c))
+			{
+				mStr++;
+				--mLen;
+			}
+			if (endsWith(c))
+			{
+				--mLen;
+			}
+		}
+
+		s32		paramstr::compare(const char* str) const
+		{
+			return CompareNoCase(mStr, mLen, str);
+		}
+
+		s32		paramstr::compare(paramstr const& other) const
+		{
+			return CompareNoCase(mStr, mLen, other.mStr, other.mLen);
+		}
 
 		struct param
 		{
 		public:
-			inline			param() : mNext(NULL), mPrev(NULL)	{mValueType = TYPE_UNSUPPORTED;}
+			inline			param() { }
 			inline			param(paramstr const& key, paramstr const& value)
 				: mKey(key)
 				, mValue(value)
-				, mNext(NULL)
-				, mPrev(NULL)
 			{
-				mValueType = TYPE_UNSUPPORTED;
 			}
-
-			void			insertAfter(param* new_node)
-			{
-				new_node->mNext = this->mNext;
-				if (this->mNext != NULL)
-				{
-					new_node->mPrev = this->mNext->mPrev;
-					this->mNext->mPrev = new_node;
-				}
-				this->mNext = new_node;
-			}
-
-			void			insertBefore(param* new_node)
-			{
-				new_node->mPrev = NULL;
-				new_node->mNext = this;
-				this->mPrev = new_node;
-			}
-
-			param*			next()													{ return mNext; }
-
-			void			overrideValue(paramstr const& value)					{ mValue = value; }
-
-			void*			operator new(xcore::xsize_t num_bytes, void* mem)		{ return mem; }
-			void			operator delete(void* pMem, void* )						{ }
-
-			s32				compareKey(const paramstr& otherkey) const				{ return mKey.compare(otherkey); }
 
 		private:
 			paramstr		mKey;
 			paramstr		mValue;
-			enum EValueType
-			{
-				TYPE_BOOL,
-				TYPE_INT,
-				TYPE_FLOAT,
-				TYPE_STRING,
-				TYPE_CHAR,
-				TYPE_UNSUPPORTED
-			};
-			EValueType		mValueType;
-			param*			mNext;
-			param*			mPrev;
+
 		};
 
-		struct params
+		// Two versions of command-line handling
+		//  1. the whole command-line is in one string.
+		//  2. the command-line is seperated into parts.
+		// This class abstracts that difference.
+		class arguments
 		{
-			params(x_iallocator* allocator)
-				: mParametersString(NULL)
-				, mAllocator(allocator)
-				, mParams(NULL)
-				, mCaseSensitive(true)
-			{
+		public:
+			inline			arguments() : mCmdline(NULL), mArgc(0), mArgv(NULL) {}
+			inline			arguments(const char* cmdline) : mCmdline(cmdline), mArgc(0), mArgv(NULL), mLen(-1) {}
+			inline			arguments(s32 argc, const char** argv) : mCmdline(NULL), mArgc(argc), mArgv(argv), mLen(-1) {}
 
+			void			init()
+			{
+				s32 l = 0;
+				if (mCmdline != NULL)
+				{
+					l = StrLen(mCmdline);
+				}
+				else if (mArgc > 0)
+				{
+					s32 i = 0;
+					while (i < mArgc)
+					{
+						l += StrLen(mArgv[i]);
+						i += 1;
+					}
+				}
+				mLen = l;
 			}
 
-			XCORE_CLASS_PLACEMENT_NEW_DELETE
+			s32				len() const { return mLen; }
 
-			char*			mParametersString;
-			x_iallocator*	mAllocator;
-			param*			mParams;
-			paramstr		mCmd;
+			// --switch "value"
+			enum etype 
+			{
+				PARAM_ERR = 0,
+				PARAM_KEY = 1,
+				PARAM_VAL = 2,
+			};
+			etype			get(paramstr& p);
+
+			const char*		get_str(s32 pos) const
+			{
+				if (mCmdline != NULL && pos < mLen)
+				{
+					return &mCmdline[pos];
+				}
+				else
+				{
+					s32 i = 0;
+					s32 l = 0;
+					while (i < mArgc)
+					{
+						l += StrLen(mArgv[i]);
+						if (pos < l)
+						{
+							return &mArgv[i][l - pos];
+						}
+						i += 1;
+					}
+				}
+
+				return " ";
+			}
+
+			char			get_char(s32 pos) const 
+			{
+				if (mCmdline != NULL && pos < mLen)
+				{
+					return mCmdline[pos];
+				}
+				else
+				{
+					s32 i = 0;
+					s32 l = 0;
+					while (i < mArgc)
+					{
+						l += StrLen(mArgv[i]);
+						if (pos < l)
+						{
+							return mArgv[i][l - pos];
+						}
+						i += 1;
+					}
+				}
+
+				return ' ';
+			}
+
+		private:
+			s32				mLen;
+
+			const char*		mCmdline;
+
+			s32				mArgc;
+			const char**	mArgv;
+		};
+
+
+		struct context
+		{
+			context()
+				: mCmdLine(NULL)
+				, mCaseSensitive(true)
+			{
+			}
+
+			const char*		mCmdLine;
 			xbool			mCaseSensitive;
+
+			paramstr		mCmd;
+			cmds			mCmds;
 
 			void			clear()
 			{
 				mCmd.clear();
 				mCaseSensitive = true;
+			}
+		};
 
-				// deallocate parameter list
-				param* i = mParams;
-				while (i!=NULL)
+		static xbool	is_argv_nil(argV* argv)
+		{
+			return argv->mShort == argV::nil.mShort && argv->mLong == argV::nil.mLong;
+		}
+
+		static xbool	is_argl_nil(argL* argl)
+		{
+			return argl->mName == argL::nil.mName && argl->mArgV == argL::nil.mArgV;
+		}
+
+		static argV*	find_argv(argL* argl, paramstr& argv)
+		{
+			argV* argvs = argl->mArgV;
+			while (!is_argv_nil(argvs))
+			{
+				if (argv.compare(argvs->mLong) == 0 || argv.compare(argvs->mShort) == 0)
 				{
-					param* d = i;
-					i = i->next();
-
-					d->~param();
-					mAllocator->deallocate(d);
+					return argvs;
 				}
-				mParams = NULL;
+
+				argvs++;
+			}
+			return NULL;
+		}
+
+		static xbool	set_argv_value(argV* argv, paramstr value)
+		{
+			return false;
+		}
+
+		static argL*	find_argl(cmds& cmd, paramstr& argcmd)
+		{
+			argL* argls = cmd.mArgL;
+			while (!is_argl_nil(argls))
+			{
+				if (CompareNoCase("", argls->mName) == 0)
+				{
+					return argls;
+				}
+				else if (CompareNoCase("default", argls->mName) == 0)
+				{
+					return argls;
+				}
+				else if (argcmd.compare(argls->mName) == 0)
+				{
+					return argls;
+				}
+
+				argls++;
+			}
+			return NULL;
+		}
+
+
+		class parser
+		{
+		public:
+			inline			parser(cmds& c)
+				: mCmds(c)
+				, mArgL(NULL)
+			{
 			}
 
-			void			add(paramstr const& _key, paramstr const& _value)
+			xbool			parse(const char* cmdline);
+			xbool			parse(s32 argc, const char** argv);
+
+		private:
+			xbool			parse();
+
+			xbool			matchParameters(s32 pos, s32 offset) const;
+			xbool			matchParameter(s32 pos, s32& ioOffset) const;
+			xbool			matchParameterStruct(s32 pos, s32& ioOffset, paramstr& outName, paramstr& outValue) const;
+			xbool			matchParameterName(s32 pos, s32& ioOffset) const;
+			xbool			matchParameterSeparator(s32 pos) const;
+			xbool			matchParameterValue(s32 pos, s32& ioOffset) const;
+
+			xbool			matchBoolean(const char* string, s32 length) const;
+			xbool			matchInteger(const char* string, s32 stringLen) const;
+			xbool			matchFloatNumber(const char* string, s32 stringLen) const;
+
+			typedef			xbool(parser::*matchDelegate)(s32) const;
+
+			s32				advanceWhile(s32 pos, matchDelegate matcher) const;
+			s32				advanceWhileNot(s32 pos, matchDelegate matcher) const;
+
+			xbool			matchAllNotOf(s32 pos, char* cc) const;
+			xbool			matchParameterNameChar(s32 pos) const;
+			xbool			matchParameterValueChar(s32 pos) const;
+			xbool			matchParameterValueFirstChar(s32 pos) const;
+			xbool			match(s32 pos, char c) const;
+			xbool			matchSlash(s32 pos) const;
+			xbool			matchMinus(s32 pos) const;
+			xbool			matchQuestion(s32 pos) const;
+			xbool			matchColon(s32 pos) const;
+			xbool			matchSpace(s32 pos) const;
+			xbool			matchQuote(s32 pos) const;
+			xbool			matchDoubleQuote(s32 pos) const;
+			xbool			matchTerminator(s32 pos)  const;
+
+			cmds&			mCmds;
+			argL*			mArgL;
+			arguments		mArgs;
+		};
+
+		xbool	parser::parse(const char * cmdline)
+		{
+			if (cmdline == NULL)
+				return false;
+
+			mArgs = arguments(cmdline);
+			mArgs.init();
+			
+			return parse();
+		}
+
+
+		xbool	parser::parse(s32 argc, const char** argv)
+		{
+			if (argc == 0 || argv == NULL)
+				return false;
+
+			mArgs = arguments(argc, argv);
+			mArgs.init();
+
+			return parse();
+		}
+
+		xbool	parser::parse()
+		{
+			s32 pos = 0;
+			s32 offset = 0;
+			xbool _success = false;
+
+			if (mArgs.len() > 0)
 			{
-				param* p = NULL;
-				param* i = mParams;
-				while (i!=NULL)
+				if (matchParameterValueFirstChar(offset))
 				{
-					s32 e = i->compareKey(_key);
-					if (e == 0)
-					{
-						i->overrideValue(_value);
-						return;
-					}
-					else if (e == 1)
-					{
-						break;
-					}
-					else
-					{
-						p = i;
-						i = i->next();
-					}
-				}
-
-				// Key doesn't exist yet
-				void* new_node_mem = mAllocator->allocate(sizeof(param), 4);
-				param* new_node = new (new_node_mem) param(_key, _value);
-
-				if (mParams == NULL)
-				{
-					mParams = new_node;
-				}
-				else if (p!=NULL)
-				{
-					p->insertAfter(new_node);
-				}
-				else if (i!=NULL)
-				{
-					i->insertBefore(new_node);
-					if (i==mParams)
-						mParams = new_node;
-				}
-			}
-
-			class parser
-			{
-			public:
-				inline			parser(x_iallocator* allocator)
-					: mAllocator(allocator)
-					, mParametersStringLen(0)
-					, mParametersString(NULL)
-				{
-					x_strcpy(mValueBooleanTrue, sizeof(mValueBooleanTrue), "true");
-				}
-
-				xbool			parse(char* parameters_string, params& outParams);
-
-			private:
-				xbool			matchParameters(s32 pos, s32 offset, params& params) const;
-				xbool			matchParameter(s32 pos, s32& ioOffset, params& params) const;
-				xbool			matchParameterStruct(s32 pos, s32& ioOffset, paramstr& outName, paramstr& outValue) const;
-				xbool			matchParameterName(s32 pos, s32& ioOffset) const;
-				xbool			matchParameterSeparator(s32 pos) const;
-				xbool			matchParameterValue(s32 pos, s32& ioOffset) const;
-
-				xbool			matchBoolean(const char* string, s32 length) const;
-				xbool			matchInteger(const char* string, s32 stringLen) const;
-				xbool			matchFloatNumber(const char* string, s32 stringLen) const;
-
-				typedef			xbool (parser::*matchDelegate)(s32) const;
-
-				s32				advanceWhile(s32 pos, matchDelegate matcher) const;
-				s32				advanceWhileNot(s32 pos, matchDelegate matcher) const;
-
-				xbool			matchAllNotOf(s32 pos, char* cc) const;
-				xbool			matchParameterNameChar(s32 pos) const;
-				xbool			matchParameterValueChar(s32 pos) const;
-				xbool			matchParameterValueFirstChar(s32 pos) const;
-				xbool			match(s32 pos, char c) const;
-				xbool			matchSlash(s32 pos) const;
-				xbool			matchMinus(s32 pos) const;
-				xbool			matchQuestion(s32 pos) const;
-				xbool			matchColon(s32 pos) const;
-				xbool			matchSpace(s32 pos) const;
-				xbool			matchQuote(s32 pos) const;
-				xbool			matchDoubleQuote(s32 pos) const;
-				xbool			matchTerminator(s32 pos)  const;
-
-				x_iallocator*	mAllocator;
-				s32				mParametersStringLen;
-				char*			mParametersString;
-
-				char			mValueBooleanTrue[5];
-			};
-
-
-			xbool	parser::parse(char* parameters_string, params& outParams)
-			{
-				if (parameters_string==NULL)
-					return false;
-
-				mParametersString = parameters_string;
-				mParametersStringLen = x_strlen(parameters_string);
-
-				s32 pos = 0;
-				s32 offset = 0;
-				xbool _success = false;
-
-				if (mParametersStringLen>0)
-				{
-					if (matchParameterValueFirstChar(offset))
-					{
-						//local definition: pos
-						s32 tmp_pos = advanceWhile(offset, &parser::matchParameterValueChar);
-
-						paramstr param(mParametersString + offset, tmp_pos - offset);
-						outParams.mCmd.set(param);
-
-						offset = tmp_pos;
-						//pos released
-					}
-
-					offset = advanceWhile(offset, &parser::matchSpace);
-
-					if (matchParameters(pos, offset, outParams))
-					{
-						_success = true;
-					}
+					pos = advanceWhile(offset, &parser::matchParameterValueChar);
+					paramstr cmd(mArgs.get_str(offset), pos - offset);
+					mArgL = find_argl(mCmds, cmd);
 				}
 				else
 				{
+					paramstr cmd("", 0);
+					mArgL = find_argl(mCmds, cmd);
+				}
+
+				if (mArgL == NULL)
+				{
+					return false;
+				}
+
+				pos = advanceWhile(pos, &parser::matchSpace);
+				offset = pos;
+
+				if (matchParameters(pos, offset))
+				{
 					_success = true;
 				}
-
-				return _success;
 			}
-
-			xbool	parser::matchParameters(s32 pos, s32 offset, params& params) const
+			else
 			{
-				/*overload matchParameter function*/
-				while (pos < mParametersStringLen && matchParameter(pos, offset, params))
-				{
-					pos = offset;
-					pos = advanceWhile(pos, &parser::matchSpace);
-				}
-
-				if (pos == mParametersStringLen)
-				{
-					return true;
-				}
-
-				return false;
+				_success = true;
 			}
 
-			xbool	parser::matchParameter(s32 pos, s32& ioOffset, params& params) const
-			{
-				if (matchSlash(pos))
-				{
-					pos++;
-				}
-				else if (matchMinus(pos))
-				{
-					pos++;
-
-					if (matchMinus(pos))
-					{
-						pos++;
-					}
-				}
-				else if(!matchQuestion(pos))
-				{
-					return false;
-				}
-
-				paramstr _name, _value;
-				if (matchParameterStruct(pos, ioOffset, _name, _value))
-				{
-					params.add(_name, _value);
-
-					pos = ioOffset;
-
-					// Error? (pos < (mParametersString.Length-1))
-					if (pos < mParametersStringLen && !matchSpace(pos))
-					{
-						return false;
-					}
-					return true;
-				}
-				return false;
-			}
-
-			xbool	parser::matchBoolean(const char* string, s32 length) const
-			{
-				xbool result = false;
-				char* tempBoolStr = (char*)mAllocator->allocate(length*sizeof(char)+1,4);
-				x_strcpy(tempBoolStr,length+1,string);
-				if(x_strcmp("true",tempBoolStr)==0	||	x_strcmp("false",tempBoolStr)==0)
-					result = true;
-				mAllocator->deallocate(tempBoolStr);
-				return result;
-			}
-
-			xbool parser::matchFloatNumber(const char* string,	s32	stringLen) const
-			{
-				s32		dotNum			=	0;
-				for (s32 i=0; i<stringLen; i++)
-				{
-					/*all the float number character should be 0~9 or '.', and the number of '.' should be only one*/
-					if(string[i]	<	48	||	string[i]	>	57)
-						if (string[i]	==	'.'	&&	dotNum	==	0)
-							dotNum++;
-						/*the last character can be 'f' or 'F'*/
-						else if(i	==	stringLen-1	&&	(string[i]	==	'f'	||	string[i]	==	'F'))
-							return	true;
-						else
-							return	false;
-				}
-				if(dotNum==1)
-					return	true;
-				return false;
-			}
-
-			xbool parser::matchInteger(const char* string, s32 stringLen) const
-			{
-				for (s32 i=0; i<stringLen; i++)
-				{
-					if (string[i]	<	48	||	string[i]	>	57)
-					return false;
-				}
-				return true;
-			}
-
-			xbool	parser::matchParameterStruct(s32 pos, s32& ioOffset, paramstr& outName, paramstr& outValue) const
-			{
-				if (matchParameterName(pos, ioOffset))
-				{
-					outName = paramstr(mParametersString + pos, ioOffset - pos);
-					outValue = paramstr((char*)&mValueBooleanTrue[0], x_strlen(mValueBooleanTrue));
-
-					pos = ioOffset;
-
-					if (pos < mParametersStringLen)
-					{
-						if (matchParameterSeparator(pos))
-						{
-							pos++;
-							while (matchSpace(pos))
-								pos++;
-
-							if (matchParameterValue(pos, ioOffset))
-							{
-								outValue = paramstr(mParametersString + pos, ioOffset - pos);
-
-								if (outValue.len() == 0)
-								{
-									outValue = paramstr((char*)&mValueBooleanTrue[0], x_strlen(mValueBooleanTrue));
-								}
-								else if (outValue.startsWith('\''))
-								{
-									outValue.trim('\'');
-								}
-								else if (outValue.startsWith('\"'))
-								{
-									outValue.trim('\"');
-								}
-
-								pos = ioOffset;
-							}
-						}
-					}
-
-					ioOffset = pos;
-					return true;
-				}
-
-				return false;
-			}
-
-			xbool	parser::matchParameterName(s32 pos, s32& ioOffset) const
-			{
-				s32 pos2 = pos;
-				pos = advanceWhile(pos, &parser::matchParameterNameChar);
-
-				if (pos > pos2)
-				{
-					ioOffset = pos;
-					return true;
-				}
-				return false;
-			}
-
-			xbool	parser::matchParameterSeparator(s32 pos) const
-			{
-				if (mParametersString[pos] == ':' || mParametersString[pos] == '=' || mParametersString[pos] == ' ')
-					return true;
-				return false;
-			}
-
-			xbool	parser::matchParameterValue(s32 pos, s32& ioOffset) const
-			{
-				if (matchQuote(pos))
-				{
-					pos = advanceWhileNot(pos+1, &parser::matchQuote);
-					if (matchQuote(pos))
-					{
-						pos++;
-						ioOffset = pos;
-						return true;
-					}
-				}
-				else if (matchDoubleQuote(pos))
-				{
-					pos = advanceWhileNot(pos+1, &parser::matchDoubleQuote);
-					if (matchDoubleQuote(pos))
-					{
-						pos++;
-						ioOffset = pos;
-						return true;
-					}
-				}
-				else if (matchParameterValueFirstChar(pos))
-				{
-					pos = advanceWhile(pos+1, &parser::matchParameterValueChar);
-					ioOffset = pos;
-					return true;
-				}
-				return false;
-			}
-
-			s32	parser::advanceWhile(s32 pos, matchDelegate matcher) const
-			{
-				while (pos < mParametersStringLen && (this->*matcher)(pos))
-					pos++;
-				return pos;
-			}
-
-			s32	parser::advanceWhileNot(s32 pos, matchDelegate matcher) const
-			{
-				while (pos < mParametersStringLen && !(this->*matcher)(pos))
-					pos++;
-				return pos;
-			}
-
-			xbool parser::matchAllNotOf(s32 pos, char* cc) const
-			{
-				while (*cc != '\0')
-				{
-					char c = *cc++;
-					if (mParametersString[pos] == c)
-						return false;
-				}
-				return true;
-			}
-
-			xbool parser::matchParameterNameChar(s32 pos) const
-			{
-				char cc[] = { ' ', ':', '=', '\0' };
-				return matchAllNotOf(pos, cc);
-			}
-
-			xbool parser::matchParameterValueChar(s32 pos) const
-			{
-				char cc[] = { ' ', '\0' };
-				return matchAllNotOf(pos, cc);
-			}
-
-			xbool parser::matchParameterValueFirstChar(s32 pos) const
-			{
-				char cc[] = { ' ', '/', ':', '-', '=','?', '\0' };
-				return matchAllNotOf(pos, cc);
-			}
-
-			xbool parser::match(s32 pos, char c) const
-			{
-				return (mParametersString[pos] == c);
-			}
-
-			xbool parser::matchSlash(s32 pos) const
-			{
-				return match(pos, '/');
-			}
-
-			xbool parser::matchMinus(s32 pos) const
-			{
-				return match(pos, '-');
-			}
-
-			xbool	parser::matchQuestion(s32 pos) const
-			{
-				return match(pos, '?');
-			}
-
-			xbool parser::matchColon(s32 pos) const
-			{
-				return match(pos, ':');
-			}
-
-			xbool parser::matchSpace(s32 pos) const
-			{
-				return match(pos, ' ');
-			}
-
-			xbool parser::matchQuote(s32 pos) const
-			{
-				return match(pos, '\'');
-			}
-
-			xbool parser::matchDoubleQuote(s32 pos) const
-			{
-				return match(pos, '\"');
-			}
-
-			xbool parser::matchTerminator(s32 pos) const
-			{
-				return match(pos, '\0');
-			}
-
+			return _success;
 		}
 
-		xbool			parser::parse()
+		xbool	parser::matchParameters(s32 pos, s32 offset) const
 		{
-			xcmdline::parser parser(mAllocator);
-			xbool res = parser.parse(mCmdline, *mParameter);
+			/*overload matchParameter function*/
+			while (pos < mArgs.len() && matchParameter(pos, offset))
+			{
+				pos = offset;
+				pos = advanceWhile(pos, &parser::matchSpace);
+			}
 
-			// now cmdline is correctly parsed and stored in the params
-			// what we should do now is set the values according the identifier
+			if (pos == mArgs.len())
+			{
+				return true;
+			}
 
+			return false;
+		}
+
+		xbool	parser::matchParameter(s32 pos, s32& ioOffset) const
+		{
+			if (matchSlash(pos))
+			{
+				pos++;
+			}
+			else if (matchMinus(pos))
+			{
+				pos++;
+
+				if (matchMinus(pos))
+				{
+					pos++;
+				}
+			}
+			else if (!matchQuestion(pos))
+			{
+				return false;
+			}
+
+			paramstr arg_name, arg_value;
+			if (matchParameterStruct(pos, ioOffset, arg_name, arg_value))
+			{
+				// @TODO: Find ArgV in @ArgL and set the value
+				xbool result = true;
+				argV* argv = find_argv(mArgL, arg_name);
+				if (argv != NULL)
+				{
+					result = set_argv_value(argv, arg_value);
+				}
+				else
+				{
+					result = false;
+				}
+				
+				pos = ioOffset;
+
+				// Error? (pos < (mParametersString.Length-1))
+				if (pos < mArgs.len() && !matchSpace(pos))
+				{
+					result = false;
+				}
+				return result;
+			}
+			return false;
+		}
+
+		xbool	parser::matchBoolean(const char* string, s32 length) const
+		{
+			const char* boolean_strings[] = { "false", "no", "off", "0", "true", "yes", "on", "1", NULL };
+			const bool boolean_values[] = { false,false,false,false, true,true,true,true, NULL };
+
+			s32 i = 0;
+			while (boolean_strings[i] != NULL)
+			{
+				const char* bool_str = boolean_strings[i];
+				s32 const result = CompareNoCase(string, length, bool_str);
+				if (result == 0)
+					return boolean_values[i];
+			};
+			return false;
+		}
+
+		xbool parser::matchFloatNumber(const char* string, s32	stringLen) const
+		{
+			s32		dotNum = 0;
+			for (s32 i = 0; i < stringLen; i++)
+			{
+				/*all the float number character should be 0~9 or '.', and the number of '.' should be only one*/
+				if (string[i] < 48 || string[i]	>	57)
+					if (string[i] == '.'	&&	dotNum == 0)
+						dotNum++;
+				/*the last character can be 'f' or 'F'*/
+					else if (i == stringLen - 1 && (string[i] == 'f' || string[i] == 'F'))
+						return	true;
+					else
+						return	false;
+			}
+			if (dotNum == 1)
+				return	true;
+			return false;
+		}
+
+		xbool parser::matchInteger(const char* string, s32 stringLen) const
+		{
+			for (s32 i = 0; i < stringLen; i++)
+			{
+				if (string[i] < 48 || string[i]	>	57)
+					return false;
+			}
+			return true;
+		}
+
+		xbool	parser::matchParameterStruct(s32 pos, s32& ioOffset, paramstr& outName, paramstr& outValue) const
+		{
+			if (matchParameterName(pos, ioOffset))
+			{
+				outName = paramstr(mArgs.get_str(pos), ioOffset - pos);
+				outValue = paramstr("true", StrLen("true"));
+
+				pos = ioOffset;
+
+				if (pos < mArgs.len())
+				{
+					if (matchParameterSeparator(pos))
+					{
+						pos++;
+						while (matchSpace(pos))
+							pos++;
+
+						if (matchParameterValue(pos, ioOffset))
+						{
+							outValue = paramstr(mArgs.get_str(pos), ioOffset - pos);
+
+							if (outValue.len() == 0)
+							{
+								outValue = paramstr("true", StrLen("true"));
+							}
+							else if (outValue.startsWith('\''))
+							{
+								outValue.trim('\'');
+							}
+							else if (outValue.startsWith('\"'))
+							{
+								outValue.trim('\"');
+							}
+
+							pos = ioOffset;
+						}
+					}
+				}
+
+				ioOffset = pos;
+				return true;
+			}
+
+			return false;
+		}
+
+		xbool	parser::matchParameterName(s32 pos, s32& ioOffset) const
+		{
+			s32 pos2 = pos;
+			pos = advanceWhile(pos, &parser::matchParameterNameChar);
+
+			if (pos > pos2)
+			{
+				ioOffset = pos;
+				return true;
+			}
+			return false;
+		}
+
+		xbool	parser::matchParameterSeparator(s32 pos) const
+		{
+			char c = mArgs.get_char(pos);
+			if (c == ':' || c == '=' || c == ' ')
+				return true;
+			return false;
+		}
+
+		xbool	parser::matchParameterValue(s32 pos, s32& ioOffset) const
+		{
+			if (matchQuote(pos))
+			{
+				pos = advanceWhileNot(pos + 1, &parser::matchQuote);
+				if (matchQuote(pos))
+				{
+					pos++;
+					ioOffset = pos;
+					return true;
+				}
+			}
+			else if (matchDoubleQuote(pos))
+			{
+				pos = advanceWhileNot(pos + 1, &parser::matchDoubleQuote);
+				if (matchDoubleQuote(pos))
+				{
+					pos++;
+					ioOffset = pos;
+					return true;
+				}
+			}
+			else if (matchParameterValueFirstChar(pos))
+			{
+				pos = advanceWhile(pos + 1, &parser::matchParameterValueChar);
+				ioOffset = pos;
+				return true;
+			}
+			return false;
+		}
+
+		s32	parser::advanceWhile(s32 pos, matchDelegate matcher) const
+		{
+			while (pos < mArgs.len() && (this->*matcher)(pos))
+				pos++;
+			return pos;
+		}
+
+		s32	parser::advanceWhileNot(s32 pos, matchDelegate matcher) const
+		{
+			while (pos < mArgs.len() && !(this->*matcher)(pos))
+				pos++;
+			return pos;
+		}
+
+		xbool parser::matchAllNotOf(s32 pos, char* cc) const
+		{
+			while (*cc != '\0')
+			{
+				char c = *cc++;
+				if (mArgs.get_char(pos) == c)
+					return false;
+			}
+			return true;
+		}
+
+		xbool parser::matchParameterNameChar(s32 pos) const
+		{
+			char cc[] = { ' ', ':', '=', '\0' };
+			return matchAllNotOf(pos, cc);
+		}
+
+		xbool parser::matchParameterValueChar(s32 pos) const
+		{
+			char cc[] = { ' ', '\0' };
+			return matchAllNotOf(pos, cc);
+		}
+
+		xbool parser::matchParameterValueFirstChar(s32 pos) const
+		{
+			char cc[] = { ' ', '/', ':', '-', '=','?', '\0' };
+			return matchAllNotOf(pos, cc);
+		}
+
+		xbool parser::match(s32 pos, char c) const
+		{
+			return (mArgs.get_char(pos) == c);
+		}
+
+		xbool parser::matchSlash(s32 pos) const
+		{
+			return match(pos, '/');
+		}
+
+		xbool parser::matchMinus(s32 pos) const
+		{
+			return match(pos, '-');
+		}
+
+		xbool	parser::matchQuestion(s32 pos) const
+		{
+			return match(pos, '?');
+		}
+
+		xbool parser::matchColon(s32 pos) const
+		{
+			return match(pos, ':');
+		}
+
+		xbool parser::matchSpace(s32 pos) const
+		{
+			return match(pos, ' ');
+		}
+
+		xbool parser::matchQuote(s32 pos) const
+		{
+			return match(pos, '\'');
+		}
+
+		xbool parser::matchDoubleQuote(s32 pos) const
+		{
+			return match(pos, '\"');
+		}
+
+		xbool parser::matchTerminator(s32 pos) const
+		{
+			return match(pos, '\0');
+		}
+
+		xbool			instance::parse(argV * arg, const char* cmdline)
+		{
+			argL argl("", arg);
+			cmds c(&argl);
+			parser parser(c);
+			xbool res = parser.parse(cmdline);
 			return res;
 		}
 
-		xbool			parser::parse(const char* cmdline)
+		xbool			instance::parse(argV * arg, s32 argc, const char** argv)
 		{
-			s32 const cmdline_len = x_strlen(cmdline);
-			mCmdline = (char*)mAllocator->allocate(cmdline_len + 1,4);
-			x_strcpy(mCmdline, cmdline_len+1, cmdline);
-			return parse();
+			argL argl("", arg);
+			cmds c(&argl);
+			parser p(c);
+			xbool res = p.parse(argc, argv);
+			return res;
 		}
 
-		xbool			parser::parse(s32 argc, const char** argv)
+		xbool			instance::parse(cmds & c, const char* cmdline)
 		{
-			s32 cmdline_len = 0;
-			for (s32 i=0; i<argc; ++i)
-			{
-				const char* arg = argv[i];
-				s32 const arg_len = x_strlen(arg);
-				cmdline_len += arg_len + 1;
-			}
-
-			s32 const cmdline_len_alloc = cmdline_len;
-			mCmdline = (char*)mAllocator->allocate(cmdline_len_alloc+ 1,4);
-			mCmdline[cmdline_len_alloc] = '\0';
-
-			cmdline_len = 0;
-			for (s32 i=0; i<argc; ++i)
-			{
-				const char* arg = argv[i];
-				x_strcpy(&mCmdline[cmdline_len], cmdline_len_alloc - cmdline_len, arg);
-				s32 const arg_len = x_strlen(arg);
-				mCmdline[cmdline_len + arg_len] = ' ';
-				cmdline_len += arg_len + 1;
-			}
-
-			return parse();
+			parser p(c);
+			xbool res = p.parse(cmdline);
+			return res;
 		}
 
-		parser::parser(x_iallocator* allocator)
-			: mAllocator(allocator)
-			, mCmdline(NULL)
+		xbool			instance::parse(cmds & c, s32 argc, const char** argv)
 		{
-			void* params_mem = mAllocator->allocate(sizeof(xcmdline::params),4);
-			mParameter = new (params_mem) xcmdline::params(mAllocator);
+			parser p(c);
+			xbool res = p.parse(argc, argv);
+			return res;
 		}
 
-
-		parser::~parser()
-		{
-			if (mParameter!=NULL)
-			{
-				mParameter->clear();
-				mAllocator->deallocate(mParameter);
-			}
-			if (mCmdline != NULL)
-			{
-				mAllocator->deallocate(mCmdline);
-			}
-		}
 	};
 }

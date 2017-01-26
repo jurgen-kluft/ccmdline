@@ -8,7 +8,7 @@
 //==============================================================================
 // INCLUDES
 //==============================================================================
-#include "xbase\x_types.h"
+#include "xbase\x_target.h"
 #include "xbase\x_va_list.h"
 
 //==============================================================================
@@ -19,7 +19,7 @@ namespace xcore
 	// Forward declares
 	class x_iallocator;
 
-	namespace xcli
+	namespace cli
 	{
 		struct params;
 
@@ -31,45 +31,56 @@ namespace xcore
 
 		struct argV
 		{
+			inline				argV(const char* sn, const char* ln, const char* de, eoption o, x_va v)
+				: mShort(sn)
+				, mLong(ln)
+				, mDescription(de)
+				, mOption(o)
+				, mValue(v) 
+			{
+			}
+
 			const char*			mShort;						// e.g. f
 			const char*			mLong;						// e.g. force
 			const char*			mDescription;				// "Force to add files"
 			eoption				mOption;					// OPTIONAL
-			x_va_r				mValue;						// false -> boolean
+			x_va				mValue;						// false -> boolean
+			static argV			nil;
 		};
 
 		struct argL
 		{
+			inline				argL(const char* name, argV* argv) 
+				: mName(name)
+				, mArgV(argv) 
+			{
+			}
+
 			const char*			mName;						// "add"
-			s32					mArgC;
 			argV*				mArgV;
+
+			static argL			nil;
 		};
 
 		struct cmds
 		{
-			s32					mArgC;
+			inline				cmds() : mArgL(NULL) {}
+			inline				cmds(argL* argl) : mArgL(argl) {}
+
 			argL*				mArgL;
 		};
 
-		class parser
+		class instance
 		{
 		public:
-								parser(x_iallocator* allocator);
-								~parser();
+			xbool				parse(argV * arg, const char* cmdline);
+			xbool				parse(argV * arg, s32 argc, const char** argv);
 
-			/*parse the cmdline and store them in xparams*/
-			xbool				parse(const char* cmdline);
-			xbool				parse(s32 argc, const char** argv);
-
-			xbool				compile(argL& args) const;
-			xbool				compile(cmds& cmds) const;
+			xbool				parse(cmds & c, const char* cmdline);
+			xbool				parse(cmds & c, s32 argc, const char** argv);
 
 		private:
-			xbool				parse();
-
-			x_iallocator*		mAllocator;
-			params*				mParameter;
-			char*				mCmdline;
+			xbool				parse(cmds & c);
 		};
 
 	};
