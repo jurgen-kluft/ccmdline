@@ -9,7 +9,7 @@ namespace xcore
 {
 	namespace cli
 	{
-		argV	argV::nil(NULL, NULL, NULL, eOPT_OPTIONAL, x_va());
+		argV	argV::nil(NULL, NULL, NULL, eOPT_OPTIONAL, x_va_r());
 		argL	argL::nil(NULL, NULL);
 
 		struct paramstr
@@ -29,6 +29,8 @@ namespace xcore
 
 			s32			compare(const char* str) const;
 			s32			compare(paramstr const& other) const;
+
+			bool		to_value(x_va_r& out) const;
 
 		private:
 			const char*	mStr;
@@ -71,6 +73,66 @@ namespace xcore
 		{
 			return CompareNoCase(mStr, mLen, other.mStr, other.mLen);
 		}
+
+		bool		paramstr::to_value(x_va_r& out) const
+		{
+			x_va value_str(mStr);
+			switch (out.type())
+			{
+			case x_va::TYPE_BOOL:
+				out = (bool)value_str;
+				break;
+			case x_va::TYPE_FLOAT32:
+				out = (f32)value_str;
+				break;
+			case x_va::TYPE_FLOAT64: 
+				out = (f64)value_str;
+				break;
+			case x_va::TYPE_INT8: 
+				out = (s8)value_str;
+				break;
+			case x_va::TYPE_INT16: 
+				out = (s16)value_str;
+				break;
+			case x_va::TYPE_INT32: 
+				out = (s32)value_str;
+				break;
+			case x_va::TYPE_INT64:
+				out = (s64)value_str;
+				break;
+			case x_va::TYPE_UINT8:
+				out = (u8)value_str;
+				break;
+			case x_va::TYPE_UINT16:
+				out = (u16)value_str;
+				break;
+			case x_va::TYPE_UINT32:
+				out = (u32)value_str;
+				break;
+			case x_va::TYPE_UINT64:
+				out = (u64)value_str;
+				break;
+			case x_va::TYPE_UCHAR:
+				out = (uchar32)value_str;
+				break;
+			case x_va::TYPE_PCTCHAR:
+				out = (const char*)value_str;
+				break;
+			case x_va::TYPE_PCUSTR8:
+				out = (const char*)value_str;
+				break;
+			case x_va::TYPE_PCUSTR32:
+				out = (const char*)value_str;
+				break;
+			case x_va::TYPE_PCXSTRING:
+				out = (const char*)value_str;
+				break;
+			default:
+				return false;
+			}
+			return true;
+		}
+
 
 		struct param
 		{
@@ -233,9 +295,9 @@ namespace xcore
 			return NULL;
 		}
 
-		static xbool	set_argv_value(argV* argv, paramstr value)
+		static xbool	set_argv_value(argV* argv, paramstr& value_str)
 		{
-			return false;
+			return value_str.to_value(argv->mValue);
 		}
 
 		static argL*	find_argl(cmds& cmd, paramstr& argcmd)

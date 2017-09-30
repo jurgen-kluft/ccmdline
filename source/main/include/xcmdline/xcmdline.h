@@ -31,7 +31,7 @@ namespace xcore
 
 		struct argV
 		{
-			inline				argV(const char* sn, const char* ln, const char* de, eoption o, x_va v)
+			inline				argV(const char* sn, const char* ln, const char* de, eoption o, x_va_r v)
 				: mShort(sn)
 				, mLong(ln)
 				, mDescription(de)
@@ -44,7 +44,7 @@ namespace xcore
 			const char*			mLong;						// e.g. force
 			const char*			mDescription;				// "Force to add files"
 			eoption				mOption;					// OPTIONAL
-			x_va				mValue;						// false -> boolean
+			x_va_r				mValue;						// false -> boolean
 			static argV			nil;
 		};
 
