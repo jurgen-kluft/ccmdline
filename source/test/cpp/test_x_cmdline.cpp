@@ -1,10 +1,10 @@
-#include "xbase\x_target.h"
-#include "xbase\x_string_ascii.h"
-#include "xbase\x_string_utf.h"
+#include "xbase/x_target.h"
+#include "xbase/x_string_ascii.h"
+#include "xbase/x_string_utf.h"
 
-#include "xcmdline\xcmdline.h"
+#include "xcmdline/xcmdline.h"
 
-#include "xunittest\xunittest.h"
+#include "xunittest/xunittest.h"
 
 using namespace xcore;
 

@@ -1,7 +1,7 @@
-#include "xbase\x_target.h"
-#include "xbase\x_allocator.h"
+#include "xbase/x_target.h"
+#include "xbase/x_allocator.h"
 
-#include "xunittest\xunittest.h"
+#include "xunittest/xunittest.h"
 
 
 UNITTEST_SUITE_LIST(xCmdlineUnitTest);
