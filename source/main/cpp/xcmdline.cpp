@@ -14,17 +14,16 @@ namespace xcore
 
 		struct paramstr
 		{
-			inline		paramstr() : mStr(NULL), mLen(0) { }
-			inline		paramstr(const char* str) : mStr(str), mLen(0) { while (str[mLen] != '\0') { ++mLen; } }
-			inline		paramstr(const char* str, s32 len) : mStr(str), mLen(len) { }
+			inline		paramstr() : mStr(NULL), mEnd(NULL) { }
+			inline		paramstr(const char* str) : mStr(str), mEnd(NULL) { mEnd = ascii::len(mStr); }
+			inline		paramstr(const char* str, const char* end) : mStr(str), mEnd(end) { }
 
-			bool		empty() const { return mStr == NULL || mLen == 0; }
-			s32			len() const { return mLen; }
+			bool		empty() const { return mStr == mEnd; }
 
 			bool		startsWith(char c) const;
 			bool		endsWith(char c) const;
 
-			void		clear() { mStr = NULL; mLen = 0; }
+			void		clear() { mStr = NULL; mEnd = NULL; }
 			void		trim(char c);
 
 			s32			compare(const char* str) const;
@@ -34,7 +33,7 @@ namespace xcore
 
 		private:
 			const char*	mStr;
-			s32			mLen;
+			const char*	mEnd;
 		};
 
 		bool	paramstr::startsWith(char c) const
@@ -48,88 +47,37 @@ namespace xcore
 		{
 			if (empty())
 				return false;
-			return mStr[mLen - 1] == c;
+			return mEnd[-1] == c;
 		}
 
 		void	paramstr::trim(char c)
 		{
-			if (startsWith(c))
+			if (empty() == false)
 			{
-				mStr++;
-				--mLen;
-			}
-			if (endsWith(c))
-			{
-				--mLen;
+				if (startsWith(c))
+				{
+					mStr += 1;
+				}
+				if (endsWith(c))
+				{
+					mEnd -= 1;
+				}
 			}
 		}
 
 		s32		paramstr::compare(const char* str) const
 		{
-			return CompareNoCase(mStr, mLen, str);
+			return ascii::compare(mStr, mEnd, str, NULL, ascii::CASE_IGNORE);
 		}
 
 		s32		paramstr::compare(paramstr const& other) const
 		{
-			return CompareNoCase(mStr, mLen, other.mStr, other.mLen);
+			return ascii::compare(mStr, mEnd, other.mStr, other.mEnd, ascii::CASE_IGNORE);
 		}
 
 		bool		paramstr::to_value(x_va_r& out) const
 		{
-			x_va value_str(mStr);
-			switch (out.type())
-			{
-			case x_va::TYPE_BOOL:
-				out = (bool)value_str;
-				break;
-			case x_va::TYPE_FLOAT32:
-				out = (f32)value_str;
-				break;
-			case x_va::TYPE_FLOAT64: 
-				out = (f64)value_str;
-				break;
-			case x_va::TYPE_INT8: 
-				out = (s8)value_str;
-				break;
-			case x_va::TYPE_INT16: 
-				out = (s16)value_str;
-				break;
-			case x_va::TYPE_INT32: 
-				out = (s32)value_str;
-				break;
-			case x_va::TYPE_INT64:
-				out = (s64)value_str;
-				break;
-			case x_va::TYPE_UINT8:
-				out = (u8)value_str;
-				break;
-			case x_va::TYPE_UINT16:
-				out = (u16)value_str;
-				break;
-			case x_va::TYPE_UINT32:
-				out = (u32)value_str;
-				break;
-			case x_va::TYPE_UINT64:
-				out = (u64)value_str;
-				break;
-			case x_va::TYPE_UCHAR:
-				out = (uchar32)value_str;
-				break;
-			case x_va::TYPE_PCTCHAR:
-				out = (const char*)value_str;
-				break;
-			case x_va::TYPE_PCUSTR8:
-				out = (const char*)value_str;
-				break;
-			case x_va::TYPE_PCUSTR32:
-				out = (const char*)value_str;
-				break;
-			case x_va::TYPE_PCXSTRING:
-				out = (const char*)value_str;
-				break;
-			default:
-				return false;
-			}
+			out = x_va(mStr, mEnd);
 			return true;
 		}
 
@@ -166,14 +114,14 @@ namespace xcore
 				s32 l = 0;
 				if (mCmdline != NULL)
 				{
-					l = StrLen(mCmdline);
+					l = ascii::size(mCmdline);
 				}
 				else if (mArgc > 0)
 				{
 					s32 i = 0;
 					while (i < mArgc)
 					{
-						l += StrLen(mArgv[i]);
+						l += ascii::size(mArgv[i]);
 						i += 1;
 					}
 				}
@@ -203,7 +151,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += StrLen(mArgv[i]);
+						l += ascii::size(mArgv[i]);
 						if (pos < l)
 						{
 							return &mArgv[i][l - pos];
@@ -227,7 +175,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += StrLen(mArgv[i]);
+						l += ascii::size(mArgv[i]);
 						if (pos < l)
 						{
 							return mArgv[i][l - pos];
@@ -305,11 +253,11 @@ namespace xcore
 			argL* argls = cmd.mArgL;
 			while (!is_argl_nil(argls))
 			{
-				if (CompareNoCase("", argls->mName) == 0)
+				if (ascii::compare("", argls->mName, ascii::CASE_IGNORE) == 0)
 				{
 					return argls;
 				}
-				else if (CompareNoCase("default", argls->mName) == 0)
+				else if (ascii::compare("default", argls->mName, ascii::CASE_IGNORE) == 0)
 				{
 					return argls;
 				}
@@ -344,7 +292,7 @@ namespace xcore
 			xbool			matchParameterStruct(s32 pos, s32& ioOffset, paramstr& outName, paramstr& outValue) const;
 			xbool			matchParameterName(s32 pos, s32& ioOffset) const;
 			xbool			matchParameterSeparator(s32 pos) const;
-			xbool			matchParameterValue(s32 pos, s32& ioOffset) const;
+			xbool			matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const;
 
 			xbool			matchBoolean(const char* string, s32 length) const;
 			xbool			matchInteger(const char* string, s32 stringLen) const;
@@ -408,12 +356,12 @@ namespace xcore
 				if (matchParameterValueFirstChar(offset))
 				{
 					pos = advanceWhile(offset, &parser::matchParameterValueChar);
-					paramstr cmd(mArgs.get_str(offset), pos - offset);
+					paramstr cmd(mArgs.get_str(offset), mArgs.get_str(pos));
 					mArgL = find_argl(mCmds, cmd);
 				}
 				else
 				{
-					paramstr cmd("", 0);
+					paramstr cmd("");
 					mArgL = find_argl(mCmds, cmd);
 				}
 
@@ -511,7 +459,7 @@ namespace xcore
 			while (boolean_strings[i] != NULL)
 			{
 				const char* bool_str = boolean_strings[i];
-				s32 const result = CompareNoCase(string, length, bool_str);
+				s32 const result = ascii::compare(string, string + length, bool_str, NULL, ascii::CASE_IGNORE);
 				if (result == 0)
 					return boolean_values[i];
 			};
@@ -552,8 +500,8 @@ namespace xcore
 		{
 			if (matchParameterName(pos, ioOffset))
 			{
-				outName = paramstr(mArgs.get_str(pos), ioOffset - pos);
-				outValue = paramstr("true", StrLen("true"));
+				outName = paramstr(mArgs.get_str(pos), mArgs.get_str(ioOffset));
+				outValue = paramstr("true");
 
 				pos = ioOffset;
 
@@ -565,13 +513,14 @@ namespace xcore
 						while (matchSpace(pos))
 							pos++;
 
-						if (matchParameterValue(pos, ioOffset))
+						s32 end_pos;
+						if (matchParameterValue(pos, end_pos, ioOffset))
 						{
-							outValue = paramstr(mArgs.get_str(pos), ioOffset - pos);
+							outValue = paramstr(mArgs.get_str(pos), mArgs.get_str(end_pos));
 
-							if (outValue.len() == 0)
+							if (outValue.empty())
 							{
-								outValue = paramstr("true", StrLen("true"));
+								outValue = paramstr("true");
 							}
 							else if (outValue.startsWith('\''))
 							{
@@ -615,15 +564,15 @@ namespace xcore
 			return false;
 		}
 
-		xbool	parser::matchParameterValue(s32 pos, s32& ioOffset) const
+		xbool	parser::matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const
 		{
 			if (matchQuote(pos))
 			{
 				pos = advanceWhileNot(pos + 1, &parser::matchQuote);
 				if (matchQuote(pos))
 				{
-					pos++;
-					ioOffset = pos;
+					end_pos = pos;
+					ioOffset = pos + 1;
 					return true;
 				}
 			}
@@ -632,14 +581,15 @@ namespace xcore
 				pos = advanceWhileNot(pos + 1, &parser::matchDoubleQuote);
 				if (matchDoubleQuote(pos))
 				{
-					pos++;
-					ioOffset = pos;
+					end_pos = pos;
+					ioOffset = pos + 1;
 					return true;
 				}
 			}
 			else if (matchParameterValueFirstChar(pos))
 			{
 				pos = advanceWhile(pos + 1, &parser::matchParameterValueChar);
+				end_pos = pos;
 				ioOffset = pos;
 				return true;
 			}

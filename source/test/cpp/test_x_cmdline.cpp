@@ -18,24 +18,6 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_FIXTURE_SETUP() {}
 		UNITTEST_FIXTURE_TEARDOWN() {}
 
-		UNITTEST_TEST(test_str_to_bool)
-		{
-			CHECK_TRUE(StrToBool("yes"));
-			CHECK_TRUE(StrToBool("yEs"));
-			CHECK_FALSE(StrToBool("no"));
-			CHECK_FALSE(StrToBool("nO"));
-
-			CHECK_TRUE(StrToBool("true"));
-			CHECK_TRUE(StrToBool("TRUE"));
-			CHECK_FALSE(StrToBool("false"));
-			CHECK_FALSE(StrToBool("FALSE"));
-
-			CHECK_TRUE(StrToBool("on"));
-			CHECK_TRUE(StrToBool("ON"));
-			CHECK_FALSE(StrToBool("off"));
-			CHECK_FALSE(StrToBool("OFF"));
-		}
-
 		UNITTEST_TEST(test_parse_int)
 		{
 			s32 prop_month = 0;
@@ -73,7 +55,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			uchar32 prop_char = 'x';
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char)),
+				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char, &prop_char + 1)),
 				xcore::cli::argV::nil
 			};
 
@@ -84,15 +66,17 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 		UNITTEST_TEST(test_parse_string)
 		{
-			char prop_str[64];
+			char prop_str[64 + 1];
+			prop_str[64] = '\0';
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(prop_str)),
+				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r((char*)prop_str, &prop_str[64])),
 				xcore::cli::argV::nil
 			};
 
 			const char* parse_str = "-s \"String\" --stringVar \"Today is 9.30\"";
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, parse_str));
+			CHECK_TRUE(ascii::compare("Today is 9.30", prop_str) == 0);
 		}
 
 		UNITTEST_TEST(test_parse_bool)
@@ -118,15 +102,17 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32 prop_t = 0;
-			xstring prop_str(gHeapAllocator, 64);
+			char prop_str[64 + 1];
+			prop_str[64] = '\0';
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_t)),
-				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str)),
+				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(prop_str, &prop_str[64])),
 				xcore::cli::argV::nil
 			};
 
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, "--testHelp 325 --version \"v1.0\""));
+			CHECK_TRUE(ascii::compare("v1.0", prop_str) == 0);
 		}
 
 		UNITTEST_TEST(test_another_parse)
@@ -134,41 +120,43 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32 prop_year = 0;
 			s32 prop_month = 0;
 			s32 prop_day = 0;
-			char prop_who[128];
-			char prop_what[128];
+			char prop_who[128 + 1];
+			prop_who[128] = '\0';
+			char prop_what[128 + 1];
+			prop_what[128] = '\0';
 			bool prop_birthday = false;
 
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
 				xcore::cli::argV("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
 				xcore::cli::argV("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(prop_who)),
-				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(prop_what)),
+				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(prop_who, &prop_who[128])),
+				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(prop_what, &prop_what[128])),
 				xcore::cli::argV("b", "isBirthday", "Is it a birthday", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_birthday)),
 				xcore::cli::argV::nil
 			};
 
-			const char*	cli_argv[] =
-			{
-				"-y",
-				"2011",
-				"--month",
-				"12",
-				"--day",
-				"30.22",
-				"-who",
-				"\"Jurgen\"",
-				"-w",
-				"'J'",
-				"--isBirthday",
-				"false"
-			};
-			xcore::s32 argc = sizeof(cli_argv) / sizeof(char*);
-
-			const char** argvp = cli_argv;
+//			const char*	cli_argv[] =
+//			{
+//				"-y",
+//				"2011",
+//				"--month",
+//				"12",
+//				"--day",
+//				"30.22",
+//				"-who",
+//				"\"Jurgen\"",
+//				"-w",
+//				"'J'",
+//				"--isBirthday",
+//				"false"
+//			};
+			const char*	cargv = "-y 2011 --month 12 --day 30.22 -who \"Jurgen\" -w 'J' --isBirthday false";
 
 			cmdline	c;
-			CHECK_TRUE(c.parse(argv, argc, argvp));
+			CHECK_TRUE(c.parse(argv, cargv));
+			CHECK_TRUE(ascii::compare("Jurgen", prop_who) == 0);
+			CHECK_TRUE(ascii::compare("J", prop_what) == 0);
 		}
 
 		UNITTEST_TEST(test_argL_argV_1)
