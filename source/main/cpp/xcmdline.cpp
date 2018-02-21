@@ -15,7 +15,7 @@ namespace xcore
 		struct paramstr
 		{
 			inline		paramstr() : mStr(NULL), mEnd(NULL) { }
-			inline		paramstr(const char* str) : mStr(str), mEnd(NULL) { mEnd = ascii::len(mStr); }
+			inline		paramstr(const char* str) : mStr(str), mEnd(NULL) { mEnd = ascii::endof(mStr, NULL); }
 			inline		paramstr(const char* str, const char* end) : mStr(str), mEnd(end) { }
 
 			bool		empty() const { return mStr == mEnd; }
@@ -67,17 +67,18 @@ namespace xcore
 
 		s32		paramstr::compare(const char* str) const
 		{
-			return ascii::compare(mStr, mEnd, str, NULL, ascii::CASE_IGNORE);
+			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(str), ascii::CASE_IGNORE);
 		}
 
 		s32		paramstr::compare(paramstr const& other) const
 		{
-			return ascii::compare(mStr, mEnd, other.mStr, other.mEnd, ascii::CASE_IGNORE);
+			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(other.mStr, other.mEnd), ascii::CASE_IGNORE);
 		}
 
 		bool		paramstr::to_value(x_va_r& out) const
 		{
-			out = x_va(mStr, mEnd);
+			ascii::crunes str(mStr, mEnd);
+			out = x_va(str);
 			return true;
 		}
 
@@ -459,8 +460,8 @@ namespace xcore
 			while (boolean_strings[i] != NULL)
 			{
 				const char* bool_str = boolean_strings[i];
-				s32 const result = ascii::compare(string, string + length, bool_str, NULL, ascii::CASE_IGNORE);
-				if (result == 0)
+				bool const result = ascii::crunes(string, string + length) == ascii::crunes(bool_str);
+				if (result)
 					return boolean_values[i];
 			};
 			return false;
@@ -473,13 +474,21 @@ namespace xcore
 			{
 				/*all the float number character should be 0~9 or '.', and the number of '.' should be only one*/
 				if (string[i] < 48 || string[i]	>	57)
-					if (string[i] == '.'	&&	dotNum == 0)
+				{
+					if (string[i] == '.' &&	dotNum == 0)
+					{
 						dotNum++;
+					}
 				/*the last character can be 'f' or 'F'*/
-					else if (i == stringLen - 1 && (string[i] == 'f' || string[i] == 'F'))
+					else if ((i == (stringLen - 1)) && (string[i] == 'f' || string[i] == 'F'))
+					{
 						return	true;
+					}
 					else
+					{
 						return	false;
+					}
+				}
 			}
 			if (dotNum == 1)
 				return	true;

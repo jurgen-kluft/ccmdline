@@ -53,30 +53,31 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 		UNITTEST_TEST(test_parse_char)
 		{
-			uchar32 prop_char = 'x';
+			xuchar32s4 prop_chars;
+			xuchar32s prop_char = prop_chars.chars();
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char, &prop_char + 1)),
+				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char)),
 				xcore::cli::argV::nil
 			};
 
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, "-c 'a' --charVar 'e'"));
-			CHECK_EQUAL('e', prop_char);
+			CHECK_EQUAL(prop_char[0], 'e');
 		}
 
 		UNITTEST_TEST(test_parse_string)
 		{
-			char prop_str[64 + 1];
-			prop_str[64] = '\0';
+			xuchars64 prop_str;
+
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r((char*)prop_str, &prop_str[64])),
+				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str.chars())),
 				xcore::cli::argV::nil
 			};
 
 			const char* parse_str = "-s \"String\" --stringVar \"Today is 9.30\"";
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, parse_str));
-			CHECK_TRUE(ascii::compare("Today is 9.30", prop_str) == 0);
+			CHECK_TRUE(prop_str == ascii::crunes("Today is 9.30"));
 		}
 
 		UNITTEST_TEST(test_parse_bool)
@@ -101,18 +102,18 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 		UNITTEST_TEST(test_parse_other)
 		{
-			s32 prop_t = 0;
-			char prop_str[64 + 1];
-			prop_str[64] = '\0';
+			s32 prop_int;
+			xuchars64 prop_str;
+
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_t)),
-				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(prop_str, &prop_str[64])),
+				xcore::cli::argV("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_int)),
+				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str.chars())),
 				xcore::cli::argV::nil
 			};
 
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, "--testHelp 325 --version \"v1.0\""));
-			CHECK_TRUE(ascii::compare("v1.0", prop_str) == 0);
+			CHECK_TRUE(prop_str == ascii::crunes("v1.0"));
 		}
 
 		UNITTEST_TEST(test_another_parse)
@@ -120,18 +121,16 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32 prop_year = 0;
 			s32 prop_month = 0;
 			s32 prop_day = 0;
-			char prop_who[128 + 1];
-			prop_who[128] = '\0';
-			char prop_what[128 + 1];
-			prop_what[128] = '\0';
+			xuchars128 prop_who;
+			xuchars128 prop_what;
 			bool prop_birthday = false;
 
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
 				xcore::cli::argV("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
 				xcore::cli::argV("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(prop_who, &prop_who[128])),
-				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(prop_what, &prop_what[128])),
+				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_who.chars())),
+				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_what.chars())),
 				xcore::cli::argV("b", "isBirthday", "Is it a birthday", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_birthday)),
 				xcore::cli::argV::nil
 			};
@@ -155,8 +154,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, cargv));
-			CHECK_TRUE(ascii::compare("Jurgen", prop_who) == 0);
-			CHECK_TRUE(ascii::compare("J", prop_what) == 0);
+			CHECK_TRUE(prop_who == ascii::crunes("Jurgen"));
+			CHECK_TRUE(prop_what == ascii::crunes("J"));
 		}
 
 		UNITTEST_TEST(test_argL_argV_1)
