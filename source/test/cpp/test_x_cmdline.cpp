@@ -54,15 +54,15 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_TEST(test_parse_char)
 		{
 			xuchar32s4 prop_chars;
-			xuchar32s prop_char = prop_chars.chars();
+			xuchar32s& prop_char = prop_chars.chars();
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char)),
 				xcore::cli::argV::nil
 			};
 
 			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "-c 'a' --charVar 'e'"));
-			CHECK_EQUAL(prop_char[0], 'e');
+			CHECK_TRUE(c.parse(argv, "-c "eee""));
+			CHECK_EQUAL('e', prop_char[0]);
 		}
 
 		UNITTEST_TEST(test_parse_string)
