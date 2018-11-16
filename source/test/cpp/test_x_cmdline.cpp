@@ -1,6 +1,5 @@
 #include "xbase/x_target.h"
-#include "xbase/x_string_ascii.h"
-#include "xbase/x_string_utf.h"
+#include "xbase/x_runes.h"
 
 #include "xcmdline/xcmdline.h"
 
@@ -9,7 +8,7 @@
 using namespace xcore;
 
 typedef xcore::cli::instance cmdline;
-extern xcore::x_iallocator* gHeapAllocator;
+extern xcore::xalloc* gHeapAllocator;
 
 UNITTEST_SUITE_BEGIN(test_x_cmdline)
 {
@@ -53,24 +52,23 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 		UNITTEST_TEST(test_parse_char)
 		{
-			xuchar32s4 prop_chars;
-			xuchar32s& prop_char = prop_chars.chars();
+			ascii::runez<8> prop_chars;
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_char)),
+				xcore::cli::argV("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_chars)),
 				xcore::cli::argV::nil
 			};
 
 			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "-c "eee""));
-			CHECK_EQUAL('e', prop_char[0]);
+			CHECK_TRUE(c.parse(argv, "-c \"eee\"")==true);
+			CHECK_EQUAL('e', prop_chars.m_str[0]);
 		}
 
 		UNITTEST_TEST(test_parse_string)
 		{
-			xuchars64 prop_str;
+			ascii::runez<64> prop_str;
 
 			xcore::cli::argV argv[] = {
-				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str.chars())),
+				xcore::cli::argV("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str)),
 				xcore::cli::argV::nil
 			};
 
@@ -103,11 +101,11 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32 prop_int;
-			xuchars64 prop_str;
+			ascii::runez<64> prop_str;
 
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_int)),
-				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str.chars())),
+				xcore::cli::argV("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str)),
 				xcore::cli::argV::nil
 			};
 
@@ -121,16 +119,16 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32 prop_year = 0;
 			s32 prop_month = 0;
 			s32 prop_day = 0;
-			xuchars128 prop_who;
-			xuchars128 prop_what;
+			ascii::runez<128> prop_who;
+			ascii::runez<128> prop_what;
 			bool prop_birthday = false;
 
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
 				xcore::cli::argV("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
 				xcore::cli::argV("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_who.chars())),
-				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_what.chars())),
+				xcore::cli::argV("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_who)),
+				xcore::cli::argV("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_what)),
 				xcore::cli::argV("b", "isBirthday", "Is it a birthday", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_birthday)),
 				xcore::cli::argV::nil
 			};

@@ -10,10 +10,10 @@ UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, test_x_cmdline);
 class UnitTestAllocator : public UnitTest::Allocator
 {
 public:
-	xcore::x_iallocator*	mAllocator;
+	xcore::xalloc*			mAllocator;
 	int						mNumAllocations;
 
-	UnitTestAllocator(xcore::x_iallocator* allocator)
+	UnitTestAllocator(xcore::xalloc* allocator)
 		: mNumAllocations(0)
 	{
 		mAllocator = allocator;
@@ -37,7 +37,7 @@ public:
 
 bool gRunUnitTest(UnitTest::TestReporter& reporter)
 {
-	UnitTestAllocator unittestAllocator( xcore::gCreateSystemAllocator() );
+	UnitTestAllocator unittestAllocator( xcore::xalloc::get_system() );
 	UnitTest::SetAllocator(&unittestAllocator);
 
 	int r = UNITTEST_SUITE_RUN(reporter, xCmdlineUnitTest);

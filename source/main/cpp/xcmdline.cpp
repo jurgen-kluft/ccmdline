@@ -1,6 +1,6 @@
 #include "xbase/x_target.h"
 #include "xbase/x_allocator.h"
-#include "xbase/x_string_ascii.h"
+#include "xbase/x_runes.h"
 
 #include "xcmdline/xcmdline.h"
 

@@ -17,7 +17,7 @@
 namespace xcore
 {
 	// Forward declares
-	class x_iallocator;
+	class xalloc;
 
 	namespace cli
 	{
