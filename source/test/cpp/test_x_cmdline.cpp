@@ -82,7 +82,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			bool prop_bool_a = true;
 			bool prop_bool_b = false;
-			bool prop_bool_c = true;
+			bool prop_bool_c = false;
 
 			xcore::cli::argV argv[] = {
 				xcore::cli::argV("a", "boolVarA", "A boolean variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_bool_a)),

@@ -67,12 +67,12 @@ namespace xcore
 
 		s32		paramstr::compare(const char* str) const
 		{
-			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(str), ascii::CASE_IGNORE);
+			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(str), false);
 		}
 
 		s32		paramstr::compare(paramstr const& other) const
 		{
-			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(other.mStr, other.mEnd), ascii::CASE_IGNORE);
+			return ascii::compare(ascii::crunes(mStr, mEnd), ascii::crunes(other.mStr, other.mEnd), false);
 		}
 
 		bool		paramstr::to_value(x_va_r& out) const
@@ -112,7 +112,7 @@ namespace xcore
 
 			void			init()
 			{
-				s32 l = 0;
+				s64 l = 0;
 				if (mCmdline != NULL)
 				{
 					l = ascii::size(mCmdline);
@@ -126,7 +126,7 @@ namespace xcore
 						i += 1;
 					}
 				}
-				mLen = l;
+				mLen = (s32)l;
 			}
 
 			s32				len() const { return mLen; }
@@ -152,7 +152,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += ascii::size(mArgv[i]);
+						l += (s32)ascii::size(mArgv[i]);
 						if (pos < l)
 						{
 							return &mArgv[i][l - pos];
@@ -176,7 +176,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += ascii::size(mArgv[i]);
+						l += (s32)ascii::size(mArgv[i]);
 						if (pos < l)
 						{
 							return mArgv[i][l - pos];
@@ -254,11 +254,11 @@ namespace xcore
 			argL* argls = cmd.mArgL;
 			while (!is_argl_nil(argls))
 			{
-				if (ascii::compare("", argls->mName, ascii::CASE_IGNORE) == 0)
+				if (ascii::compare("", argls->mName, false) == 0)
 				{
 					return argls;
 				}
-				else if (ascii::compare("default", argls->mName, ascii::CASE_IGNORE) == 0)
+				else if (ascii::compare("default", argls->mName, false) == 0)
 				{
 					return argls;
 				}
