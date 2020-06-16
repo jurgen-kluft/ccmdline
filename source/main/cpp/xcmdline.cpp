@@ -115,14 +115,14 @@ namespace xcore
 				s64 l = 0;
 				if (mCmdline != NULL)
 				{
-					l = ascii::size(mCmdline);
+					l = ascii::len(mCmdline, nullptr);
 				}
 				else if (mArgc > 0)
 				{
 					s32 i = 0;
 					while (i < mArgc)
 					{
-						l += ascii::size(mArgv[i]);
+						l += ascii::len(mArgv[i], nullptr);
 						i += 1;
 					}
 				}
@@ -152,7 +152,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += (s32)ascii::size(mArgv[i]);
+						l += (s32)ascii::len(mArgv[i], nullptr);
 						if (pos < l)
 						{
 							return &mArgv[i][l - pos];
@@ -176,7 +176,7 @@ namespace xcore
 					s32 l = 0;
 					while (i < mArgc)
 					{
-						l += (s32)ascii::size(mArgv[i]);
+						l += (s32)ascii::len(mArgv[i], nullptr);
 						if (pos < l)
 						{
 							return mArgv[i][l - pos];
