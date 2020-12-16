@@ -5,15 +5,9 @@
 #pragma once
 #endif
 
-//==============================================================================
-// INCLUDES
-//==============================================================================
 #include "xbase/x_target.h"
 #include "xbase/x_va_list.h"
 
-//==============================================================================
-// xcore namespace
-//==============================================================================
 namespace xcore
 {
 	// Forward declares
@@ -21,7 +15,7 @@ namespace xcore
 
 	namespace cli
 	{
-		struct params;
+		struct params_t;
 
 		enum eoption
 		{
@@ -29,65 +23,59 @@ namespace xcore
 			eOPT_REQUIRED
 		};
 
-		struct argV
+		struct argv_t
 		{
-			inline				argV(const char* sn, const char* ln, const char* de, eoption o, x_va_r v)
-				: mShort(sn)
-				, mLong(ln)
-				, mDescription(de)
-				, mOption(o)
-				, mValue(v) 
+			inline				argv_t(const char* sn, const char* ln, const char* de, eoption o, x_va_r v)
+				: m_short(sn)
+				, m_long(ln)
+				, m_description(de)
+				, m_option(o)
+				, m_value(v) 
 			{
 			}
 
-			const char*			mShort;						// e.g. f
-			const char*			mLong;						// e.g. force
-			const char*			mDescription;				// "Force to add files"
-			eoption				mOption;					// OPTIONAL
-			x_va_r				mValue;						// false -> boolean
-			static argV			nil;
+			const char*			m_short;						// e.g. f
+			const char*			m_long;						// e.g. force
+			const char*			m_description;				// "Force to add files"
+			eoption				m_option;					// OPTIONAL
+			x_va_r				m_value;						// false -> boolean
+			static argv_t		nil;
 		};
 
-		struct argL
+		struct argl_t
 		{
-			inline				argL(const char* name, argV* argv) 
-				: mName(name)
-				, mArgV(argv) 
+			inline				argl_t(const char* name, argv_t* argv) 
+				: m_name(name)
+				, m_argv(argv) 
 			{
 			}
 
-			const char*			mName;						// "add"
-			argV*				mArgV;
-
-			static argL			nil;
+			const char*			m_name;						// "add"
+			argv_t*				m_argv;
+			static argl_t		nil;
 		};
 
-		struct cmds
+		struct cmds_t
 		{
-			inline				cmds() : mArgL(NULL) {}
-			inline				cmds(argL* argl) : mArgL(argl) {}
+			inline				cmds_t() : m_argl(NULL) {}
+			inline				cmds_t(argl_t* argl) : m_argl(argl) {}
 
-			argL*				mArgL;
+			argl_t*				m_argl;
 		};
 
-		class instance
+		class cmdline_t
 		{
 		public:
-			xbool				parse(argV * arg, const char* cmdline);
-			xbool				parse(argV * arg, s32 argc, const char** argv);
+			xbool				parse(argv_t * arg, const char* cmdline);
+			xbool				parse(argv_t * arg, s32 argc, const char** argv);
 
-			xbool				parse(cmds & c, const char* cmdline);
-			xbool				parse(cmds & c, s32 argc, const char** argv);
+			xbool				parse(cmds_t & c, const char* cmdline);
+			xbool				parse(cmds_t & c, s32 argc, const char** argv);
 
 		private:
-			xbool				parse(cmds & c);
+			xbool				parse(cmds_t & c);
 		};
-
 	};
-
-	//==============================================================================
-	// END xcore namespace
-	//==============================================================================
 };
 
 
