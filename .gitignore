@@ -1,5 +1,7 @@
 #ignore all files
-*.*
+*
+!*/
+
 vendor/
 tags
 
@@ -28,4 +30,4 @@ tags
 !*.ini
 !*.bat
 
-#except the following folders
+
