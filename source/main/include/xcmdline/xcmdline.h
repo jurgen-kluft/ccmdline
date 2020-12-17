@@ -57,9 +57,10 @@ namespace xcore
 
 		struct cmds_t
 		{
-			inline				cmds_t() : m_argl(NULL) {}
-			inline				cmds_t(argl_t* argl) : m_argl(argl) {}
+			inline				cmds_t() : m_index(-1), m_argl(NULL) {}
+			inline				cmds_t(argl_t* argl) : m_index(-1), m_argl(argl) {}
 
+			s32					m_index;
 			argl_t*				m_argl;
 		};
 

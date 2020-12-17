@@ -228,6 +228,7 @@ namespace xcore
 
         static argl_t* find_argl(cmds_t& cmd, paramstr_t& argcmd)
         {
+			cmd.m_index = 0;
             argl_t* argls = cmd.m_argl;
             while (!is_argl_nil(argls))
             {
@@ -244,6 +245,7 @@ namespace xcore
                     return argls;
                 }
 
+				cmd.m_index += 1;
                 argls++;
             }
             return NULL;

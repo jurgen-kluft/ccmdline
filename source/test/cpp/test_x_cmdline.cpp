@@ -80,7 +80,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			bool prop_bool_a = true;
 			bool prop_bool_b = false;
-			bool prop_bool_c = false;
+			bool prop_bool_c = true;
 
 			xcore::cli::argv_t argv[] = {
 				xcore::cli::argv_t("a", "boolVarA", "A boolean variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_bool_a)),
@@ -177,7 +177,10 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			};
 
 			cmdline	c;
-			c.parse(cmds, "add --count 3 --force --items \"item { name : Book }\" \"item { name : Car }\" \"item { name : Pen }\"");
+ 			c.parse(cmds, "remove --count 3 --force --items \"item { name : Book }\" \"item { name : Car }\" \"item { name : Pen }\"");
+
+			CHECK_NOT_EQUAL(-1, cmds.m_index);
+			CHECK_EQUAL(1, cmds.m_index);
 		}
 	}
 }
