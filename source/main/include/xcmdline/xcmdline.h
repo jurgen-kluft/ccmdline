@@ -6,12 +6,12 @@
 #endif
 
 #include "xbase/x_target.h"
-#include "xbase/x_va_list.h"
+#include "xbase/va_list_t.h"
 
 namespace xcore
 {
 	// Forward declares
-	class xalloc;
+	class alloc_t;
 
 	namespace cli
 	{
@@ -25,7 +25,7 @@ namespace xcore
 
 		struct argv_t
 		{
-			inline				argv_t(const char* sn, const char* ln, const char* de, eoption o, x_va_r v)
+			inline				argv_t(const char* sn, const char* ln, const char* de, eoption o, va_r_t v)
 				: m_short(sn)
 				, m_long(ln)
 				, m_description(de)
@@ -38,7 +38,7 @@ namespace xcore
 			const char*			m_long;						// e.g. force
 			const char*			m_description;				// "Force to add files"
 			eoption				m_option;					// OPTIONAL
-			x_va_r				m_value;						// false -> boolean
+			va_r_t				m_value;						// false -> boolean
 			static argv_t		nil;
 		};
 
@@ -67,14 +67,14 @@ namespace xcore
 		class cmdline_t
 		{
 		public:
-			xbool				parse(argv_t * arg, const char* cmdline);
-			xbool				parse(argv_t * arg, s32 argc, const char** argv);
+			bool				parse(argv_t * arg, const char* cmdline);
+			bool				parse(argv_t * arg, s32 argc, const char** argv);
 
-			xbool				parse(cmds_t & c, const char* cmdline);
-			xbool				parse(cmds_t & c, s32 argc, const char** argv);
+			bool				parse(cmds_t & c, const char* cmdline);
+			bool				parse(cmds_t & c, s32 argc, const char** argv);
 
 		private:
-			xbool				parse(cmds_t & c);
+			bool				parse(cmds_t & c);
 		};
 	};
 };

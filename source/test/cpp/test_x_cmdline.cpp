@@ -6,7 +6,7 @@
 using namespace xcore;
 
 typedef xcore::cli::cmdline_t cmdline;
-extern xcore::xalloc* gHeapAllocator;
+extern xcore::alloc_t* gHeapAllocator;
 
 UNITTEST_SUITE_BEGIN(test_x_cmdline)
 {
@@ -21,9 +21,9 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			s32 prop_day = 0;
 			s32 prop_year = 0;
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
-				xcore::cli::argv_t("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-				xcore::cli::argv_t("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
+				xcore::cli::argv_t("m", "month", "Month", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_month)),
+				xcore::cli::argv_t("d", "day", "Day", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_day)),
+				xcore::cli::argv_t("y", "year", "Year", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_year)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -39,7 +39,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			f32 prop_test = 0.0f;
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("t", "test", "Test", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_test)),
+				xcore::cli::argv_t("t", "test", "Test", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_test)),
 				xcore::cli::argv_t::nil
 			};
 			
@@ -52,7 +52,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 		{
 			runez_t<ascii::rune, 8> prop_chars;
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_chars)),
+				xcore::cli::argv_t("c", "charVar", "Character variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_chars)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -66,7 +66,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			runez_t<ascii::rune, 64> prop_str;
 
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str)),
+				xcore::cli::argv_t("s", "stringVar", "Character variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_str)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -83,9 +83,9 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			bool prop_bool_c = true;
 
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("a", "boolVarA", "A boolean variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_bool_a)),
-				xcore::cli::argv_t("b", "boolVarB", "A boolean variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_bool_b)),
-				xcore::cli::argv_t("c", "boolVarC", "A boolean variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_bool_c)),
+				xcore::cli::argv_t("a", "boolVarA", "A boolean variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_a)),
+				xcore::cli::argv_t("b", "boolVarB", "A boolean variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_b)),
+				xcore::cli::argv_t("c", "boolVarC", "A boolean variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_c)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -102,8 +102,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			runez_t<ascii::rune, 64> prop_str;
 
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_int)),
-				xcore::cli::argv_t("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_str)),
+				xcore::cli::argv_t("t", "testHelp", "A integer variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_int)),
+				xcore::cli::argv_t("v", "version", "A string variable", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_str)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -122,12 +122,12 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			bool prop_birthday = false;
 
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
-				xcore::cli::argv_t("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
-				xcore::cli::argv_t("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-				xcore::cli::argv_t("who", "who", "Who", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_who)),
-				xcore::cli::argv_t("w", "what", "What", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_what)),
-				xcore::cli::argv_t("b", "isBirthday", "Is it a birthday", xcore::cli::eOPT_OPTIONAL, x_va_r(&prop_birthday)),
+				xcore::cli::argv_t("y", "year", "Year", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_year)),
+				xcore::cli::argv_t("m", "month", "Month", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_month)),
+				xcore::cli::argv_t("d", "day", "Day", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_day)),
+				xcore::cli::argv_t("who", "who", "Who", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_who)),
+				xcore::cli::argv_t("w", "what", "What", xcore::cli::eOPT_OPTIONAL, va_r_t(&prop_what)),
+				xcore::cli::argv_t("b", "isBirthday", "Is it a birthday", xcore::cli::eOPT_OPTIONAL, va_r_t(&prop_birthday)),
 				xcore::cli::argv_t::nil
 			};
 
@@ -160,8 +160,8 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 			bool prop_force = false;
 
 			xcore::cli::argv_t argv[] = {
-				xcore::cli::argv_t("c", "count", "Number of items", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_count)),
-				xcore::cli::argv_t("f", "force", "Force illegal items", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_force)),
+				xcore::cli::argv_t("c", "count", "Number of items", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_count)),
+				xcore::cli::argv_t("f", "force", "Force illegal items", xcore::cli::eOPT_REQUIRED, va_r_t(&prop_force)),
 				xcore::cli::argv_t::nil
 			};
 

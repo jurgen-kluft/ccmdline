@@ -8,7 +8,7 @@ namespace xcore
 {
     namespace cli
     {
-        argv_t argv_t::nil(NULL, NULL, NULL, eOPT_OPTIONAL, x_va_r());
+        argv_t argv_t::nil(NULL, NULL, NULL, eOPT_OPTIONAL, va_r_t());
         argl_t argl_t::nil(NULL, NULL);
 
         struct paramstr_t
@@ -37,7 +37,7 @@ namespace xcore
             s32 compare(const char* str) const;
             s32 compare(paramstr_t const& other) const;
 
-            bool to_value(x_va_r& out) const;
+            bool to_value(va_r_t& out) const;
 
         private:
             const char* m_str;
@@ -76,10 +76,10 @@ namespace xcore
         s32 paramstr_t::compare(const char* str) const { return xcore::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
         s32 paramstr_t::compare(paramstr_t const& other) const { return xcore::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
 
-        bool paramstr_t::to_value(x_va_r& out) const
+        bool paramstr_t::to_value(va_r_t& out) const
         {
             crunes_t str(m_str, m_end);
-            out = x_va(str);
+            out = va_t(str);
             return true;
         }
 
@@ -195,7 +195,7 @@ namespace xcore
             context_t() : m_cmdline(NULL), m_casesensitive(true) {}
 
             const char* m_cmdline;
-            xbool       m_casesensitive;
+            bool       m_casesensitive;
             paramstr_t  m_cmd;
             cmds_t      m_cmds;
 
@@ -206,8 +206,8 @@ namespace xcore
             }
         };
 
-        static xbool is_argv_nil(argv_t* argv) { return argv->m_short == argv_t::nil.m_short && argv->m_long == argv_t::nil.m_long; }
-        static xbool is_argl_nil(argl_t* argl) { return argl->m_name == argl_t::nil.m_name && argl->m_argv == argl_t::nil.m_argv; }
+        static bool is_argv_nil(argv_t* argv) { return argv->m_short == argv_t::nil.m_short && argv->m_long == argv_t::nil.m_long; }
+        static bool is_argl_nil(argl_t* argl) { return argl->m_name == argl_t::nil.m_name && argl->m_argv == argl_t::nil.m_argv; }
 
         static argv_t* find_argv(argl_t* argl, paramstr_t& argv)
         {
@@ -224,7 +224,7 @@ namespace xcore
             return NULL;
         }
 
-        static xbool set_argv_value(argv_t* argv, paramstr_t& value_str) { return value_str.to_value(argv->m_value); }
+        static bool set_argv_value(argv_t* argv, paramstr_t& value_str) { return value_str.to_value(argv->m_value); }
 
         static argl_t* find_argl(cmds_t& cmd, paramstr_t& argcmd)
         {
@@ -256,48 +256,48 @@ namespace xcore
         public:
             inline parser_t(cmds_t& c) : m_cmds(c), m_argl(NULL) {}
 
-            xbool parse(const char* cmdline);
-            xbool parse(s32 argc, const char** argv);
+            bool parse(const char* cmdline);
+            bool parse(s32 argc, const char** argv);
 
         private:
-            xbool parse();
+            bool parse();
 
-            xbool matchParameters(s32 pos, s32 offset) const;
-            xbool matchParameter(s32 pos, s32& ioOffset) const;
-            xbool matchParameterStruct(s32 pos, s32& ioOffset, paramstr_t& outName, paramstr_t& outValue) const;
-            xbool matchParameterName(s32 pos, s32& ioOffset) const;
-            xbool matchParameterSeparator(s32 pos) const;
-            xbool matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const;
+            bool matchParameters(s32 pos, s32 offset) const;
+            bool matchParameter(s32 pos, s32& ioOffset) const;
+            bool matchParameterStruct(s32 pos, s32& ioOffset, paramstr_t& outName, paramstr_t& outValue) const;
+            bool matchParameterName(s32 pos, s32& ioOffset) const;
+            bool matchParameterSeparator(s32 pos) const;
+            bool matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const;
 
-            xbool matchBoolean(const char* string, s32 length) const;
-            xbool matchInteger(const char* string, s32 stringLen) const;
-            xbool matchFloatNumber(const char* string, s32 stringLen) const;
+            bool matchBoolean(const char* string, s32 length) const;
+            bool matchInteger(const char* string, s32 stringLen) const;
+            bool matchFloatNumber(const char* string, s32 stringLen) const;
 
-            typedef xbool (parser_t::*matchDelegate)(s32) const;
+            typedef bool (parser_t::*matchDelegate)(s32) const;
 
             s32 advanceWhile(s32 pos, matchDelegate matcher) const;
             s32 advanceWhileNot(s32 pos, matchDelegate matcher) const;
 
-            xbool matchAllNotOf(s32 pos, char* cc) const;
-            xbool matchParameterNameChar(s32 pos) const;
-            xbool matchParameterValueChar(s32 pos) const;
-            xbool matchParameterValueFirstChar(s32 pos) const;
-            xbool match(s32 pos, char c) const;
-            xbool matchSlash(s32 pos) const;
-            xbool matchMinus(s32 pos) const;
-            xbool matchQuestion(s32 pos) const;
-            xbool matchColon(s32 pos) const;
-            xbool matchSpace(s32 pos) const;
-            xbool matchQuote(s32 pos) const;
-            xbool matchDoubleQuote(s32 pos) const;
-            xbool matchTerminator(s32 pos) const;
+            bool matchAllNotOf(s32 pos, char* cc) const;
+            bool matchParameterNameChar(s32 pos) const;
+            bool matchParameterValueChar(s32 pos) const;
+            bool matchParameterValueFirstChar(s32 pos) const;
+            bool match(s32 pos, char c) const;
+            bool matchSlash(s32 pos) const;
+            bool matchMinus(s32 pos) const;
+            bool matchQuestion(s32 pos) const;
+            bool matchColon(s32 pos) const;
+            bool matchSpace(s32 pos) const;
+            bool matchQuote(s32 pos) const;
+            bool matchDoubleQuote(s32 pos) const;
+            bool matchTerminator(s32 pos) const;
 
             cmds_t&     m_cmds;
             argl_t*     m_argl;
             arguments_t m_args;
         };
 
-        xbool parser_t::parse(const char* cmdline)
+        bool parser_t::parse(const char* cmdline)
         {
             if (cmdline == NULL)
                 return false;
@@ -308,7 +308,7 @@ namespace xcore
             return parse();
         }
 
-        xbool parser_t::parse(s32 argc, const char** argv)
+        bool parser_t::parse(s32 argc, const char** argv)
         {
             if (argc == 0 || argv == NULL)
                 return false;
@@ -319,11 +319,11 @@ namespace xcore
             return parse();
         }
 
-        xbool parser_t::parse()
+        bool parser_t::parse()
         {
             s32   pos      = 0;
             s32   offset   = 0;
-            xbool _success = false;
+            bool _success = false;
 
             if (m_args.len() > 0)
             {
@@ -360,7 +360,7 @@ namespace xcore
             return _success;
         }
 
-        xbool parser_t::matchParameters(s32 pos, s32 offset) const
+        bool parser_t::matchParameters(s32 pos, s32 offset) const
         {
             /*overload matchParameter function*/
             while (pos < m_args.len() && matchParameter(pos, offset))
@@ -377,7 +377,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchParameter(s32 pos, s32& ioOffset) const
+        bool parser_t::matchParameter(s32 pos, s32& ioOffset) const
         {
             if (matchSlash(pos))
             {
@@ -401,7 +401,7 @@ namespace xcore
             if (matchParameterStruct(pos, ioOffset, arg_name, arg_value))
             {
                 // @TODO: Find ArgV in @ArgL and set the value
-                xbool   result = true;
+                bool   result = true;
                 argv_t* argv   = find_argv(m_argl, arg_name);
                 if (argv != NULL)
                 {
@@ -424,7 +424,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchBoolean(const char* string, s32 length) const
+        bool parser_t::matchBoolean(const char* string, s32 length) const
         {
             const char* boolean_strings[] = {"false", "no", "off", "0", "true", "yes", "on", "1", NULL};
             const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, NULL};
@@ -440,7 +440,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchFloatNumber(const char* string, s32 stringLen) const
+        bool parser_t::matchFloatNumber(const char* string, s32 stringLen) const
         {
             s32 dotNum = 0;
             for (s32 i = 0; i < stringLen; i++)
@@ -468,7 +468,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchInteger(const char* string, s32 stringLen) const
+        bool parser_t::matchInteger(const char* string, s32 stringLen) const
         {
             for (s32 i = 0; i < stringLen; i++)
             {
@@ -478,7 +478,7 @@ namespace xcore
             return true;
         }
 
-        xbool parser_t::matchParameterStruct(s32 pos, s32& ioOffset, paramstr_t& outName, paramstr_t& outValue) const
+        bool parser_t::matchParameterStruct(s32 pos, s32& ioOffset, paramstr_t& outName, paramstr_t& outValue) const
         {
             if (matchParameterName(pos, ioOffset))
             {
@@ -525,7 +525,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchParameterName(s32 pos, s32& ioOffset) const
+        bool parser_t::matchParameterName(s32 pos, s32& ioOffset) const
         {
             s32 pos2 = pos;
             pos      = advanceWhile(pos, &parser_t::matchParameterNameChar);
@@ -538,7 +538,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchParameterSeparator(s32 pos) const
+        bool parser_t::matchParameterSeparator(s32 pos) const
         {
             char c = m_args.get_char(pos);
             if (c == ':' || c == '=' || c == ' ')
@@ -546,7 +546,7 @@ namespace xcore
             return false;
         }
 
-        xbool parser_t::matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const
+        bool parser_t::matchParameterValue(s32 pos, s32& end_pos, s32& ioOffset) const
         {
             if (matchQuote(pos))
             {
@@ -592,7 +592,7 @@ namespace xcore
             return pos;
         }
 
-        xbool parser_t::matchAllNotOf(s32 pos, char* cc) const
+        bool parser_t::matchAllNotOf(s32 pos, char* cc) const
         {
             while (*cc != '\0')
             {
@@ -603,63 +603,63 @@ namespace xcore
             return true;
         }
 
-        xbool parser_t::matchParameterNameChar(s32 pos) const
+        bool parser_t::matchParameterNameChar(s32 pos) const
         {
             char cc[] = {' ', ':', '=', '\0'};
             return matchAllNotOf(pos, cc);
         }
 
-        xbool parser_t::matchParameterValueChar(s32 pos) const
+        bool parser_t::matchParameterValueChar(s32 pos) const
         {
             char cc[] = {' ', '\0'};
             return matchAllNotOf(pos, cc);
         }
 
-        xbool parser_t::matchParameterValueFirstChar(s32 pos) const
+        bool parser_t::matchParameterValueFirstChar(s32 pos) const
         {
             char cc[] = {' ', '/', ':', '-', '=', '?', '\0'};
             return matchAllNotOf(pos, cc);
         }
 
-        xbool parser_t::match(s32 pos, char c) const { return (m_args.get_char(pos) == c); }
-        xbool parser_t::matchSlash(s32 pos) const { return match(pos, '/'); }
-        xbool parser_t::matchMinus(s32 pos) const { return match(pos, '-'); }
-        xbool parser_t::matchQuestion(s32 pos) const { return match(pos, '?'); }
-        xbool parser_t::matchColon(s32 pos) const { return match(pos, ':'); }
-        xbool parser_t::matchSpace(s32 pos) const { return match(pos, ' '); }
-        xbool parser_t::matchQuote(s32 pos) const { return match(pos, '\''); }
-        xbool parser_t::matchDoubleQuote(s32 pos) const { return match(pos, '\"'); }
-        xbool parser_t::matchTerminator(s32 pos) const { return match(pos, '\0'); }
+        bool parser_t::match(s32 pos, char c) const { return (m_args.get_char(pos) == c); }
+        bool parser_t::matchSlash(s32 pos) const { return match(pos, '/'); }
+        bool parser_t::matchMinus(s32 pos) const { return match(pos, '-'); }
+        bool parser_t::matchQuestion(s32 pos) const { return match(pos, '?'); }
+        bool parser_t::matchColon(s32 pos) const { return match(pos, ':'); }
+        bool parser_t::matchSpace(s32 pos) const { return match(pos, ' '); }
+        bool parser_t::matchQuote(s32 pos) const { return match(pos, '\''); }
+        bool parser_t::matchDoubleQuote(s32 pos) const { return match(pos, '\"'); }
+        bool parser_t::matchTerminator(s32 pos) const { return match(pos, '\0'); }
 
-        xbool cmdline_t::parse(argv_t* arg, const char* cmdline)
+        bool cmdline_t::parse(argv_t* arg, const char* cmdline)
         {
             argl_t argl("", arg);
             cmds_t c(&argl);
             parser_t p(c);
-            xbool  res = p.parse(cmdline);
+            bool  res = p.parse(cmdline);
             return res;
         }
 
-        xbool cmdline_t::parse(argv_t* arg, s32 argc, const char** argv)
+        bool cmdline_t::parse(argv_t* arg, s32 argc, const char** argv)
         {
             argl_t argl("", arg);
             cmds_t c(&argl);
             parser_t p(c);
-            xbool  res = p.parse(argc, argv);
+            bool  res = p.parse(argc, argv);
             return res;
         }
 
-        xbool cmdline_t::parse(cmds_t& c, const char* cmdline)
+        bool cmdline_t::parse(cmds_t& c, const char* cmdline)
         {
             parser_t p(c);
-            xbool  res = p.parse(cmdline);
+            bool  res = p.parse(cmdline);
             return res;
         }
 
-        xbool cmdline_t::parse(cmds_t& c, s32 argc, const char** argv)
+        bool cmdline_t::parse(cmds_t& c, s32 argc, const char** argv)
         {
             parser_t p(c);
-            xbool  res = p.parse(argc, argv);
+            bool  res = p.parse(argc, argv);
             return res;
         }
 
