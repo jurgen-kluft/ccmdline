@@ -6,7 +6,7 @@
 #endif
 
 #include "xbase/x_target.h"
-#include "xbase/va_list_t.h"
+#include "xbase/x_va_list.h"
 
 namespace xcore
 {
