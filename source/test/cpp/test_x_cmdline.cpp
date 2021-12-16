@@ -58,7 +58,7 @@ UNITTEST_SUITE_BEGIN(test_x_cmdline)
 
 			cmdline	c;
 			CHECK_TRUE(c.parse(argv, "-c \"eee\"")==true);
-			CHECK_EQUAL('e', prop_chars.m_runes.m_ascii.m_str[0]);
+			CHECK_EQUAL('e', prop_chars.m_ascii.m_str[0]);
 		}
 
 		UNITTEST_TEST(test_parse_string)
