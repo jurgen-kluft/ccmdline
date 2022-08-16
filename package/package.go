@@ -1,8 +1,8 @@
 package xcmdline
 
 import (
+	"github.com/jurgen-kluft/ccode/denv"
 	xbase "github.com/jurgen-kluft/xbase/package"
-	"github.com/jurgen-kluft/xcode/denv"
 	xunittest "github.com/jurgen-kluft/xunittest/package"
 )
 

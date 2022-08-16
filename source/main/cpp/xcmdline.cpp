@@ -1,8 +1,8 @@
-#include "xbase/x_target.h"
-#include "xbase/x_allocator.h"
-#include "xbase/x_runes.h"
+#include "cbase/c_target.h"
+#include "cbase/c_allocator.h"
+#include "cbase/c_runes.h"
 
-#include "xcmdline/xcmdline.h"
+#include "ccmdline/xcmdline.h"
 
 namespace ncore
 {

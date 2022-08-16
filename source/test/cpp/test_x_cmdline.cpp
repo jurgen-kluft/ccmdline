@@ -1,7 +1,7 @@
-#include "xbase/x_target.h"
-#include "xbase/x_runes.h"
-#include "xcmdline/xcmdline.h"
-#include "xunittest/xunittest.h"
+#include "cbase/c_target.h"
+#include "cbase/c_runes.h"
+#include "ccmdline/xcmdline.h"
+#include "cunittest/xunittest.h"
 
 using namespace ncore;
 
