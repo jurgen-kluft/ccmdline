@@ -1,5 +1,5 @@
-#ifndef __XCORE_CMDLINE_H__
-#define __XCORE_CMDLINE_H__
+#ifndef __CCORE_CMDLINE_H__
+#define __CCORE_CMDLINE_H__
 #include "xbase/x_target.h"
 #ifdef USE_PRAGMA_ONCE
 #pragma once
@@ -8,7 +8,7 @@
 #include "xbase/x_target.h"
 #include "xbase/x_va_list.h"
 
-namespace xcore
+namespace ncore
 {
 	// Forward declares
 	class alloc_t;
@@ -57,7 +57,7 @@ namespace xcore
 
 		struct cmds_t
 		{
-			inline				cmds_t() : m_index(-1), m_argl(NULL) {}
+			inline				cmds_t() : m_index(-1), m_argl(nullptr) {}
 			inline				cmds_t(argl_t* argl) : m_index(-1), m_argl(argl) {}
 
 			s32					m_index;
@@ -80,4 +80,4 @@ namespace xcore
 };
 
 
-#endif    /// __XCORE_CMDLINE_H__
+#endif    /// __CCORE_CMDLINE_H__

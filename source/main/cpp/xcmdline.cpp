@@ -4,17 +4,17 @@
 
 #include "xcmdline/xcmdline.h"
 
-namespace xcore
+namespace ncore
 {
     namespace cli
     {
-        argv_t argv_t::nil(NULL, NULL, NULL, eOPT_OPTIONAL, va_r_t());
-        argl_t argl_t::nil(NULL, NULL);
+        argv_t argv_t::nil(nullptr, nullptr, nullptr, eOPT_OPTIONAL, va_r_t());
+        argl_t argl_t::nil(nullptr, nullptr);
 
         struct paramstr_t
         {
-            inline paramstr_t() : m_str(NULL), m_end(NULL) {}
-            inline paramstr_t(const char* str) : m_str(str), m_end(NULL)
+            inline paramstr_t() : m_str(nullptr), m_end(nullptr) {}
+            inline paramstr_t(const char* str) : m_str(str), m_end(nullptr)
             {
                 m_end = m_str;
                 while (*m_end != '\0')
@@ -29,8 +29,8 @@ namespace xcore
 
             void clear()
             {
-                m_str = NULL;
-                m_end = NULL;
+                m_str = nullptr;
+                m_end = nullptr;
             }
             void trim(char c);
 
@@ -73,8 +73,8 @@ namespace xcore
             }
         }
 
-        s32 paramstr_t::compare(const char* str) const { return xcore::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
-        s32 paramstr_t::compare(paramstr_t const& other) const { return xcore::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
+        s32 paramstr_t::compare(const char* str) const { return ncore::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
+        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
 
         bool paramstr_t::to_value(va_r_t& out) const
         {
@@ -101,14 +101,14 @@ namespace xcore
         class arguments_t
         {
         public:
-            inline arguments_t() : m_cmdline(NULL), m_argc(0), m_argv(NULL) {}
-            inline arguments_t(const char* cmdline) : m_cmdline(cmdline), m_argc(0), m_argv(NULL), m_len(-1) {}
-            inline arguments_t(s32 argc, const char** argv) : m_cmdline(NULL), m_argc(argc), m_argv(argv), m_len(-1) {}
+            inline arguments_t() : m_cmdline(nullptr), m_argc(0), m_argv(nullptr) {}
+            inline arguments_t(const char* cmdline) : m_cmdline(cmdline), m_argc(0), m_argv(nullptr), m_len(-1) {}
+            inline arguments_t(s32 argc, const char** argv) : m_cmdline(nullptr), m_argc(argc), m_argv(argv), m_len(-1) {}
 
             void init()
             {
                 s64 l = 0;
-                if (m_cmdline != NULL)
+                if (m_cmdline != nullptr)
                 {
                     l = ascii::strlen(m_cmdline, nullptr);
                 }
@@ -137,7 +137,7 @@ namespace xcore
 
             const char* get_str(s32 pos) const
             {
-                if (m_cmdline != NULL && pos < m_len)
+                if (m_cmdline != nullptr && pos < m_len)
                 {
                     return &m_cmdline[pos];
                 }
@@ -161,7 +161,7 @@ namespace xcore
 
             char get_char(s32 pos) const
             {
-                if (m_cmdline != NULL && pos < m_len)
+                if (m_cmdline != nullptr && pos < m_len)
                 {
                     return m_cmdline[pos];
                 }
@@ -192,7 +192,7 @@ namespace xcore
 
         struct context_t
         {
-            context_t() : m_cmdline(NULL), m_casesensitive(true) {}
+            context_t() : m_cmdline(nullptr), m_casesensitive(true) {}
 
             const char* m_cmdline;
             bool       m_casesensitive;
@@ -221,7 +221,7 @@ namespace xcore
 
                 argvs++;
             }
-            return NULL;
+            return nullptr;
         }
 
         static bool set_argv_value(argv_t* argv, paramstr_t& value_str) { return value_str.to_value(argv->m_value); }
@@ -248,13 +248,13 @@ namespace xcore
 				cmd.m_index += 1;
                 argls++;
             }
-            return NULL;
+            return nullptr;
         }
 
         class parser_t
         {
         public:
-            inline parser_t(cmds_t& c) : m_cmds(c), m_argl(NULL) {}
+            inline parser_t(cmds_t& c) : m_cmds(c), m_argl(nullptr) {}
 
             bool parse(const char* cmdline);
             bool parse(s32 argc, const char** argv);
@@ -299,7 +299,7 @@ namespace xcore
 
         bool parser_t::parse(const char* cmdline)
         {
-            if (cmdline == NULL)
+            if (cmdline == nullptr)
                 return false;
 
             m_args = arguments_t(cmdline);
@@ -310,7 +310,7 @@ namespace xcore
 
         bool parser_t::parse(s32 argc, const char** argv)
         {
-            if (argc == 0 || argv == NULL)
+            if (argc == 0 || argv == nullptr)
                 return false;
 
             m_args = arguments_t(argc, argv);
@@ -339,7 +339,7 @@ namespace xcore
                     m_argl = find_argl(m_cmds, cmd);
                 }
 
-                if (m_argl == NULL)
+                if (m_argl == nullptr)
                 {
                     return false;
                 }
@@ -403,7 +403,7 @@ namespace xcore
                 // @TODO: Find ArgV in @ArgL and set the value
                 bool   result = true;
                 argv_t* argv   = find_argv(m_argl, arg_name);
-                if (argv != NULL)
+                if (argv != nullptr)
                 {
                     result = set_argv_value(argv, arg_value);
                 }
@@ -426,11 +426,11 @@ namespace xcore
 
         bool parser_t::matchBoolean(const char* string, s32 length) const
         {
-            const char* boolean_strings[] = {"false", "no", "off", "0", "true", "yes", "on", "1", NULL};
-            const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, NULL};
+            const char* boolean_strings[] = {"false", "no", "off", "0", "true", "yes", "on", "1", nullptr};
+            const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, nullptr};
 
             s32 i = 0;
-            while (boolean_strings[i] != NULL)
+            while (boolean_strings[i] != nullptr)
             {
                 const char* bool_str = boolean_strings[i];
                 bool const  result   = crunes_t(string, string + length) == crunes_t(bool_str);
@@ -664,4 +664,4 @@ namespace xcore
         }
 
     }; // namespace cli
-} // namespace xcore
+} // namespace ncore
