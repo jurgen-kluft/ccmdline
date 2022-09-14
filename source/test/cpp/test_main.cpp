@@ -6,8 +6,8 @@
 #include "cunittest/cunittest.h"
 #include "cunittest/private/ut_ReportAssert.h"
 
-UNITTEST_SUITE_LIST(xCmdlineUnitTest);
-UNITTEST_SUITE_DECLARE(xCmdlineUnitTest, test_x_cmdline);
+UNITTEST_SUITE_LIST(cUnitTest);
+UNITTEST_SUITE_DECLARE(cUnitTest, test_cmdline);
 
 namespace ncore
 {
@@ -89,7 +89,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter)
 	gTestAllocator = &testAllocator;
 	ncore::context_t::set_system_alloc(&testAllocator);
 
-	int r = UNITTEST_SUITE_RUN(reporter, xCmdlineUnitTest);
+	int r = UNITTEST_SUITE_RUN(reporter, cUnitTest);
 	if (UnitTest::GetNumAllocations()!=0)
 	{
 		reporter.reportFailure(__FILE__, __LINE__, "cunittest", "memory leaks detected!");
