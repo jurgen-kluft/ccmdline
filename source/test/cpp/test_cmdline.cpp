@@ -5,7 +5,7 @@
 
 using namespace ncore;
 
-typedef ncore::cli::cmdline_t cmdline;
+typedef ncore::cli::cmdline cmdline;
 extern ncore::alloc_t* gHeapAllocator;
 
 UNITTEST_SUITE_BEGIN(test_cmdline)
@@ -20,11 +20,11 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_month = 0;
 			s32 prop_day = 0;
 			s32 prop_year = 0;
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
-				ncore::cli::argv_t("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
-				ncore::cli::argv_t("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
+				ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
+				ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
+				ncore::cli::argv::nil
 			};
 
 			cmdline	c;
@@ -38,9 +38,9 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		UNITTEST_TEST(test_parse_float)
 		{
 			f32 prop_test = 0.0f;
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("t", "test", "Test", ncore::cli::Required, va_r_t(&prop_test)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("t", "test", "Test", ncore::cli::Required, va_r_t(&prop_test)),
+				ncore::cli::argv::nil
 			};
 			
 			cmdline	c;
@@ -51,9 +51,9 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		UNITTEST_TEST(test_parse_char)
 		{
 			runez_t<ascii::rune, 8> prop_chars;
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("c", "charVar", "Character variable", ncore::cli::Required, va_r_t(&prop_chars)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("c", "charVar", "Character variable", ncore::cli::Required, va_r_t(&prop_chars)),
+				ncore::cli::argv::nil
 			};
 
 			cmdline	c;
@@ -65,9 +65,9 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		{
 			runez_t<ascii::rune, 64> prop_str;
 
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("s", "stringVar", "Character variable", ncore::cli::Required, va_r_t(&prop_str)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("s", "stringVar", "Character variable", ncore::cli::Required, va_r_t(&prop_str)),
+				ncore::cli::argv::nil
 			};
 
 			const char* parse_str = "-s \"String\" --stringVar \"Today is 9.30\"";
@@ -82,11 +82,11 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			bool prop_bool_b = false;
 			bool prop_bool_c = true;
 
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("a", "boolVarA", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_a)),
-				ncore::cli::argv_t("b", "boolVarB", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_b)),
-				ncore::cli::argv_t("c", "boolVarC", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_c)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("a", "boolVarA", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_a)),
+				ncore::cli::argv("b", "boolVarB", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_b)),
+				ncore::cli::argv("c", "boolVarC", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_c)),
+				ncore::cli::argv::nil
 			};
 
 			cmdline	c;
@@ -101,10 +101,10 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_int;
 			runez_t<ascii::rune, 64> prop_str;
 
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)),
-				ncore::cli::argv_t("v", "version", "A string variable", ncore::cli::Required, va_r_t(&prop_str)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)),
+				ncore::cli::argv("v", "version", "A string variable", ncore::cli::Required, va_r_t(&prop_str)),
+				ncore::cli::argv::nil
 			};
 
 			cmdline	c;
@@ -121,14 +121,14 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			runez_t<ascii::rune, 128> prop_what;
 			bool prop_birthday = false;
 
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
-				ncore::cli::argv_t("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
-				ncore::cli::argv_t("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
-				ncore::cli::argv_t("who", "who", "Who", ncore::cli::Required, va_r_t(&prop_who)),
-				ncore::cli::argv_t("w", "what", "What", ncore::cli::Optional, va_r_t(&prop_what)),
-				ncore::cli::argv_t("b", "isBirthday", "Is it a birthday", ncore::cli::Optional, va_r_t(&prop_birthday)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
+				ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
+				ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
+				ncore::cli::argv("who", "who", "Who", ncore::cli::Required, va_r_t(&prop_who)),
+				ncore::cli::argv("w", "what", "What", ncore::cli::Optional, va_r_t(&prop_what)),
+				ncore::cli::argv("b", "isBirthday", "Is it a birthday", ncore::cli::Optional, va_r_t(&prop_birthday)),
+				ncore::cli::argv::nil
 			};
 
 //			const char*	cli_argv[] =
@@ -159,20 +159,20 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_count = 0;
 			bool prop_force = false;
 
-			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("c", "count", "Number of items", ncore::cli::Required, va_r_t(&prop_count)),
-				ncore::cli::argv_t("f", "force", "Force illegal items", ncore::cli::Required, va_r_t(&prop_force)),
-				ncore::cli::argv_t::nil
+			ncore::cli::argv argv[] = {
+				ncore::cli::argv("c", "count", "Number of items", ncore::cli::Required, va_r_t(&prop_count)),
+				ncore::cli::argv("f", "force", "Force illegal items", ncore::cli::Required, va_r_t(&prop_force)),
+				ncore::cli::argv::nil
 			};
 
-			ncore::cli::argl_t argl[] = {
-				ncore::cli::argl_t((const char*)"add", argv),
-				ncore::cli::argl_t((const char*)"remove", argv),
-				ncore::cli::argl_t((const char*)"replace", argv),
-				ncore::cli::argl_t::nil
+			ncore::cli::argl argl[] = {
+				ncore::cli::argl((const char*)"add", argv),
+				ncore::cli::argl((const char*)"remove", argv),
+				ncore::cli::argl((const char*)"replace", argv),
+				ncore::cli::argl::nil
 			};
 
-			ncore::cli::cmds_t cmds = {
+			ncore::cli::cmds cmds = {
 				argl
 			};
 
