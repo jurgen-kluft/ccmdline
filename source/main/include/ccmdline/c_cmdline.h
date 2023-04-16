@@ -2,7 +2,7 @@
 #define __CCORE_CMDLINE_H__
 #include "cbase/c_target.h"
 #ifdef USE_PRAGMA_ONCE
-#pragma once
+#    pragma once
 #endif
 
 #include "cbase/c_target.h"
@@ -10,74 +10,62 @@
 
 namespace ncore
 {
-	// Forward declares
-	class alloc_t;
+    // Forward declares
+    class alloc_t;
 
-	namespace cli
-	{
-		struct params_t;
+    namespace cli
+    {
+        struct params;
 
-		enum EOption
-		{
-			Optional,
-			Required
-		};
+        enum EOption
+        {
+            Optional,
+            Required
+        };
 
-		struct argv_t
-		{
-			inline				argv_t(const char* sn, const char* ln, const char* de, EOption o, va_r_t v)
-				: m_short(sn)
-				, m_long(ln)
-				, m_description(de)
-				, m_option(o)
-				, m_value(v) 
-			{
-			}
+        struct argv
+        {
+            inline argv(const char* sn, const char* ln, const char* de, EOption o, va_r_t v) : m_short(sn), m_long(ln), m_description(de), m_option(o), m_value(v) {}
 
-			const char*			m_short;						// e.g. f
-			const char*			m_long;						// e.g. force
-			const char*			m_description;				// "Force to add files"
-			EOption				m_option;					// OPTIONAL
-			va_r_t				m_value;						// false -> boolean
-			static argv_t		nil;
-		};
+            const char* m_short;       // e.g. f
+            const char* m_long;        // e.g. force
+            const char* m_description; // "Force to add files"
+            EOption     m_option;      // OPTIONAL
+            va_r_t      m_value;       // false -> boolean
+            static argv nil;
+        };
 
-		struct argl_t
-		{
-			inline				argl_t(const char* name, argv_t* argv) 
-				: m_name(name)
-				, m_argv(argv) 
-			{
-			}
+        struct argl
+        {
+            inline argl(const char* name, argv* argv) : m_name(name), m_argv(argv) {}
 
-			const char*			m_name;						// "add"
-			argv_t*				m_argv;
-			static argl_t		nil;
-		};
+            const char* m_name; // "add"
+            argv*       m_argv;
+            static argl nil;
+        };
 
-		struct cmds_t
-		{
-			inline				cmds_t() : m_index(-1), m_argl(nullptr) {}
-			inline				cmds_t(argl_t* argl) : m_index(-1), m_argl(argl) {}
+        struct cmds
+        {
+            inline cmds() : m_index(-1), m_argl(nullptr) {}
+            inline cmds(argl* argl) : m_index(-1), m_argl(argl) {}
 
-			s32					m_index;
-			argl_t*				m_argl;
-		};
+            s32   m_index;
+            argl* m_argl;
+        };
 
-		class cmdline_t
-		{
-		public:
-			bool				parse(argv_t * arg, const char* cmdline);
-			bool				parse(argv_t * arg, s32 argc, const char** argv);
+        class cmdline
+        {
+        public:
+            bool parse(argv* arg, const char* cmdline);
+            bool parse(argv* arg, s32 argc, const char** argv);
 
-			bool				parse(cmds_t & c, const char* cmdline);
-			bool				parse(cmds_t & c, s32 argc, const char** argv);
+            bool parse(cmds& c, const char* cmdline);
+            bool parse(cmds& c, s32 argc, const char** argv);
 
-		private:
-			bool				parse(cmds_t & c);
-		};
-	};
-};
+        private:
+            bool parse(cmds& c);
+        };
+    }; // namespace cli
+};     // namespace ncore
 
-
-#endif    /// __CCORE_CMDLINE_H__
+#endif /// __CCORE_CMDLINE_H__

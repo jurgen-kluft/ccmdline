@@ -14,14 +14,14 @@ Note: Currently can only handle command-line in ASCII
 s32 prop_month = 0;
 s32 prop_day = 0;
 s32 prop_year = 0;
-ncore::cli::argv_t argv[] = {
-    ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_t(&prop_month)),
-    ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_t(&prop_day)),
-    ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_t(&prop_year)),
-    ncore::cli::argv_t::nil
+ncore::cli::argv argv[] = {
+    ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_t(&prop_month)),
+    ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_t(&prop_day)),
+    ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_t(&prop_year)),
+    ncore::cli::argv::nil
 };
 
-cmdline c;
+ncore::cli::cmdline c;
 c.parse(argv, "--month 8 --day 12 -y 2020");
 ```
 
@@ -41,22 +41,22 @@ ncore::cli::cmd cmds[] = {
     {
         "add",
         {
-            ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_t(&prop_month)),
-            ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_t(&prop_day)),
-            ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_t(&prop_year)),
-            ncore::cli::argv_t::nil
+            ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_t(&prop_month)),
+            ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_t(&prop_day)),
+            ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_t(&prop_year)),
+            ncore::cli::argv::nil
         }
     },
     {
         "commit",
         {
-            ncore::cli::argv_t("m", "message", "Message", ncore::cli::eOPT_REQUIRED, va_t(&prop_commit_msg)),
-            ncore::cli::argv_t::nil
+            ncore::cli::argv("m", "message", "Message", ncore::cli::Required, va_t(&prop_commit_msg)),
+            ncore::cli::argv::nil
         }
     }
 };
 
-cmdline c;
+ncore::cli::cmdline c;
 ncore::cli::cmd* cmd = c.parse(cmds, "commit -m `this is our first commit`");
 
 ```

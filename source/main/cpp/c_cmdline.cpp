@@ -8,8 +8,8 @@ namespace ncore
 {
     namespace cli
     {
-        argv_t argv_t::nil(nullptr, nullptr, nullptr, Optional, va_r_t());
-        argl_t argl_t::nil(nullptr, nullptr);
+        argv argv::nil(nullptr, nullptr, nullptr, Optional, va_r_t());
+        argl argl::nil(nullptr, nullptr);
 
         struct paramstr_t
         {
@@ -197,7 +197,7 @@ namespace ncore
             const char* m_cmdline;
             bool       m_casesensitive;
             paramstr_t  m_cmd;
-            cmds_t      m_cmds;
+            cmds      m_cmds;
 
             void clear()
             {
@@ -206,15 +206,15 @@ namespace ncore
             }
         };
 
-        static bool is_argv_nil(argv_t* argv) { return argv->m_short == argv_t::nil.m_short && argv->m_long == argv_t::nil.m_long; }
-        static bool is_argl_nil(argl_t* argl) { return argl->m_name == argl_t::nil.m_name && argl->m_argv == argl_t::nil.m_argv; }
+        static bool is_argv_nil(argv* argv) { return argv->m_short == argv::nil.m_short && argv->m_long == argv::nil.m_long; }
+        static bool is_argl_nil(argl* argl) { return argl->m_name == argl::nil.m_name && argl->m_argv == argl::nil.m_argv; }
 
-        static argv_t* find_argv(argl_t* argl, paramstr_t& argv)
+        static argv* find_argv(argl* argl, paramstr_t& paramstr)
         {
-            argv_t* argvs = argl->m_argv;
+            argv* argvs = argl->m_argv;
             while (!is_argv_nil(argvs))
             {
-                if (argv.compare(argvs->m_long) == 0 || argv.compare(argvs->m_short) == 0)
+                if (paramstr.compare(argvs->m_long) == 0 || paramstr.compare(argvs->m_short) == 0)
                 {
                     return argvs;
                 }
@@ -224,12 +224,12 @@ namespace ncore
             return nullptr;
         }
 
-        static bool set_argv_value(argv_t* argv, paramstr_t& value_str) { return value_str.to_value(argv->m_value); }
+        static bool set_argv_value(argv* _argv, paramstr_t& value_str) { return value_str.to_value(_argv->m_value); }
 
-        static argl_t* find_argl(cmds_t& cmd, paramstr_t& argcmd)
+        static argl* find_argl(cmds& cmd, paramstr_t& paramstr)
         {
 			cmd.m_index = 0;
-            argl_t* argls = cmd.m_argl;
+            argl* argls = cmd.m_argl;
             while (!is_argl_nil(argls))
             {
                 if (compare("", argls->m_name, false) == 0)
@@ -240,7 +240,7 @@ namespace ncore
                 {
                     return argls;
                 }
-                else if (argcmd.compare(argls->m_name) == 0)
+                else if (paramstr.compare(argls->m_name) == 0)
                 {
                     return argls;
                 }
@@ -254,7 +254,7 @@ namespace ncore
         class parser_t
         {
         public:
-            inline parser_t(cmds_t& c) : m_cmds(c), m_argl(nullptr) {}
+            inline parser_t(cmds& c) : m_cmds(c), m_argl(nullptr) {}
 
             bool parse(const char* cmdline);
             bool parse(s32 argc, const char** argv);
@@ -292,8 +292,8 @@ namespace ncore
             bool matchDoubleQuote(s32 pos) const;
             bool matchTerminator(s32 pos) const;
 
-            cmds_t&     m_cmds;
-            argl_t*     m_argl;
+            cmds&     m_cmds;
+            argl*     m_argl;
             arguments_t m_args;
         };
 
@@ -402,7 +402,7 @@ namespace ncore
             {
                 // @TODO: Find ArgV in @ArgL and set the value
                 bool   result = true;
-                argv_t* argv   = find_argv(m_argl, arg_name);
+                argv* argv   = find_argv(m_argl, arg_name);
                 if (argv != nullptr)
                 {
                     result = set_argv_value(argv, arg_value);
@@ -631,32 +631,32 @@ namespace ncore
         bool parser_t::matchDoubleQuote(s32 pos) const { return match(pos, '\"'); }
         bool parser_t::matchTerminator(s32 pos) const { return match(pos, '\0'); }
 
-        bool cmdline_t::parse(argv_t* arg, const char* cmdline)
+        bool cmdline::parse(argv* arg, const char* cmdline)
         {
-            argl_t argl("", arg);
-            cmds_t c(&argl);
+            argl argl("", arg);
+            cmds c(&argl);
             parser_t p(c);
             bool  res = p.parse(cmdline);
             return res;
         }
 
-        bool cmdline_t::parse(argv_t* arg, s32 argc, const char** argv)
+        bool cmdline::parse(argv* arg, s32 argc, const char** argv)
         {
-            argl_t argl("", arg);
-            cmds_t c(&argl);
+            argl argl("", arg);
+            cmds c(&argl);
             parser_t p(c);
             bool  res = p.parse(argc, argv);
             return res;
         }
 
-        bool cmdline_t::parse(cmds_t& c, const char* cmdline)
+        bool cmdline::parse(cmds& c, const char* cmdline)
         {
             parser_t p(c);
             bool  res = p.parse(cmdline);
             return res;
         }
 
-        bool cmdline_t::parse(cmds_t& c, s32 argc, const char** argv)
+        bool cmdline::parse(cmds& c, s32 argc, const char** argv)
         {
             parser_t p(c);
             bool  res = p.parse(argc, argv);
