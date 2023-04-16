@@ -8,7 +8,7 @@ namespace ncore
 {
     namespace cli
     {
-        argv_t argv_t::nil(nullptr, nullptr, nullptr, eOPT_OPTIONAL, va_r_t());
+        argv_t argv_t::nil(nullptr, nullptr, nullptr, Optional, va_r_t());
         argl_t argl_t::nil(nullptr, nullptr);
 
         struct paramstr_t
@@ -427,7 +427,7 @@ namespace ncore
         bool parser_t::matchBoolean(const char* string, s32 length) const
         {
             const char* boolean_strings[] = {"false", "no", "off", "0", "true", "yes", "on", "1", nullptr};
-            const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, nullptr};
+            const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, false};
 
             s32 i = 0;
             while (boolean_strings[i] != nullptr)

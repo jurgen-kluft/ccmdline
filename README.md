@@ -2,9 +2,10 @@
 
 A library to parse the command line.
 
-## xcmdline, cmdline library
+## ccmdline, a cmdline library
 
-A hand-written cmdline arguments parser using xva-list from xbase library.
+A hand-written cmdline arguments parser using va_list_t from cbase library.
+
 Note: Currently can only handle command-line in ASCII
 
 ## Example
@@ -13,11 +14,11 @@ Note: Currently can only handle command-line in ASCII
 s32 prop_month = 0;
 s32 prop_day = 0;
 s32 prop_year = 0;
-xcore::cli::argV argv[] = {
-    xcore::cli::argV("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
-    xcore::cli::argV("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-    xcore::cli::argV("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
-    xcore::cli::argV::nil
+ncore::cli::argv_t argv[] = {
+    ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_t(&prop_month)),
+    ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_t(&prop_day)),
+    ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_t(&prop_year)),
+    ncore::cli::argv_t::nil
 };
 
 cmdline c;
@@ -36,27 +37,27 @@ Introducing commands where every command has a list of arguments:
 
 ```c++
 const char* prop_commit_msg = nullptr;
-xcore::cli::cmd cmds[] = {
+ncore::cli::cmd cmds[] = {
     {
         "add",
         {
-            xcore::cli::argV("m", "month", "Month", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_month)),
-            xcore::cli::argV("d", "day", "Day", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_day)),
-            xcore::cli::argV("y", "year", "Year", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_year)),
-            xcore::cli::argV::nil
+            ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_t(&prop_month)),
+            ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_t(&prop_day)),
+            ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_t(&prop_year)),
+            ncore::cli::argv_t::nil
         }
     },
     {
         "commit",
         {
-            xcore::cli::argV("m", "message", "Message", xcore::cli::eOPT_REQUIRED, x_va_r(&prop_commit_msg)),
-            xcore::cli::argV::nil
+            ncore::cli::argv_t("m", "message", "Message", ncore::cli::eOPT_REQUIRED, va_t(&prop_commit_msg)),
+            ncore::cli::argv_t::nil
         }
     }
 };
 
 cmdline c;
-xcore::cli::cmd* cmd = c.parse(cmds, "commit -m `this is our first commit`");
+ncore::cli::cmd* cmd = c.parse(cmds, "commit -m `this is our first commit`");
 
 ```
 

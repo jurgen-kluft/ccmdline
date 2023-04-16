@@ -17,15 +17,15 @@ namespace ncore
 	{
 		struct params_t;
 
-		enum eoption
+		enum EOption
 		{
-			eOPT_OPTIONAL,
-			eOPT_REQUIRED
+			Optional,
+			Required
 		};
 
 		struct argv_t
 		{
-			inline				argv_t(const char* sn, const char* ln, const char* de, eoption o, va_r_t v)
+			inline				argv_t(const char* sn, const char* ln, const char* de, EOption o, va_r_t v)
 				: m_short(sn)
 				, m_long(ln)
 				, m_description(de)
@@ -37,7 +37,7 @@ namespace ncore
 			const char*			m_short;						// e.g. f
 			const char*			m_long;						// e.g. force
 			const char*			m_description;				// "Force to add files"
-			eoption				m_option;					// OPTIONAL
+			EOption				m_option;					// OPTIONAL
 			va_r_t				m_value;						// false -> boolean
 			static argv_t		nil;
 		};

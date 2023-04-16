@@ -21,9 +21,9 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_day = 0;
 			s32 prop_year = 0;
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_month)),
-				ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_day)),
-				ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_year)),
+				ncore::cli::argv_t("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
+				ncore::cli::argv_t("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
+				ncore::cli::argv_t("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -39,7 +39,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		{
 			f32 prop_test = 0.0f;
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("t", "test", "Test", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_test)),
+				ncore::cli::argv_t("t", "test", "Test", ncore::cli::Required, va_r_t(&prop_test)),
 				ncore::cli::argv_t::nil
 			};
 			
@@ -52,7 +52,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		{
 			runez_t<ascii::rune, 8> prop_chars;
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("c", "charVar", "Character variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_chars)),
+				ncore::cli::argv_t("c", "charVar", "Character variable", ncore::cli::Required, va_r_t(&prop_chars)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -66,7 +66,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			runez_t<ascii::rune, 64> prop_str;
 
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("s", "stringVar", "Character variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_str)),
+				ncore::cli::argv_t("s", "stringVar", "Character variable", ncore::cli::Required, va_r_t(&prop_str)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -83,9 +83,9 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			bool prop_bool_c = true;
 
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("a", "boolVarA", "A boolean variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_a)),
-				ncore::cli::argv_t("b", "boolVarB", "A boolean variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_b)),
-				ncore::cli::argv_t("c", "boolVarC", "A boolean variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_bool_c)),
+				ncore::cli::argv_t("a", "boolVarA", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_a)),
+				ncore::cli::argv_t("b", "boolVarB", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_b)),
+				ncore::cli::argv_t("c", "boolVarC", "A boolean variable", ncore::cli::Required, va_r_t(&prop_bool_c)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -102,8 +102,8 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			runez_t<ascii::rune, 64> prop_str;
 
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("t", "testHelp", "A integer variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_int)),
-				ncore::cli::argv_t("v", "version", "A string variable", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_str)),
+				ncore::cli::argv_t("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)),
+				ncore::cli::argv_t("v", "version", "A string variable", ncore::cli::Required, va_r_t(&prop_str)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -122,12 +122,12 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			bool prop_birthday = false;
 
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("y", "year", "Year", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_year)),
-				ncore::cli::argv_t("m", "month", "Month", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_month)),
-				ncore::cli::argv_t("d", "day", "Day", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_day)),
-				ncore::cli::argv_t("who", "who", "Who", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_who)),
-				ncore::cli::argv_t("w", "what", "What", ncore::cli::eOPT_OPTIONAL, va_r_t(&prop_what)),
-				ncore::cli::argv_t("b", "isBirthday", "Is it a birthday", ncore::cli::eOPT_OPTIONAL, va_r_t(&prop_birthday)),
+				ncore::cli::argv_t("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
+				ncore::cli::argv_t("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
+				ncore::cli::argv_t("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
+				ncore::cli::argv_t("who", "who", "Who", ncore::cli::Required, va_r_t(&prop_who)),
+				ncore::cli::argv_t("w", "what", "What", ncore::cli::Optional, va_r_t(&prop_what)),
+				ncore::cli::argv_t("b", "isBirthday", "Is it a birthday", ncore::cli::Optional, va_r_t(&prop_birthday)),
 				ncore::cli::argv_t::nil
 			};
 
@@ -160,8 +160,8 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			bool prop_force = false;
 
 			ncore::cli::argv_t argv[] = {
-				ncore::cli::argv_t("c", "count", "Number of items", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_count)),
-				ncore::cli::argv_t("f", "force", "Force illegal items", ncore::cli::eOPT_REQUIRED, va_r_t(&prop_force)),
+				ncore::cli::argv_t("c", "count", "Number of items", ncore::cli::Required, va_r_t(&prop_count)),
+				ncore::cli::argv_t("f", "force", "Force illegal items", ncore::cli::Required, va_r_t(&prop_force)),
 				ncore::cli::argv_t::nil
 			};
 
