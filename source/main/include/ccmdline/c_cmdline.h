@@ -1,11 +1,11 @@
 #ifndef __CCORE_CMDLINE_H__
 #define __CCORE_CMDLINE_H__
-#include "cbase/c_target.h"
+#include "ccore/c_target.h"
 #ifdef USE_PRAGMA_ONCE
 #    pragma once
 #endif
 
-#include "cbase/c_target.h"
+#include "ccore/c_target.h"
 #include "cbase/c_va_list.h"
 
 namespace ncore
