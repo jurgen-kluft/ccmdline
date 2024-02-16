@@ -1,5 +1,5 @@
-#include "ccore/c_target.h"
-#include "ccore/c_allocator.h"
+#include "cbase/c_base.h"
+#include "cbase/c_allocator.h"
 #include "cbase/c_console.h"
 #include "cbase/c_context.h"
 
@@ -48,6 +48,7 @@ bool gRunUnitTest(UnitTest::TestReporter& reporter, UnitTest::TestContext& conte
 #ifdef TARGET_DEBUG
     ncore::UnitTestAssertHandler assertHandler;
     ncore::context_t::set_assert_handler(&assertHandler);
+    ncore::gSetAssertHandler(&assertHandler);
 #endif
     ncore::console->write("Configuration: ");
     ncore::console->setColor(ncore::console_t::YELLOW);
