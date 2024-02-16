@@ -53,18 +53,12 @@ namespace ncore
             argl* m_argl;
         };
 
-        class cmdline
-        {
-        public:
-            bool parse(argv* arg, const char* cmdline);
-            bool parse(argv* arg, s32 argc, const char** argv);
+        bool parse(argv* arg, const char* cmdline);
+        bool parse(argv* arg, s32 argc, const char** argv);
 
-            bool parse(cmds& c, const char* cmdline);
-            bool parse(cmds& c, s32 argc, const char** argv);
+        bool parse(cmds& c, const char* cmdline);
+        bool parse(cmds& c, s32 argc, const char** argv);
 
-        private:
-            bool parse(cmds& c);
-        };
     }; // namespace cli
 };     // namespace ncore
 

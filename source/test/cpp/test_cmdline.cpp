@@ -5,7 +5,6 @@
 
 using namespace ncore;
 
-typedef ncore::cli::cmdline cmdline;
 extern ncore::alloc_t* gHeapAllocator;
 
 UNITTEST_SUITE_BEGIN(test_cmdline)
@@ -27,8 +26,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv::nil
 			};
 
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "--month 12 --day 30 -y 2011"));
+			CHECK_TRUE(parse(argv, "--month 12 --day 30 -y 2011"));
 			
 			CHECK_EQUAL(12, prop_month);
 			CHECK_EQUAL(30, prop_day);
@@ -43,8 +41,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv::nil
 			};
 			
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "--test 12.352 -t 3.14"));
+			CHECK_TRUE(parse(argv, "--test 12.352 -t 3.14"));
 			CHECK_EQUAL(3.14f, prop_test);
 		}
 
@@ -56,8 +53,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv::nil
 			};
 
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "-c \"eee\"")==true);
+			CHECK_TRUE(parse(argv, "-c \"eee\"")==true);
 			CHECK_EQUAL('e', prop_chars.m_ascii.m_bos[prop_chars.m_ascii.m_str]);
 		}
 
@@ -71,8 +67,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			};
 
 			const char* parse_str = "-s \"String\" --stringVar \"Today is 9.30\"";
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, parse_str));
+			CHECK_TRUE(parse(argv, parse_str));
 			CHECK_TRUE(prop_str == crunes_t("Today is 9.30"));
 		}
 
@@ -89,8 +84,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv::nil
 			};
 
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "-a false --boolVarB true -c false"));
+			CHECK_TRUE(parse(argv, "-a false --boolVarB true -c false"));
 			CHECK_EQUAL(false, prop_bool_a);
 			CHECK_EQUAL(true, prop_bool_b);
 			CHECK_EQUAL(false, prop_bool_c);
@@ -107,8 +101,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv::nil
 			};
 
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, "--testHelp 325 --version \"v1.0\""));
+			CHECK_TRUE(parse(argv, "--testHelp 325 --version \"v1.0\""));
 			CHECK_TRUE(prop_str == crunes_t("v1.0"));
 		}
 
@@ -119,7 +112,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_day = 0;
 			runez_t<ascii::rune, 128> prop_who;
 			runez_t<ascii::rune, 128> prop_what;
-			bool prop_birthday = false;
+			bool prop_birthday = true;
 
 			ncore::cli::argv argv[] = {
 				ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
@@ -148,10 +141,10 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 //			};
 			const char*	cargv = "-y 2011 --month 12 --day 30.22 -who \"Jurgen\" -w 'J' --isBirthday false";
 
-			cmdline	c;
-			CHECK_TRUE(c.parse(argv, cargv));
+			CHECK_TRUE(parse(argv, cargv));
 			CHECK_TRUE(prop_who == crunes_t("Jurgen"));
 			CHECK_TRUE(prop_what == crunes_t("J"));
+			CHECK_FALSE(prop_birthday);
 		}
 
 		UNITTEST_TEST(test_argL_argV_1)
@@ -176,8 +169,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				argl
 			};
 
-			cmdline	c;
- 			c.parse(cmds, "remove --count 3 --force --items \"item { name : Book }\" \"item { name : Car }\" \"item { name : Pen }\"");
+ 			parse(cmds, "remove --count 3 --force --items \"item { name : Book }\" \"item { name : Car }\" \"item { name : Pen }\"");
 
 			CHECK_NOT_EQUAL(-1, cmds.m_index);
 			CHECK_EQUAL(1, cmds.m_index);

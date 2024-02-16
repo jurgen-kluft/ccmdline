@@ -631,7 +631,7 @@ namespace ncore
         bool parser_t::matchDoubleQuote(s32 pos) const { return match(pos, '\"'); }
         bool parser_t::matchTerminator(s32 pos) const { return match(pos, '\0'); }
 
-        bool cmdline::parse(argv* arg, const char* cmdline)
+        bool parse(argv* arg, const char* cmdline)
         {
             argl argl("", arg);
             cmds c(&argl);
@@ -640,7 +640,7 @@ namespace ncore
             return res;
         }
 
-        bool cmdline::parse(argv* arg, s32 argc, const char** argv)
+        bool parse(argv* arg, s32 argc, const char** argv)
         {
             argl argl("", arg);
             cmds c(&argl);
@@ -649,14 +649,14 @@ namespace ncore
             return res;
         }
 
-        bool cmdline::parse(cmds& c, const char* cmdline)
+        bool parse(cmds& c, const char* cmdline)
         {
             parser_t p(c);
             bool  res = p.parse(cmdline);
             return res;
         }
 
-        bool cmdline::parse(cmds& c, s32 argc, const char** argv)
+        bool parse(cmds& c, s32 argc, const char** argv)
         {
             parser_t p(c);
             bool  res = p.parse(argc, argv);
