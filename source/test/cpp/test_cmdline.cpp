@@ -27,7 +27,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			};
 
 			CHECK_TRUE(parse(argv, "--month 12 --day 30 -y 2011"));
-			
+
 			CHECK_EQUAL(12, prop_month);
 			CHECK_EQUAL(30, prop_day);
 			CHECK_EQUAL(2011, prop_year);
@@ -40,29 +40,29 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 				ncore::cli::argv("t", "test", "Test", ncore::cli::Required, va_r_t(&prop_test)),
 				ncore::cli::argv::nil
 			};
-			
+
 			CHECK_TRUE(parse(argv, "--test 12.352 -t 3.14"));
 			CHECK_EQUAL(3.14f, prop_test);
 		}
 
 		UNITTEST_TEST(test_parse_char)
 		{
-			runez_t<ascii::rune, 8> prop_chars;
+			ascii::rune prop_chars[8];
 			ncore::cli::argv argv[] = {
-				ncore::cli::argv("c", "charVar", "Character variable", ncore::cli::Required, va_r_t(&prop_chars)),
+				ncore::cli::argv("c", "charVar", "Character variable", ncore::cli::Required, va_r_t(prop_chars, 8)),
 				ncore::cli::argv::nil
 			};
 
 			CHECK_TRUE(parse(argv, "-c \"eee\"")==true);
-			CHECK_EQUAL('e', prop_chars.m_ascii.m_bos[prop_chars.m_ascii.m_str]);
+			CHECK_EQUAL('e', prop_chars[0]);
 		}
 
 		UNITTEST_TEST(test_parse_string)
 		{
-			runez_t<ascii::rune, 64> prop_str;
+			ascii::rune prop_str[64];
 
 			ncore::cli::argv argv[] = {
-				ncore::cli::argv("s", "stringVar", "Character variable", ncore::cli::Required, va_r_t(&prop_str)),
+				ncore::cli::argv("s", "stringVar", "Character variable", ncore::cli::Required, va_r_t(prop_str, 64)),
 				ncore::cli::argv::nil
 			};
 
@@ -93,11 +93,11 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 		UNITTEST_TEST(test_parse_other)
 		{
 			s32 prop_int;
-			runez_t<ascii::rune, 64> prop_str;
+			ascii::rune prop_str[64];
 
 			ncore::cli::argv argv[] = {
 				ncore::cli::argv("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)),
-				ncore::cli::argv("v", "version", "A string variable", ncore::cli::Required, va_r_t(&prop_str)),
+				ncore::cli::argv("v", "version", "A string variable", ncore::cli::Required, va_r_t(prop_str, 64)),
 				ncore::cli::argv::nil
 			};
 
@@ -110,16 +110,16 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
 			s32 prop_year = 0;
 			s32 prop_month = 0;
 			s32 prop_day = 0;
-			runez_t<ascii::rune, 128> prop_who;
-			runez_t<ascii::rune, 128> prop_what;
+			ascii::rune  prop_who[128];
+			ascii::rune  prop_what[128];
 			bool prop_birthday = true;
 
 			ncore::cli::argv argv[] = {
 				ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
 				ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
 				ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
-				ncore::cli::argv("who", "who", "Who", ncore::cli::Required, va_r_t(&prop_who)),
-				ncore::cli::argv("w", "what", "What", ncore::cli::Optional, va_r_t(&prop_what)),
+				ncore::cli::argv("who", "who", "Who", ncore::cli::Required, va_r_t(prop_who, 128)),
+				ncore::cli::argv("w", "what", "What", ncore::cli::Optional, va_r_t(prop_what, 128)),
 				ncore::cli::argv("b", "isBirthday", "Is it a birthday", ncore::cli::Optional, va_r_t(&prop_birthday)),
 				ncore::cli::argv::nil
 			};

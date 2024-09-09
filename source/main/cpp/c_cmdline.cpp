@@ -73,8 +73,8 @@ namespace ncore
             }
         }
 
-        s32 paramstr_t::compare(const char* str) const { return ncore::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
-        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
+        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
+        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
 
         bool paramstr_t::to_value(va_r_t& out) const
         {
@@ -232,11 +232,11 @@ namespace ncore
             argl* argls = cmd.m_argl;
             while (!is_argl_nil(argls))
             {
-                if (compare("", argls->m_name, false) == 0)
+                if (nrunes::compare("", argls->m_name, false) == 0)
                 {
                     return argls;
                 }
-                else if (compare("default", argls->m_name, false) == 0)
+                else if (nrunes::compare("default", argls->m_name, false) == 0)
                 {
                     return argls;
                 }
