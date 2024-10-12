@@ -28,8 +28,6 @@ func GetPackage() *denv.Package {
 	// 'ccmdline' unittest project
 	maintest := denv.SetupDefaultCppTestProject("ccmdline_test", "github.com\\jurgen-kluft\\ccmdline")
 	maintest.Dependencies = append(maintest.Dependencies, unittestpkg.GetMainLib())
-	maintest.Dependencies = append(maintest.Dependencies, cbasepkg.GetMainLib())
-	maintest.Dependencies = append(maintest.Dependencies, ccorepkg.GetMainLib())
 	maintest.Dependencies = append(maintest.Dependencies, mainlib)
 
 	mainpkg.AddMainLib(mainlib)
