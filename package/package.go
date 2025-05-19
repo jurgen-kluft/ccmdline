@@ -21,13 +21,13 @@ func GetPackage() *denv.Package {
 	mainpkg.AddPackage(ccorepkg)
 
 	// 'ccmdline' library
-	mainlib := denv.SetupDefaultCppLibProject("ccmdline", "github.com\\jurgen-kluft\\ccmdline")
-	mainlib.Dependencies = append(mainlib.Dependencies, cbasepkg.GetMainLib())
-	mainlib.Dependencies = append(mainlib.Dependencies, ccorepkg.GetMainLib())
+	mainlib := denv.SetupCppLibProject("ccmdline", "github.com\\jurgen-kluft\\ccmdline")
+	mainlib.AddDependencies(cbasepkg.GetMainLib()...)
+	mainlib.AddDependencies(ccorepkg.GetMainLib()...)
 
 	// 'ccmdline' unittest project
 	maintest := denv.SetupDefaultCppTestProject("ccmdline_test", "github.com\\jurgen-kluft\\ccmdline")
-	maintest.Dependencies = append(maintest.Dependencies, unittestpkg.GetMainLib())
+	maintest.AddDependencies(unittestpkg.GetMainLib()...)
 	maintest.Dependencies = append(maintest.Dependencies, mainlib)
 
 	mainpkg.AddMainLib(mainlib)
