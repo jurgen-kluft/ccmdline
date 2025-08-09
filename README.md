@@ -6,7 +6,7 @@ A library to parse the command line.
 
 A hand-written cmdline arguments parser using va_list_t from cbase library.
 
-Note: Currently can only handle command-line in ASCII
+Note: Currently can only handle command-line in ASCII/UTF-8 encoding.
 
 ## Example
 

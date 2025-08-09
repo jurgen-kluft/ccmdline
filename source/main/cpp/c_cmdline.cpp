@@ -73,13 +73,13 @@ namespace ncore
             }
         }
 
-        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(crunes_t(m_str, m_end), crunes_t(str), false); }
-        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(crunes_t(m_str, m_end), crunes_t(other.m_str, other.m_end), false); }
+        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(make_crunes(m_str, m_end), make_crunes(str), false); }
+        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(make_crunes(m_str, m_end), make_crunes(other.m_str, other.m_end), false); }
 
         bool paramstr_t::to_value(va_r_t& out) const
         {
-            crunes_t str(m_str, m_end);
-            out = va_t(str);
+            crunes_t str = make_crunes(m_str, m_end);
+            out          = va_t(str);
             return true;
         }
 
@@ -110,14 +110,16 @@ namespace ncore
                 s64 l = 0;
                 if (m_cmdline != nullptr)
                 {
-                    l = ascii::strlen(m_cmdline, nullptr);
+                    const char* end;
+                    l = ascii::strlen(m_cmdline, end, nullptr);
                 }
                 else if (m_argc > 0)
                 {
-                    s32 i = 0;
+                    s32         i = 0;
+                    const char* end;
                     while (i < m_argc)
                     {
-                        l += ascii::strlen(m_argv[i], nullptr);
+                        l += ascii::strlen(m_argv[i], end, nullptr);
                         i += 1;
                     }
                 }
@@ -147,7 +149,8 @@ namespace ncore
                     s32 l = 0;
                     while (i < m_argc)
                     {
-                        l += (s32)ascii::strlen(m_argv[i], nullptr);
+                        const char* end;
+                        l += (s32)ascii::strlen(m_argv[i], end, nullptr);
                         if (pos < l)
                         {
                             return &m_argv[i][l - pos];
@@ -171,7 +174,8 @@ namespace ncore
                     s32 l = 0;
                     while (i < m_argc)
                     {
-                        l += (s32)ascii::strlen(m_argv[i], nullptr);
+                        const char* end;
+                        l += (s32)ascii::strlen(m_argv[i], end, nullptr);
                         if (pos < l)
                         {
                             return m_argv[i][l - pos];
@@ -195,9 +199,9 @@ namespace ncore
             context_t() : m_cmdline(nullptr), m_casesensitive(true) {}
 
             const char* m_cmdline;
-            bool       m_casesensitive;
+            bool        m_casesensitive;
             paramstr_t  m_cmd;
-            cmds      m_cmds;
+            cmds        m_cmds;
 
             void clear()
             {
@@ -228,15 +232,16 @@ namespace ncore
 
         static argl* find_argl(cmds& cmd, paramstr_t& paramstr)
         {
-			cmd.m_index = 0;
-            argl* argls = cmd.m_argl;
+            cmd.m_index       = 0;
+            argl*       argls = cmd.m_argl;
+            const char* end;
             while (!is_argl_nil(argls))
             {
-                if (nrunes::compare("", argls->m_name, false) == 0)
+                if (ascii::strlen(argls->m_name, end, nullptr) == 0)
                 {
                     return argls;
                 }
-                else if (nrunes::compare("default", argls->m_name, false) == 0)
+                else if (ascii::compare("default", argls->m_name) == 0)
                 {
                     return argls;
                 }
@@ -245,7 +250,7 @@ namespace ncore
                     return argls;
                 }
 
-				cmd.m_index += 1;
+                cmd.m_index += 1;
                 argls++;
             }
             return nullptr;
@@ -292,8 +297,8 @@ namespace ncore
             bool matchDoubleQuote(s32 pos) const;
             bool matchTerminator(s32 pos) const;
 
-            cmds&     m_cmds;
-            argl*     m_argl;
+            cmds&       m_cmds;
+            argl*       m_argl;
             arguments_t m_args;
         };
 
@@ -321,8 +326,8 @@ namespace ncore
 
         bool parser_t::parse()
         {
-            s32   pos      = 0;
-            s32   offset   = 0;
+            s32  pos      = 0;
+            s32  offset   = 0;
             bool _success = false;
 
             if (m_args.len() > 0)
@@ -401,7 +406,7 @@ namespace ncore
             if (matchParameterStruct(pos, ioOffset, arg_name, arg_value))
             {
                 // @TODO: Find ArgV in @ArgL and set the value
-                bool   result = true;
+                bool  result = true;
                 argv* argv   = find_argv(m_argl, arg_name);
                 if (argv != nullptr)
                 {
@@ -427,14 +432,15 @@ namespace ncore
         bool parser_t::matchBoolean(const char* string, s32 length) const
         {
             const char* boolean_strings[] = {"false", "no", "off", "0", "true", "yes", "on", "1", nullptr};
+            const u32   boolean_lengths[] = {5, 2, 3, 1, 4, 3, 2, 1, 0};
             const bool  boolean_values[]  = {false, false, false, false, true, true, true, true, false};
 
             s32 i = 0;
             while (boolean_strings[i] != nullptr)
             {
                 const char* bool_str = boolean_strings[i];
-                bool const  result   = crunes_t(string, string + length) == crunes_t(bool_str);
-                if (result)
+                s32 const   result   = ascii::compare(string, length, bool_str, boolean_lengths[i]);
+                if (result == 0)
                     return boolean_values[i];
             };
             return false;
@@ -633,33 +639,33 @@ namespace ncore
 
         bool parse(argv* arg, const char* cmdline)
         {
-            argl argl("", arg);
-            cmds c(&argl);
+            argl     argl("", arg);
+            cmds     c(&argl);
             parser_t p(c);
-            bool  res = p.parse(cmdline);
+            bool     res = p.parse(cmdline);
             return res;
         }
 
         bool parse(argv* arg, s32 argc, const char** argv)
         {
-            argl argl("", arg);
-            cmds c(&argl);
+            argl     argl("", arg);
+            cmds     c(&argl);
             parser_t p(c);
-            bool  res = p.parse(argc, argv);
+            bool     res = p.parse(argc, argv);
             return res;
         }
 
         bool parse(cmds& c, const char* cmdline)
         {
             parser_t p(c);
-            bool  res = p.parse(cmdline);
+            bool     res = p.parse(cmdline);
             return res;
         }
 
         bool parse(cmds& c, s32 argc, const char** argv)
         {
             parser_t p(c);
-            bool  res = p.parse(argc, argv);
+            bool     res = p.parse(argc, argv);
             return res;
         }
 
