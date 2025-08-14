@@ -31,7 +31,10 @@ namespace ncore
         UnitTest::TestAllocator* mAllocator;
 
     public:
-        TestAllocator(UnitTest::TestAllocator* allocator) : mAllocator(allocator) {}
+        TestAllocator(UnitTest::TestAllocator* allocator)
+            : mAllocator(allocator)
+        {
+        }
 
         virtual void* v_allocate(u32 size, u32 alignment) { return mAllocator->Allocate(size, alignment); }
         virtual void  v_deallocate(void* mem) { mAllocator->Deallocate(mem); }
