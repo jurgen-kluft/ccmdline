@@ -101,9 +101,14 @@ namespace ncore
         class arguments_t
         {
         public:
-            inline arguments_t() : m_cmdline(nullptr), m_argc(0), m_argv(nullptr) {}
-            inline arguments_t(const char* cmdline) : m_cmdline(cmdline), m_argc(0), m_argv(nullptr), m_len(-1) {}
-            inline arguments_t(s32 argc, const char** argv) : m_cmdline(nullptr), m_argc(argc), m_argv(argv), m_len(-1) {}
+            s32          m_len;
+            s32          m_argc;
+            const char*  m_cmdline;
+            const char** m_argv;
+
+            inline arguments_t() : m_len(-1), m_argc(0), m_cmdline(nullptr),  m_argv(nullptr) {}
+            inline arguments_t(const char* cmdline) : m_len(-1), m_argc(0), m_cmdline(cmdline), m_argv(nullptr) {}
+            inline arguments_t(s32 argc, const char** argv) : m_len(-1), m_argc(argc), m_cmdline(nullptr), m_argv(argv) {}
 
             void init()
             {
@@ -186,12 +191,6 @@ namespace ncore
 
                 return ' ';
             }
-
-        private:
-            s32          m_len;
-            const char*  m_cmdline;
-            s32          m_argc;
-            const char** m_argv;
         };
 
         struct context_t

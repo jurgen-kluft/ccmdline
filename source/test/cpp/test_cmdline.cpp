@@ -1,4 +1,5 @@
 #include "ccore/c_target.h"
+#include "ccore/c_memory.h"
 #include "cbase/c_runes.h"
 #include "ccmdline/c_cmdline.h"
 #include "cunittest/cunittest.h"
@@ -77,6 +78,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
         {
             s32         prop_int;
             ascii::rune prop_str[64];
+            //g_memset(prop_str, 0, sizeof(prop_str));
 
             ncore::cli::argv argv[] = {ncore::cli::argv("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)), ncore::cli::argv("v", "version", "A string variable", ncore::cli::Required, va_r_t(prop_str, 64)),
                                        ncore::cli::argv::nil};
