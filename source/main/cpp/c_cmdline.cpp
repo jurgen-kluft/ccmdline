@@ -73,12 +73,12 @@ namespace ncore
             }
         }
 
-        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(make_crunes(m_str, m_end), make_crunes(str), false); }
-        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(make_crunes(m_str, m_end), make_crunes(other.m_str, other.m_end), false); }
+        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(ascii::make_crunes(m_str, m_end), ascii::make_crunes(str), false); }
+        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(ascii::make_crunes(m_str, m_end), ascii::make_crunes(other.m_str, other.m_end), false); }
 
         bool paramstr_t::to_value(va_r_t& out) const
         {
-            crunes_t str = make_crunes(m_str, m_end);
+            crunes_t str = ascii::make_crunes(m_str, m_end);
             out          = va_t(str);
             return true;
         }
