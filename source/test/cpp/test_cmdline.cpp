@@ -78,7 +78,7 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
         {
             s32         prop_int;
             ascii::rune prop_str[64];
-            //g_memset(prop_str, 0, sizeof(prop_str));
+            // g_memset(prop_str, 0, sizeof(prop_str));
 
             ncore::cli::argv argv[] = {ncore::cli::argv("t", "testHelp", "A integer variable", ncore::cli::Required, va_r_t(&prop_int)), ncore::cli::argv("v", "version", "A string variable", ncore::cli::Required, va_r_t(prop_str, 64)),
                                        ncore::cli::argv::nil};
@@ -93,14 +93,14 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
             s32         prop_month = 0;
             s32         prop_day   = 0;
             ascii::rune prop_who[128];
-            ascii::rune prop_what[128];
+            ascii::rune prop_sig[128];
             bool        prop_birthday = true;
 
             ncore::cli::argv argv[] = {ncore::cli::argv("y", "year", "Year", ncore::cli::Required, va_r_t(&prop_year)),
                                        ncore::cli::argv("m", "month", "Month", ncore::cli::Required, va_r_t(&prop_month)),
                                        ncore::cli::argv("d", "day", "Day", ncore::cli::Required, va_r_t(&prop_day)),
                                        ncore::cli::argv("who", "who", "Who", ncore::cli::Required, va_r_t(prop_who, 128)),
-                                       ncore::cli::argv("w", "what", "What", ncore::cli::Optional, va_r_t(prop_what, 128)),
+                                       ncore::cli::argv("s", "sig", "Signature", ncore::cli::Optional, va_r_t(prop_sig, 128)),
                                        ncore::cli::argv("b", "isBirthday", "Is it a birthday", ncore::cli::Optional, va_r_t(&prop_birthday)),
                                        ncore::cli::argv::nil};
 
@@ -112,18 +112,18 @@ UNITTEST_SUITE_BEGIN(test_cmdline)
             //				"12",
             //				"--day",
             //				"30.22",
-            //				"-who",
+            //				"--who",
             //				"\"Jurgen\"",
-            //				"-w",
+            //				"-s",
             //				"'J'",
             //				"--isBirthday",
             //				"false"
             //			};
-            const char* cargv = "-y 2011 --month 12 --day 30.22 -who \"Jurgen\" -w 'J' --isBirthday false";
+            const char* cargv = "-y 2011 --month 12 --day 30.22 --who \"Jurgen\" -s 'J' --isBirthday false";
 
             CHECK_TRUE(parse(argv, cargv));
-            CHECK_EQUAL(prop_who, ("Jurgen"));
-            CHECK_EQUAL(prop_what, ("J"));
+            CHECK_EQUAL(("Jurgen"), prop_who);
+            CHECK_EQUAL(("J"), prop_sig);
             CHECK_FALSE(prop_birthday);
         }
 

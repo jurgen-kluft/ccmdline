@@ -1,6 +1,6 @@
 #include "ccore/c_target.h"
 #include "ccore/c_allocator.h"
-#include "cbase/c_runes.h"
+#include "ccore/c_runes.h"
 
 #include "ccmdline/c_cmdline.h"
 
@@ -73,12 +73,12 @@ namespace ncore
             }
         }
 
-        s32 paramstr_t::compare(const char* str) const { return ncore::nrunes::compare(ascii::make_crunes(m_str, m_end), ascii::make_crunes(str), false); }
-        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::nrunes::compare(ascii::make_crunes(m_str, m_end), ascii::make_crunes(other.m_str, other.m_end), false); }
+        s32 paramstr_t::compare(const char* str) const { return ncore::ascii::compare(m_str, (u32)(m_end - m_str), str); }
+        s32 paramstr_t::compare(paramstr_t const& other) const { return ncore::ascii::compare(m_str, (u32)(m_end - m_str), other.m_str, (u32)(other.m_end - other.m_str)); }
 
         bool paramstr_t::to_value(va_r_t& out) const
         {
-            crunes_t str = ascii::make_crunes(m_str, m_end);
+            str_t str = ascii::make_const_runes(m_str, m_end);
             out          = va_t(str);
             return true;
         }
